@@ -1,0 +1,17 @@
+language: node_js
+
+git:
+  depth: false
+
+install:
+  - cd $TRAVIS_BUILD_DIR/back && npm install
+  - cd $TRAVIS_BUILD_DIR/front && npm install
+
+script:
+  - cd $TRAVIS_BUILD_DIR/back && npm test
+  - cd $TRAVIS_BUILD_DIR/front && npm test
+
+deploy:
+  skip_cleanup: true
+  provider: script
+  script: bash $TRAVIS_BUILD_DIR/tools/deploy-to-clever-cloud.sh
