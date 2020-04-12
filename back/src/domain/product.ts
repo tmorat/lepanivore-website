@@ -1,6 +1,7 @@
+import { ProductInterface } from './product.interface';
 import { ProductId } from './type-aliases';
 
-export class Product {
+export class Product implements ProductInterface {
   id: ProductId;
   name: string;
   description: string;

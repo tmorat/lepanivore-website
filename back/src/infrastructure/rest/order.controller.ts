@@ -1,7 +1,6 @@
-import { Body, Controller, Get, Inject, Post, Query, Req } from '@nestjs/common';
+import { Body, Controller, Get, Inject, Post, Req } from '@nestjs/common';
 import { Request } from 'express';
 import { NewOrderCommand } from '../../domain/commands/new-order-command';
-import { Order } from '../../domain/order';
 import { OrderType } from '../../domain/order-type';
 import { OrderId } from '../../domain/type-aliases';
 import { GetOrders } from '../../use_cases/get-orders';

@@ -1,3 +1,3 @@
-import { Product } from '../../../domain/product';
+import { ProductInterface } from '../../../domain/product.interface';
 
-export type GetProductResponse = Product;
+export type GetProductResponse = ProductInterface;

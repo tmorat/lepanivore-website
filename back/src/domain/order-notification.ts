@@ -1,9 +1,10 @@
 import * as os from 'os';
 import { Order } from './order';
+import { OrderNotificationInterface } from './order-notification.interface';
 import { OrderType } from './order-type';
 import { ProductWithQuantity } from './product-with-quantity';
 
-export class OrderNotification {
+export class OrderNotification implements OrderNotificationInterface {
   recipient: string;
   subject: string;
   body: string;

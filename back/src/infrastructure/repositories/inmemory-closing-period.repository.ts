@@ -1,8 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ClosingPeriod } from '../../domain/closing-period';
 import { ClosingPeriodRepository } from '../../domain/closing-period.repository';
-import { Product } from '../../domain/product';
-import { ProductRepository } from '../../domain/product.repository';
 
 @Injectable()
 export class InMemoryClosingPeriodRepository implements ClosingPeriodRepository {

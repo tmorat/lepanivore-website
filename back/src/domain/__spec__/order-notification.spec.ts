@@ -1,5 +1,5 @@
-import { OrderNotification } from '../order-notification';
 import { Order } from '../order';
+import { OrderNotification } from '../order-notification';
 import { OrderType } from '../order-type';
 
 describe('domain/OrderNotification', () => {

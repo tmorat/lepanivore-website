@@ -1,8 +1,8 @@
-import { Product } from './product';
+import { ProductInterface } from './product.interface';
 import { ProductId } from './type-aliases';
 
 export interface ProductWithQuantity {
-  product: Product;
+  product: ProductInterface;
   quantity: number;
 }
 

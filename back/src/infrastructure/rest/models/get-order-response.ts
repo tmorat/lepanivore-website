@@ -1,3 +1,3 @@
-import { Order } from '../../../domain/order';
+import { OrderInterface } from '../../../domain/order.interface';
 
-export type GetOrderResponse = Order;
+export type GetOrderResponse = OrderInterface;

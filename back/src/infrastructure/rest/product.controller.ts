@@ -1,5 +1,4 @@
 import { Controller, Get, Inject } from '@nestjs/common';
-import { Product } from '../../domain/product';
 import { GetProducts } from '../../use_cases/get-products';
 import { ProxyServicesDynamicModule } from '../use_cases_proxy/proxy-services-dynamic.module';
 import { UseCaseProxy } from '../use_cases_proxy/use-case-proxy';

@@ -4,11 +4,12 @@ import { ClosingPeriod } from './closing-period';
 import { NewOrderCommand } from './commands/new-order-command';
 import { InvalidOrderError } from './invalid-order.error';
 import { OrderType } from './order-type';
+import { OrderInterface } from './order.interface';
 import { Product } from './product';
 import { ProductIdWithQuantity, ProductWithQuantity } from './product-with-quantity';
 import { OrderId } from './type-aliases';
 
-export class Order {
+export class Order implements OrderInterface {
   private static EMAIL_REGEX: RegExp = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
   id?: OrderId;
