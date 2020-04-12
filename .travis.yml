@@ -11,6 +11,9 @@ script:
   - cd $TRAVIS_BUILD_DIR/back && npm test
   - cd $TRAVIS_BUILD_DIR/front && npm test
 
+before_deploy:
+  - npm install -g clever-tools
+
 deploy:
   skip_cleanup: true
   provider: script
