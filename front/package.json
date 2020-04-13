@@ -1,6 +1,6 @@
 {
   "name": "front",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "lepanivore-website-frontend",
   "private": true,
   "scripts": {
@@ -23,15 +23,15 @@
   "devDependencies": {
     "@nuxt/typescript-build": "0.6.5",
     "@nuxtjs/vuetify": "1.11.0",
-    "@types/jest": "25.1.2",
-    "@vue/test-utils": "1.0.0-beta.31",
-    "babel-jest": "25.1.0",
-    "jest": "25.1.0",
+    "@types/jest": "25.2.1",
+    "@vue/test-utils": "1.0.0-beta.33",
+    "babel-jest": "25.3.0",
+    "jest": "25.3.0",
     "prettier": "1.19.1",
-    "ts-jest": "25.2.0",
+    "ts-jest": "25.3.1",
     "tslint": "5.20.1",
     "tslint-config-prettier": "1.18.0",
-    "tslint-plugin-prettier": "2.1.0",
+    "tslint-plugin-prettier": "2.3.0",
     "vue-jest": "4.0.0-beta.2"
   },
   "engines": {
