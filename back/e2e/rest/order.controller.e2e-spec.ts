@@ -84,9 +84,7 @@ describe('infrastructure/rest/OrderController (e2e)', () => {
       };
 
       // when
-      const testRequest: request.Test = request(app.getHttpServer())
-        .post('/api/orders')
-        .send(postOrderRequest);
+      const testRequest: request.Test = request(app.getHttpServer()).post('/api/orders').send(postOrderRequest);
 
       // then
       return testRequest.expect(201).expect((response: Response) => {
@@ -129,9 +127,7 @@ describe('infrastructure/rest/OrderController (e2e)', () => {
       jest.spyOn(global, 'Date').mockImplementationOnce(() => fixedDate);
 
       // when
-      const testRequest: request.Test = request(app.getHttpServer())
-        .post('/api/orders')
-        .send({ value: '' });
+      const testRequest: request.Test = request(app.getHttpServer()).post('/api/orders').send({ value: '' });
 
       // then
       return testRequest.expect(400).expect({
