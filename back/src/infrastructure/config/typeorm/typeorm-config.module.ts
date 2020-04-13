@@ -13,7 +13,9 @@ export const getTypeOrmModuleOptions = (environmentConfigService: EnvironmentCon
     password: environmentConfigService.get('DATABASE_PASSWORD'),
     database: environmentConfigService.get('DATABASE_NAME'),
     entities: [OrderEntity],
-    ssl: true,
+    ssl: {
+      rejectUnauthorized: false,
+    },
   } as TypeOrmModuleOptions);
 
 export const getTypeOrmMigrationsOptions = (environmentConfigService: EnvironmentConfigService) => ({
