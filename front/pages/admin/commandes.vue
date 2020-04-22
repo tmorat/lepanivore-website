@@ -28,6 +28,7 @@ interface CommandesData {
 
 export default Vue.extend({
   name: 'commandes',
+  middleware: 'auth',
   data() {
     return {
       headers: [

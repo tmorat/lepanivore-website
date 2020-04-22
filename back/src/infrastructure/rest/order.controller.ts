@@ -1,4 +1,5 @@
-import { Body, Controller, Get, Inject, Post, Req } from '@nestjs/common';
+import { Body, Controller, Get, Inject, Post, Req, UseGuards } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
 import { NewOrderCommand } from '../../domain/commands/new-order-command';
 import { OrderType } from '../../domain/order-type';
@@ -19,7 +20,7 @@ export class OrderController {
   ) {}
 
   @Get('/')
-  // TODO admin guard
+  @UseGuards(AuthGuard('jwt')) // TODO test this
   async getOrders(): Promise<GetOrderResponse[]> {
     return this.getOrdersProxyService.getInstance().execute();
   }

@@ -1,3 +1,4 @@
+import { repeat } from 'lodash';
 import { EnvironmentConfigError } from '../environment-config.error';
 import { EnvironmentConfigService } from '../environment-config.service';
 import ProcessEnv = NodeJS.ProcessEnv;
@@ -14,6 +15,7 @@ describe('infrastructure/config/environment-config/EnvironmentConfigService', ()
       DATABASE_NAME: 'database-name',
       APP_EMAIL_ORDER_NOTIFICATION_FROM: 'app-email-order-notification-from',
       APP_EMAIL_ORDER_NOTIFICATION_CC: 'app-email-order-notification-cc',
+      APP_JWT_SECRET: repeat('x', 128),
       SMTP_HOST: 'smtp-host',
       SMTP_PORT: '789',
       SMTP_USERNAME: 'smtp-username',
@@ -226,6 +228,29 @@ describe('infrastructure/config/environment-config/EnvironmentConfigService', ()
 
         // then
         expect(result).toThrow(new EnvironmentConfigError('Config validation error: "APP_EMAIL_ORDER_NOTIFICATION_CC" is not allowed to be empty'));
+      });
+    });
+
+    describe('APP_JWT_SECRET', () => {
+      it('should fail when empty', () => {
+        // given
+        process.env.APP_JWT_SECRET = '';
+
+        // when
+        const result = () => new EnvironmentConfigService();
+
+        // then
+        expect(result).toThrow(new EnvironmentConfigError('Config validation error: "APP_JWT_SECRET" is not allowed to be empty'));
+      });
+      it('should fail when less than 128 characters', () => {
+        // given
+        process.env.APP_JWT_SECRET = repeat('x', 127);
+
+        // when
+        const result = () => new EnvironmentConfigService();
+
+        // then
+        expect(result).toThrow(new EnvironmentConfigError('Config validation error: "APP_JWT_SECRET" length must be at least 128 characters long'));
       });
     });
 
