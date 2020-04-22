@@ -13,7 +13,7 @@ import { ProxyServicesDynamicModule } from '../../src/infrastructure/use_cases_p
 import { UseCaseProxy } from '../../src/infrastructure/use_cases_proxy/use-case-proxy';
 import { GetProducts } from '../../src/use_cases/get-products';
 import { OrderProducts } from '../../src/use_cases/order-products';
-import { e2eEnvironmentConfigService } from '../e2e-config';
+import { ADMIN_E2E_PASSWORD, ADMIN_E2E_USERNAME, e2eEnvironmentConfigService } from '../e2e-config';
 
 describe('infrastructure/rest/OrderController (e2e)', () => {
   let app: INestApplication;
@@ -48,8 +48,8 @@ describe('infrastructure/rest/OrderController (e2e)', () => {
     await app.init();
   });
 
-  describe('POST /api/orders', () => {
-    it('should return http status code OK with found orders', () => {
+  describe('GET /api/orders', () => {
+    it('should return http status code OK with found orders when authenticated as admin', () => {
       // given
       const orders: Order[] = [
         { id: 1, clientName: 'fake order 1' } as Order,
@@ -60,13 +60,27 @@ describe('infrastructure/rest/OrderController (e2e)', () => {
       ];
       (mockGetOrders.execute as jest.Mock).mockReturnValue(Promise.resolve(orders));
 
+      const loginRequest: request.Test = request(app.getHttpServer()).post('/api/authentication/login').send({
+        username: ADMIN_E2E_USERNAME,
+        password: ADMIN_E2E_PASSWORD,
+      });
+
+      return loginRequest.expect(200).expect((loginResponse: Response) => {
+        const testRequest: request.Test = request(app.getHttpServer()).get('/api/orders').set({ Authorization: loginResponse.body.accessToken });
+
+        // then
+        return testRequest.expect(200).expect((response: Response) => {
+          expect(response.body).toStrictEqual(orders as GetOrderResponse[]);
+        });
+      });
+    });
+
+    it('should return http status code Unauthorized when not authenticated as admin', () => {
       // when
-      const testRequest: request.Test = request(app.getHttpServer()).get('/api/orders');
+      const testRequestWithoutAuthorizationHeader: request.Test = request(app.getHttpServer()).get('/api/orders');
 
       // then
-      return testRequest.expect(200).expect((response: Response) => {
-        expect(response.body).toStrictEqual(orders as GetOrderResponse[]);
-      });
+      return testRequestWithoutAuthorizationHeader.expect(401);
     });
   });
 

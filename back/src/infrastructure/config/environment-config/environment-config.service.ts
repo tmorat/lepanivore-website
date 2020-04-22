@@ -26,6 +26,7 @@ export class EnvironmentConfigService {
       DATABASE_PASSWORD: Joi.string().when('DATABASE_TYPE', { is: 'sqlite', then: Joi.optional(), otherwise: Joi.required() }),
       APP_EMAIL_ORDER_NOTIFICATION_FROM: Joi.string().required(),
       APP_EMAIL_ORDER_NOTIFICATION_CC: Joi.string().required(),
+      APP_JWT_SECRET: Joi.string().required().min(128),
       SMTP_HOST: Joi.string().required(),
       SMTP_PORT: Joi.number().required(),
       SMTP_USERNAME: Joi.string().required(),

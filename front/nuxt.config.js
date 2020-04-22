@@ -45,6 +45,7 @@ export default {
   modules: [
     // Doc: https://axios.nuxtjs.org/usage
     '@nuxtjs/axios',
+    '@nuxtjs/auth',
   ],
   /*
    ** Axios module configuration
@@ -66,6 +67,21 @@ export default {
      * Configure proxy to dynamically route /api/** requests to API_URL if present
      */
     '/api': { target: process.env.API_URL || 'http://localhost:3001' },
+  },
+  auth: {
+    strategies: {
+      local: {
+        endpoints: {
+          login: { url: '/api/authentication/login', method: 'post', propertyName: 'accessToken' },
+          user: false,
+          logout: false,
+        },
+      },
+    },
+    redirect: {
+      login: '/admin/connexion',
+      home: '/admin/commandes',
+    },
   },
   /*
    ** vuetify module configuration
