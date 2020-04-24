@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ValueTransformer } from 'typeorm';
 import { Order } from '../../../domain/order';
 import { OrderType } from '../../../domain/order-type';
+import { OrderInterface } from '../../../domain/order.interface';
 import { Product } from '../../../domain/product';
 import { ProductWithQuantity } from '../../../domain/product-with-quantity';
 import { OrderEntity } from './order.entity';
@@ -10,7 +11,7 @@ import { OrderEntity } from './order.entity';
 export class OrderEntityTransformer implements ValueTransformer {
   private readonly PRODUCT_WITH_QUANTITY_SEPARATOR: string = ':::';
 
-  from(orderEntity: OrderEntity): Order {
+  from(orderEntity: OrderEntity): OrderInterface {
     const products: ProductWithQuantity[] = orderEntity.products.map(
       (productWithQuantityAsStringWithSeparator: string): ProductWithQuantity => {
         const productWithQuantityAsStringArray: string[] = productWithQuantityAsStringWithSeparator.split(this.PRODUCT_WITH_QUANTITY_SEPARATOR);
@@ -34,7 +35,7 @@ export class OrderEntityTransformer implements ValueTransformer {
     };
   }
 
-  to(order: Order): OrderEntity {
+  to(order: OrderInterface): OrderEntity {
     const orderEntity: OrderEntity = new OrderEntity();
     orderEntity.id = order.id;
     orderEntity.clientName = order.clientName;

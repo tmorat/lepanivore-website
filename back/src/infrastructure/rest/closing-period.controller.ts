@@ -1,5 +1,5 @@
 import { Controller, Get, Inject } from '@nestjs/common';
-import { ClosingPeriod } from '../../domain/closing-period';
+import { ClosingPeriodInterface } from '../../domain/closing-period.interface';
 import { GetClosingPeriods } from '../../use_cases/get-closing-periods';
 import { ProxyServicesDynamicModule } from '../use_cases_proxy/proxy-services-dynamic.module';
 import { UseCaseProxy } from '../use_cases_proxy/use-case-proxy';
@@ -14,10 +14,10 @@ export class ClosingPeriodController {
 
   @Get('/')
   async getClosingPeriods(): Promise<GetClosingPeriodResponse[]> {
-    const closingPeriods: ClosingPeriod[] = await this.getClosingPeriodsProxyService.getInstance().execute();
+    const closingPeriods: ClosingPeriodInterface[] = await this.getClosingPeriodsProxyService.getInstance().execute();
 
     return closingPeriods.map(
-      (closingPeriod: ClosingPeriod) =>
+      (closingPeriod: ClosingPeriodInterface) =>
         ({ start: closingPeriod.start.toISOString(), end: closingPeriod.end.toISOString() } as GetClosingPeriodResponse)
     );
   }

@@ -1,7 +1,7 @@
-import { ClosingPeriod } from '../../domain/closing-period';
+import { ClosingPeriodInterface } from '../../domain/closing-period.interface';
 import { ClosingPeriodRepository } from '../../domain/closing-period.repository';
 import { NewOrderCommand } from '../../domain/commands/new-order-command';
-import { Order } from '../../domain/order';
+import { Order, OrderFactoryInterface } from '../../domain/order';
 import { OrderNotification } from '../../domain/order-notification';
 import { OrderNotificationRepository } from '../../domain/order-notification.repository';
 import { OrderType } from '../../domain/order-type';
@@ -11,7 +11,6 @@ import { ProductRepository } from '../../domain/product.repository';
 import { OrderId } from '../../domain/type-aliases';
 import { OrderProducts } from '../order-products';
 
-jest.mock('../../domain/order');
 jest.mock('../../domain/order-notification');
 
 describe('uses_cases/OrderProducts', () => {
@@ -23,7 +22,9 @@ describe('uses_cases/OrderProducts', () => {
   let newOrderCommand: NewOrderCommand;
 
   beforeEach(() => {
-    ((Order as unknown) as jest.Mock).mockClear();
+    Order.factory = {} as OrderFactoryInterface;
+    Order.factory.create = jest.fn();
+
     ((OrderNotification as unknown) as jest.Mock).mockClear();
 
     mockProductRepository = {} as ProductRepository;
@@ -56,7 +57,7 @@ describe('uses_cases/OrderProducts', () => {
       const allProducts: Product[] = [{ id: 42, name: 'Product 1' } as Product, { id: 1337, name: 'Product 2' } as Product];
       (mockProductRepository.findAll as jest.Mock).mockReturnValue(Promise.resolve(allProducts));
 
-      const closingPeriods: ClosingPeriod[] = [
+      const closingPeriods: ClosingPeriodInterface[] = [
         { start: new Date('2019-12-23T12:00:00.000Z'), end: new Date('2019-12-28T12:00:00.000Z') },
         { start: new Date('2020-07-15T12:00:00.000Z'), end: new Date('2020-08-15T12:00:00.000Z') },
       ];
@@ -66,13 +67,13 @@ describe('uses_cases/OrderProducts', () => {
       await orderProducts.execute(newOrderCommand);
 
       // then
-      expect(Order).toHaveBeenCalledWith(newOrderCommand, allProducts, closingPeriods);
+      expect(Order.factory.create).toHaveBeenCalledWith(newOrderCommand, allProducts, closingPeriods);
     });
 
     it('should save created order using repository', async () => {
       // given
       const createdOrder: Order = { clientName: 'Fake order' } as Order;
-      ((Order as unknown) as jest.Mock).mockImplementation(() => createdOrder);
+      (Order.factory.create as jest.Mock).mockReturnValue(createdOrder);
 
       // when
       await orderProducts.execute(newOrderCommand);
@@ -84,7 +85,7 @@ describe('uses_cases/OrderProducts', () => {
     it('should create order notification with order details, id, and store email address', async () => {
       // given
       const createdOrder: Order = { clientName: 'Fake order' } as Order;
-      ((Order as unknown) as jest.Mock).mockImplementation(() => createdOrder);
+      (Order.factory.create as jest.Mock).mockReturnValue(createdOrder);
 
       const savedOrderId: OrderId = 42;
       (mockOrderRepository.save as jest.Mock).mockReturnValue(Promise.resolve(savedOrderId));

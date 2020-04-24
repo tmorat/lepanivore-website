@@ -1,7 +1,8 @@
-import { isEmpty } from 'lodash';
+import { isEmpty, cloneDeep } from 'lodash';
 import { ClosingDay } from './closing-day';
-import { ClosingPeriod } from './closing-period';
+import { ClosingPeriodInterface } from './closing-period.interface';
 import { NewOrderCommand } from './commands/new-order-command';
+import { UpdateOrderCommand } from './commands/update-order-command';
 import { InvalidOrderError } from './invalid-order.error';
 import { OrderType } from './order-type';
 import { OrderInterface } from './order.interface';
@@ -10,9 +11,18 @@ import { ProductIdWithQuantity, ProductWithQuantity } from './product-with-quant
 import { OrderId } from './type-aliases';
 
 export class Order implements OrderInterface {
+  static factory: OrderFactoryInterface = {
+    create(command: NewOrderCommand, allProducts: Product[], closingPeriods: ClosingPeriodInterface[]): Order {
+      return new Order({} as OrderInterface, command, allProducts, closingPeriods);
+    },
+    copy(order: OrderInterface): Order {
+      return new Order(order, {} as NewOrderCommand, [], []);
+    },
+  };
+
   private static EMAIL_REGEX: RegExp = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
-  id?: OrderId;
+  id: OrderId;
   clientName: string;
   clientPhoneNumber: string;
   clientEmailAddress: string;
@@ -21,27 +31,15 @@ export class Order implements OrderInterface {
   pickUpDate?: Date;
   deliveryAddress?: string;
 
-  constructor(command: NewOrderCommand, allProducts: Product[], closingPeriods: ClosingPeriod[]) {
-    Order.assertClientNameIsValid(command.clientName);
-    Order.assertClientPhoneNumberIsValid(command.clientPhoneNumber);
-    Order.assertClientEmailAddressIsValid(command.clientEmailAddress);
-    Order.assertProductsAreValid(command.products);
-    Order.assertTypeIsValid(command.type);
-    Order.assertpickUpDateIsValid(command.type, closingPeriods, command.pickUpDate);
-    Order.assertDeliveryAddressIsValid(command.type, command.deliveryAddress);
-
-    this.id = undefined;
-    this.clientName = command.clientName;
-    this.clientPhoneNumber = command.clientPhoneNumber;
-    this.clientEmailAddress = command.clientEmailAddress;
-    this.products = command.products.map((productIdWithQuantity: ProductIdWithQuantity) =>
-      Order.toProductWithQuantity(productIdWithQuantity, allProducts)
-    );
-    this.type = command.type;
-    if (this.type === OrderType.PICK_UP) {
-      this.pickUpDate = command.pickUpDate;
+  private constructor(order: OrderInterface, command: NewOrderCommand, allProducts: Product[], closingPeriods: ClosingPeriodInterface[]) {
+    if (!isEmpty(order)) {
+      this.copy(order);
     } else {
-      this.deliveryAddress = command.deliveryAddress;
+      this.id = undefined;
+
+      this.bindContactDetails(command);
+      this.bindProductSelection(command, allProducts);
+      this.bindOrderTypeSelection(command, closingPeriods);
     }
   }
 
@@ -88,7 +86,7 @@ export class Order implements OrderInterface {
     }
   }
 
-  private static assertpickUpDateIsValid(type: OrderType, closingPeriods: ClosingPeriod[], pickUpDate?: Date): void {
+  private static assertpickUpDateIsValid(type: OrderType, closingPeriods: ClosingPeriodInterface[], pickUpDate?: Date): void {
     if (type === OrderType.PICK_UP) {
       if (!pickUpDate) {
         throw new InvalidOrderError('a pick-up date must be defined when order type is pick-up');
@@ -102,7 +100,7 @@ export class Order implements OrderInterface {
         throw new InvalidOrderError('pick-up date must be between a Tuesday and a Saturday');
       }
 
-      closingPeriods.forEach((closingPeriod: ClosingPeriod) => {
+      closingPeriods.forEach((closingPeriod: ClosingPeriodInterface) => {
         if (pickUpDate.getTime() >= closingPeriod.start.getTime() && pickUpDate.getTime() <= closingPeriod.end.getTime()) {
           throw new InvalidOrderError('pick-up date must be outside closing periods');
         }
@@ -131,4 +129,60 @@ export class Order implements OrderInterface {
 
     return date;
   }
+
+  updateWith(command: UpdateOrderCommand, allProducts: Product[], closingPeriods: ClosingPeriodInterface[]): void {
+    if (this.id !== command.orderId) {
+      throw new InvalidOrderError('existing order id does not match order id in command');
+    }
+
+    this.bindProductSelection(command, allProducts);
+    this.bindOrderTypeSelection(command, closingPeriods);
+  }
+
+  private copy(otherOrder: OrderInterface): void {
+    const deepCloneOfOtherOrder: OrderInterface = cloneDeep(otherOrder);
+    for (const field in deepCloneOfOtherOrder) {
+      if (deepCloneOfOtherOrder.hasOwnProperty(field)) {
+        this[field] = deepCloneOfOtherOrder[field];
+      }
+    }
+  }
+
+  private bindContactDetails(command: NewOrderCommand): void {
+    Order.assertClientNameIsValid(command.clientName);
+    Order.assertClientPhoneNumberIsValid(command.clientPhoneNumber);
+    Order.assertClientEmailAddressIsValid(command.clientEmailAddress);
+
+    this.clientName = command.clientName;
+    this.clientPhoneNumber = command.clientPhoneNumber;
+    this.clientEmailAddress = command.clientEmailAddress;
+  }
+
+  private bindProductSelection(command: NewOrderCommand | UpdateOrderCommand, allProducts: Product[]): void {
+    Order.assertProductsAreValid(command.products);
+
+    this.products = command.products.map((productIdWithQuantity: ProductIdWithQuantity) =>
+      Order.toProductWithQuantity(productIdWithQuantity, allProducts)
+    );
+  }
+
+  private bindOrderTypeSelection(command: NewOrderCommand | UpdateOrderCommand, closingPeriods: ClosingPeriodInterface[]): void {
+    Order.assertTypeIsValid(command.type);
+    Order.assertpickUpDateIsValid(command.type, closingPeriods, command.pickUpDate);
+    Order.assertDeliveryAddressIsValid(command.type, command.deliveryAddress);
+
+    this.type = command.type;
+    if (this.type === OrderType.PICK_UP) {
+      this.pickUpDate = command.pickUpDate;
+      this.deliveryAddress = undefined;
+    } else {
+      this.deliveryAddress = command.deliveryAddress;
+      this.pickUpDate = undefined;
+    }
+  }
+}
+
+export interface OrderFactoryInterface {
+  create(command: NewOrderCommand, allProducts: Product[], closingPeriods: ClosingPeriodInterface[]): Order;
+  copy(order: OrderInterface): Order;
 }

@@ -1,25 +1,29 @@
 import { NuxtAxiosInstance } from '@nuxtjs/axios';
 import { AxiosError, AxiosResponse } from 'axios';
 import ApiService from '~/services/api.service';
+import { OrderId } from '../../../back/src/domain/type-aliases';
 import { GetClosingPeriodResponse } from '../../../back/src/infrastructure/rest/models/get-closing-period-response';
 import { GetOrderResponse } from '../../../back/src/infrastructure/rest/models/get-order-response';
 import { GetProductResponse } from '../../../back/src/infrastructure/rest/models/get-product-response';
 import { PostOrderRequest } from '../../../back/src/infrastructure/rest/models/post-order-request';
 import { PostOrderResponse } from '../../../back/src/infrastructure/rest/models/post-order-response';
+import { PutOrderRequest } from '../../../back/src/infrastructure/rest/models/put-order-request';
 
 describe('services/ApiService', () => {
   let apiService: ApiService;
   let $get: jest.Mock;
   let $post: jest.Mock;
   let $put: jest.Mock;
+  let $delete: jest.Mock;
   let useMock: jest.Mock;
 
   beforeEach(() => {
     $get = jest.fn();
     $post = jest.fn();
     $put = jest.fn();
+    $delete = jest.fn();
     useMock = jest.fn();
-    const $axios: object = { $get, $post, $put, interceptors: { response: { use: useMock } } };
+    const $axios: object = { $get, $post, $put, $delete, interceptors: { response: { use: useMock } } };
     const mockAxios: NuxtAxiosInstance = $axios as NuxtAxiosInstance;
     apiService = new ApiService(mockAxios);
   });
@@ -87,6 +91,32 @@ describe('services/ApiService', () => {
 
       // then
       expect(result).toStrictEqual(response);
+    });
+  });
+
+  describe('putOrder()', () => {
+    it('should put order to api', async () => {
+      // given
+      const orderId: OrderId = 42;
+      const request: PutOrderRequest = { deliveryAddress: 'another delivery address' } as PutOrderRequest;
+
+      // when
+      await apiService.putOrder(orderId, request);
+
+      // then
+      expect($put).toHaveBeenCalledWith('/api/orders/42', request);
+    });
+  });
+  describe('deleteOrder()', () => {
+    it('should delete order to api', async () => {
+      // given
+      const orderId: OrderId = 42;
+
+      // when
+      await apiService.deleteOrder(orderId);
+
+      // then
+      expect($delete).toHaveBeenCalledWith('/api/orders/42');
     });
   });
 

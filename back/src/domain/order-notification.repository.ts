@@ -1,5 +1,5 @@
-import { OrderNotification } from './order-notification';
+import { OrderNotificationInterface } from './order-notification.interface';
 
 export interface OrderNotificationRepository {
-  send(orderNotification: OrderNotification): Promise<void>;
+  send(orderNotification: OrderNotificationInterface): Promise<void>;
 }

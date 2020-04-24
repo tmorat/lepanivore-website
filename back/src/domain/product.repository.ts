@@ -1,5 +1,5 @@
-import { Product } from './product';
+import { ProductInterface } from './product.interface';
 
 export interface ProductRepository {
-  findAll(): Promise<Product[]>;
+  findAll(): Promise<ProductInterface[]>;
 }

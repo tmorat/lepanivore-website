@@ -1,7 +1,7 @@
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import request, { Response } from 'supertest';
-import { ClosingPeriod } from '../../src/domain/closing-period';
+import { ClosingPeriodInterface } from '../../src/domain/closing-period.interface';
 import { EnvironmentConfigService } from '../../src/infrastructure/config/environment-config/environment-config.service';
 import { GetClosingPeriodResponse } from '../../src/infrastructure/rest/models/get-closing-period-response';
 import { RestModule } from '../../src/infrastructure/rest/rest.module';
@@ -37,7 +37,7 @@ describe('infrastructure/rest/ClosingPeriodController (e2e)', () => {
   describe('GET /api/closing-periods', () => {
     it('should return http status code OK with found closing periods', () => {
       // given
-      const closingPeriods: ClosingPeriod[] = [
+      const closingPeriods: ClosingPeriodInterface[] = [
         { start: new Date('2020-07-01T12:00:00Z'), end: new Date('2020-08-15T12:00:00Z') },
         { start: new Date('2020-12-15T12:00:00Z'), end: new Date('2021-01-02T12:00:00Z') },
       ];
