@@ -1,7 +1,7 @@
 <template>
   <v-card>
     <v-card-title>
-      Votre sélection de produits
+      Sélection de produits
     </v-card-title>
     <v-container>
       <v-sheet v-for="(product, index) in value.products" v-bind:key="product.id" v-bind:index="index">

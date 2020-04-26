@@ -1,4 +1,5 @@
 import { Order } from '../../domain/order';
+import { OrderInterface } from '../../domain/order.interface';
 import { OrderRepository } from '../../domain/order.repository';
 import { GetOrders } from '../get-orders';
 
@@ -26,7 +27,7 @@ describe('use_cases/GetOrders', () => {
       (mockOrderRepository.findAll as jest.Mock).mockReturnValue(Promise.resolve(orders));
 
       // when
-      const result: Order[] = await getOrders.execute();
+      const result: OrderInterface[] = await getOrders.execute();
 
       // then
       expect(result).toStrictEqual(orders);

@@ -8,17 +8,23 @@ import { OrderId } from '../../src/domain/type-aliases';
 import { EnvironmentConfigService } from '../../src/infrastructure/config/environment-config/environment-config.service';
 import { GetOrderResponse } from '../../src/infrastructure/rest/models/get-order-response';
 import { PostOrderRequest } from '../../src/infrastructure/rest/models/post-order-request';
+import { PutOrderRequest } from '../../src/infrastructure/rest/models/put-order-request';
 import { RestModule } from '../../src/infrastructure/rest/rest.module';
 import { ProxyServicesDynamicModule } from '../../src/infrastructure/use_cases_proxy/proxy-services-dynamic.module';
 import { UseCaseProxy } from '../../src/infrastructure/use_cases_proxy/use-case-proxy';
+import { DeleteOrder } from '../../src/use_cases/delete-order';
 import { GetProducts } from '../../src/use_cases/get-products';
 import { OrderProducts } from '../../src/use_cases/order-products';
+import { UpdateExistingOrder } from '../../src/use_cases/update-existing-order';
 import { ADMIN_E2E_PASSWORD, ADMIN_E2E_USERNAME, e2eEnvironmentConfigService } from '../e2e-config';
+import DoneCallback = jest.DoneCallback;
 
 describe('infrastructure/rest/OrderController (e2e)', () => {
   let app: INestApplication;
   let mockGetOrders: GetProducts;
   let mockOrderProducts: OrderProducts;
+  let mockUpdateExistingOrder: UpdateExistingOrder;
+  let mockDeleteOrder: DeleteOrder;
 
   beforeAll(async () => {
     mockGetOrders = {} as GetProducts;
@@ -33,6 +39,18 @@ describe('infrastructure/rest/OrderController (e2e)', () => {
       getInstance: () => mockOrderProducts,
     } as UseCaseProxy<OrderProducts>;
 
+    mockUpdateExistingOrder = {} as UpdateExistingOrder;
+    mockUpdateExistingOrder.execute = jest.fn();
+    const mockUpdateExistingOrderProxyService: UseCaseProxy<UpdateExistingOrder> = {
+      getInstance: () => mockUpdateExistingOrder,
+    } as UseCaseProxy<UpdateExistingOrder>;
+
+    mockDeleteOrder = {} as DeleteOrder;
+    mockDeleteOrder.execute = jest.fn();
+    const mockDeleteOrderProxyService: UseCaseProxy<DeleteOrder> = {
+      getInstance: () => mockDeleteOrder,
+    } as UseCaseProxy<DeleteOrder>;
+
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [RestModule],
     })
@@ -40,6 +58,10 @@ describe('infrastructure/rest/OrderController (e2e)', () => {
       .useValue(mockGetProductsProxyService)
       .overrideProvider(ProxyServicesDynamicModule.ORDER_PRODUCTS_PROXY_SERVICE)
       .useValue(mockOrderProductsProxyService)
+      .overrideProvider(ProxyServicesDynamicModule.UPDATE_EXISTING_ORDER_PROXY_SERVICE)
+      .useValue(mockUpdateExistingOrderProxyService)
+      .overrideProvider(ProxyServicesDynamicModule.DELETE_ORDER_PROXY_SERVICE)
+      .useValue(mockDeleteOrderProxyService)
       .overrideProvider(EnvironmentConfigService)
       .useValue(e2eEnvironmentConfigService)
       .compile();
@@ -49,13 +71,14 @@ describe('infrastructure/rest/OrderController (e2e)', () => {
   });
 
   describe('GET /api/orders', () => {
-    it('should return http status code OK with found orders when authenticated as admin', () => {
+    it('should return http status code OK with found orders when authenticated as admin', (done: DoneCallback) => {
       // given
       const orders: Order[] = [
-        { id: 1, clientName: 'fake order 1' } as Order,
+        { id: 1, clientName: 'fake order 1', pickUpDate: new Date('2020-07-01T12:00:00Z') } as Order,
         {
           id: 2,
           clientName: 'fake order 2',
+          pickUpDate: new Date('2020-08-15T12:00:00Z'),
         } as Order,
       ];
       (mockGetOrders.execute as jest.Mock).mockReturnValue(Promise.resolve(orders));
@@ -65,14 +88,29 @@ describe('infrastructure/rest/OrderController (e2e)', () => {
         password: ADMIN_E2E_PASSWORD,
       });
 
-      return loginRequest.expect(200).expect((loginResponse: Response) => {
-        const testRequest: request.Test = request(app.getHttpServer()).get('/api/orders').set({ Authorization: loginResponse.body.accessToken });
+      let accessToken: string;
+      loginRequest
+        .expect(200)
+        .expect((loginResponse: Response) => {
+          accessToken = loginResponse.body.accessToken;
+        })
+        .end(() => {
+          // when
+          const testRequest: request.Test = request(app.getHttpServer())
+            .get('/api/orders')
+            .set({ Authorization: `Bearer ${accessToken}` });
 
-        // then
-        return testRequest.expect(200).expect((response: Response) => {
-          expect(response.body).toStrictEqual(orders as GetOrderResponse[]);
+          // then
+          testRequest
+            .expect(200)
+            .expect((response: Response) => {
+              expect(response.body).toStrictEqual([
+                { id: 1, clientName: 'fake order 1', pickUpDate: '2020-07-01' },
+                { id: 2, clientName: 'fake order 2', pickUpDate: '2020-08-15' },
+              ]);
+            })
+            .end(done);
         });
-      });
     });
 
     it('should return http status code Unauthorized when not authenticated as admin', () => {
@@ -136,20 +174,154 @@ describe('infrastructure/rest/OrderController (e2e)', () => {
       (mockOrderProducts.execute as jest.Mock).mockImplementation(() => {
         throw new InvalidOrderError('invalid order');
       });
-      const fixedDate: Date = new Date('2020-06-13T04:41:20');
-      // @ts-ignore
-      jest.spyOn(global, 'Date').mockImplementationOnce(() => fixedDate);
 
       // when
-      const testRequest: request.Test = request(app.getHttpServer()).post('/api/orders').send({ value: '' });
+      const testRequest: request.Test = request(app.getHttpServer())
+        .post('/api/orders')
+        .send({} as PostOrderRequest);
 
       // then
-      return testRequest.expect(400).expect({
-        statusCode: 400,
-        timestamp: '2020-06-13T08:41:20.000Z',
-        name: 'Error',
-        message: 'invalid order',
+      return testRequest.expect(400).expect((response: Response) => {
+        expect(response.body).toMatchObject({
+          statusCode: 400,
+          timestamp: expect.any(String),
+          name: 'Error',
+          message: 'invalid order',
+        });
       });
+    });
+  });
+
+  describe('PUT /api/orders', () => {
+    it('should update order using id in path and body request transformed to command', (done: DoneCallback) => {
+      // given
+      const putOrderRequest: PutOrderRequest = {
+        products: [{ productId: 42, quantity: 1 }],
+        type: 'DELIVERY',
+        pickUpDate: '2020-06-13T04:41:20',
+        deliveryAddress: 'Montréal',
+      };
+
+      const loginRequest: request.Test = request(app.getHttpServer()).post('/api/authentication/login').send({
+        username: ADMIN_E2E_USERNAME,
+        password: ADMIN_E2E_PASSWORD,
+      });
+
+      let accessToken: string;
+      loginRequest
+        .expect(200)
+        .expect((loginResponse: Response) => {
+          accessToken = loginResponse.body.accessToken;
+        })
+        .end(() => {
+          // when
+          const testRequest: request.Test = request(app.getHttpServer())
+            .put('/api/orders/1337')
+            .send(putOrderRequest)
+            .set({ Authorization: `Bearer ${accessToken}` });
+
+          // then
+          testRequest
+            .expect(200)
+            .expect((response: Response) => {
+              expect(mockUpdateExistingOrder.execute).toHaveBeenCalledWith({
+                orderId: 1337,
+                products: [{ productId: 42, quantity: 1 }],
+                type: OrderType.DELIVERY,
+                pickUpDate: new Date('2020-06-13T04:41:20'),
+                deliveryAddress: 'Montréal',
+              });
+            })
+            .end(done);
+        });
+    });
+
+    it('should return http status code BAD REQUEST when invalid order', (done: DoneCallback) => {
+      // given
+      (mockUpdateExistingOrder.execute as jest.Mock).mockImplementation(() => {
+        throw new InvalidOrderError('invalid order');
+      });
+
+      const loginRequest: request.Test = request(app.getHttpServer()).post('/api/authentication/login').send({
+        username: ADMIN_E2E_USERNAME,
+        password: ADMIN_E2E_PASSWORD,
+      });
+
+      let accessToken: string;
+      loginRequest
+        .expect(200)
+        .expect((loginResponse: Response) => {
+          accessToken = loginResponse.body.accessToken;
+        })
+        .end(() => {
+          // when
+          const testRequest: request.Test = request(app.getHttpServer())
+            .put('/api/orders/1337')
+            .send({} as PutOrderRequest)
+            .set({ Authorization: `Bearer ${accessToken}` });
+
+          // then
+          testRequest
+            .expect(400)
+            .expect((response: Response) => {
+              expect(response.body).toMatchObject({
+                statusCode: 400,
+                timestamp: expect.any(String),
+                name: 'Error',
+                message: 'invalid order',
+              });
+            })
+            .end(done);
+        });
+    });
+
+    it('should return http status code Unauthorized when not authenticated as admin', () => {
+      // when
+      const testRequestWithoutAuthorizationHeader: request.Test = request(app.getHttpServer())
+        .put('/api/orders/1337')
+        .send({} as PutOrderRequest);
+
+      // then
+      return testRequestWithoutAuthorizationHeader.expect(401);
+    });
+  });
+
+  describe('DELETE /api/orders', () => {
+    it('should delete order using id in path transformed to command', (done: DoneCallback) => {
+      // given
+      const loginRequest: request.Test = request(app.getHttpServer()).post('/api/authentication/login').send({
+        username: ADMIN_E2E_USERNAME,
+        password: ADMIN_E2E_PASSWORD,
+      });
+
+      let accessToken: string;
+      loginRequest
+        .expect(200)
+        .expect((loginResponse: Response) => {
+          accessToken = loginResponse.body.accessToken;
+        })
+        .end(() => {
+          // when
+          const testRequest: request.Test = request(app.getHttpServer())
+            .delete('/api/orders/1337')
+            .set({ Authorization: `Bearer ${accessToken}` });
+
+          // then
+          testRequest
+            .expect(204)
+            .expect((response: Response) => {
+              expect(mockDeleteOrder.execute).toHaveBeenCalledWith({ orderId: 1337 });
+            })
+            .end(done);
+        });
+    });
+
+    it('should return http status code Unauthorized when not authenticated as admin', () => {
+      // when
+      const testRequestWithoutAuthorizationHeader: request.Test = request(app.getHttpServer()).delete('/api/orders/1337');
+
+      // then
+      return testRequestWithoutAuthorizationHeader.expect(401);
     });
   });
 

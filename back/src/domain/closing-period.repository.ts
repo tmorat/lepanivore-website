@@ -1,5 +1,5 @@
-import { ClosingPeriod } from './closing-period';
+import { ClosingPeriodInterface } from './closing-period.interface';
 
 export interface ClosingPeriodRepository {
-  findAll(): Promise<ClosingPeriod[]>;
+  findAll(): Promise<ClosingPeriodInterface[]>;
 }

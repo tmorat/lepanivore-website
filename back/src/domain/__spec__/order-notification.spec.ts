@@ -1,9 +1,9 @@
-import { Order } from '../order';
 import { OrderNotification } from '../order-notification';
 import { OrderType } from '../order-type';
+import { OrderInterface } from '../order.interface';
 
 describe('domain/OrderNotification', () => {
-  let order: Order;
+  let order: OrderInterface;
 
   beforeEach(() => {
     order = {

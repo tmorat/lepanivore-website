@@ -2,6 +2,7 @@ import * as os from 'os';
 import { Order } from './order';
 import { OrderNotificationInterface } from './order-notification.interface';
 import { OrderType } from './order-type';
+import { OrderInterface } from './order.interface';
 import { ProductWithQuantity } from './product-with-quantity';
 
 export class OrderNotification implements OrderNotificationInterface {
@@ -9,13 +10,13 @@ export class OrderNotification implements OrderNotificationInterface {
   subject: string;
   body: string;
 
-  constructor(order: Order) {
+  constructor(order: OrderInterface) {
     this.recipient = order.clientEmailAddress;
     this.subject = `Boulangerie Le Panivore : votre commande #${order.id}`;
     this.body = OrderNotification.buildBody(order);
   }
 
-  private static buildBody(order: Order): string {
+  private static buildBody(order: OrderInterface): string {
     const heading: string = `Bonjour,${os.EOL}${os.EOL}Voici le récapitulatif de votre commande :`;
     const orderId: string = `- Numéro de commande: ${order.id}`;
     const name: string = `- Votre nom: ${order.clientName}`;

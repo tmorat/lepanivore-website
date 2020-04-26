@@ -1,8 +1,9 @@
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Repository } from 'typeorm';
-import { Order } from '../../src/domain/order';
+import { OrderNotFoundError } from '../../src/domain/order-not-found.error';
 import { OrderType } from '../../src/domain/order-type';
+import { OrderInterface } from '../../src/domain/order.interface';
 import { OrderId } from '../../src/domain/type-aliases';
 import { EnvironmentConfigService } from '../../src/infrastructure/config/environment-config/environment-config.service';
 import { DatabaseOrderRepository } from '../../src/infrastructure/repositories/database-order.repository';
@@ -15,7 +16,7 @@ describe('infrastructure/repositories/DatabaseOrderRepository', () => {
   let app: INestApplication;
   let databaseOrderRepository: DatabaseOrderRepository;
   let orderEntityRepository: Repository<OrderEntity>;
-  let orderWithoutId: Order;
+  let orderWithoutId: OrderInterface;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -49,7 +50,7 @@ describe('infrastructure/repositories/DatabaseOrderRepository', () => {
       type: OrderType.PICK_UP,
       pickUpDate: new Date('2020-06-13T04:41:20'),
       deliveryAddress: 'Montréal',
-    } as Order;
+    } as OrderInterface;
   });
 
   describe('save()', () => {
@@ -71,15 +72,57 @@ describe('infrastructure/repositories/DatabaseOrderRepository', () => {
     });
   });
 
+  describe('delete()', () => {
+    it('should delete existing order in database', async () => {
+      // given
+      const savedOrderId: OrderId = await databaseOrderRepository.save(orderWithoutId);
+      const savedOrder: OrderInterface = await databaseOrderRepository.findById(savedOrderId);
+
+      // when
+      await databaseOrderRepository.delete(savedOrder);
+
+      // then
+      const count: number = await orderEntityRepository.count();
+      expect(count).toBe(0);
+    });
+  });
+
+  describe('findById()', () => {
+    it('should return found company in database', async () => {
+      // given
+      await databaseOrderRepository.save(orderWithoutId);
+      const orderWithoutIdAndDifferentClientName: OrderInterface = { ...orderWithoutId, clientName: 'Harry Potter' };
+      const savedOrderIdDifferentClientName: OrderId = await databaseOrderRepository.save(orderWithoutIdAndDifferentClientName);
+
+      // when
+      const result: OrderInterface = await databaseOrderRepository.findById(savedOrderIdDifferentClientName);
+
+      // then
+      expect(result.id).toBe(savedOrderIdDifferentClientName);
+      expect(result).toMatchObject(orderWithoutIdAndDifferentClientName);
+    });
+
+    it('should throw exception when order not found in database', async () => {
+      // given
+      const randomId: OrderId = Math.floor(Math.random() * 1000 + 1000);
+
+      // when
+      const result: Promise<OrderInterface> = databaseOrderRepository.findById(randomId);
+
+      // then
+      await expect(result).rejects.toThrow(new OrderNotFoundError(`Order not found with id "${randomId}"`));
+    });
+  });
+
   describe('findAll()', () => {
     it('should return found companies in database', async () => {
       // given
       await databaseOrderRepository.save(orderWithoutId);
-      const orderWithoutIdAndDifferentClientName: Order = { ...orderWithoutId, clientName: 'Harry Potter' };
+      const orderWithoutIdAndDifferentClientName: OrderInterface = { ...orderWithoutId, clientName: 'Harry Potter' };
       await databaseOrderRepository.save(orderWithoutIdAndDifferentClientName);
 
       // when
-      const result: Order[] = await databaseOrderRepository.findAll();
+      const result: OrderInterface[] = await databaseOrderRepository.findAll();
 
       // then
       expect(result).toHaveLength(2);
@@ -89,7 +132,7 @@ describe('infrastructure/repositories/DatabaseOrderRepository', () => {
 
     it('should return empty array when no order has been found in database', async () => {
       // when
-      const result: Order[] = await databaseOrderRepository.findAll();
+      const result: OrderInterface[] = await databaseOrderRepository.findAll();
 
       // then
       expect(result).toHaveLength(0);

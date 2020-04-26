@@ -3,7 +3,7 @@ import { ProductWithQuantity } from './product-with-quantity';
 import { OrderId } from './type-aliases';
 
 export interface OrderInterface {
-  id?: OrderId;
+  id: OrderId;
   clientName: string;
   clientPhoneNumber: string;
   clientEmailAddress: string;

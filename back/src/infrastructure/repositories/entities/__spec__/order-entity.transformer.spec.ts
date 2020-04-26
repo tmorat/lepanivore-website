@@ -1,5 +1,6 @@
 import { Order } from '../../../../domain/order';
 import { OrderType } from '../../../../domain/order-type';
+import { OrderInterface } from '../../../../domain/order.interface';
 import { OrderEntityTransformer } from '../order-entity.transformer';
 import { OrderEntity } from '../order.entity';
 
@@ -27,7 +28,7 @@ describe('infrastructure/repositories/entities/OrderEntityTransformer', () => {
       } as OrderEntity;
 
       // when
-      const result: Order = orderEntityTransformer.from(orderEntity);
+      const result: OrderInterface = orderEntityTransformer.from(orderEntity);
 
       // then
       expect(result).toStrictEqual({
@@ -49,7 +50,7 @@ describe('infrastructure/repositories/entities/OrderEntityTransformer', () => {
   describe('to()', () => {
     it('should transform Order to OrderEntity', () => {
       // given
-      const order: Order = {
+      const order: OrderInterface = {
         id: 42,
         clientName: 'John Doe',
         clientPhoneNumber: '+1 514 111 1111',

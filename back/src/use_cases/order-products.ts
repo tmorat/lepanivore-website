@@ -1,9 +1,10 @@
-import { ClosingPeriod } from '../domain/closing-period';
+import { ClosingPeriodInterface } from '../domain/closing-period.interface';
 import { ClosingPeriodRepository } from '../domain/closing-period.repository';
 import { NewOrderCommand } from '../domain/commands/new-order-command';
 import { Order } from '../domain/order';
 import { OrderNotification } from '../domain/order-notification';
 import { OrderNotificationRepository } from '../domain/order-notification.repository';
+import { OrderInterface } from '../domain/order.interface';
 import { OrderRepository } from '../domain/order.repository';
 import { Product } from '../domain/product';
 import { ProductRepository } from '../domain/product.repository';
@@ -18,23 +19,23 @@ export class OrderProducts {
   ) {}
 
   async execute(newOrderCommand: NewOrderCommand): Promise<OrderId> {
-    const order: Order = await this.createOrder(newOrderCommand);
+    const order: OrderInterface = await this.createOrder(newOrderCommand);
     await this.sendOrderNotification(order);
 
     return order.id;
   }
 
-  private async createOrder(newOrderCommand: NewOrderCommand): Promise<Order> {
+  private async createOrder(newOrderCommand: NewOrderCommand): Promise<OrderInterface> {
     const allProducts: Product[] = await this.productRepository.findAll();
-    const closingPeriods: ClosingPeriod[] = await this.closingPeriodRepository.findAll();
+    const closingPeriods: ClosingPeriodInterface[] = await this.closingPeriodRepository.findAll();
 
-    const order: Order = new Order(newOrderCommand, allProducts, closingPeriods);
+    const order: Order = Order.factory.create(newOrderCommand, allProducts, closingPeriods);
     const orderId: OrderId = await this.orderRepository.save(order);
 
     return { ...order, id: orderId };
   }
 
-  private async sendOrderNotification(order: Order): Promise<void> {
+  private async sendOrderNotification(order: OrderInterface): Promise<void> {
     const orderNotification: OrderNotification = new OrderNotification(order);
     await this.orderNotificationRepository.send(orderNotification);
   }
