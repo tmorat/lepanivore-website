@@ -1,4 +1,4 @@
-import { isEmpty, cloneDeep } from 'lodash';
+import { cloneDeep, isEmpty } from 'lodash';
 import { ClosingDay } from './closing-day';
 import { ClosingPeriodInterface } from './closing-period.interface';
 import { NewOrderCommand } from './commands/new-order-command';
@@ -8,12 +8,13 @@ import { OrderType } from './order-type';
 import { OrderInterface } from './order.interface';
 import { Product } from './product';
 import { ProductIdWithQuantity, ProductWithQuantity } from './product-with-quantity';
+import { ProductInterface } from './product.interface';
 import { OrderId } from './type-aliases';
 
 export class Order implements OrderInterface {
   static factory: OrderFactoryInterface = {
-    create(command: NewOrderCommand, allProducts: Product[], closingPeriods: ClosingPeriodInterface[]): Order {
-      return new Order({} as OrderInterface, command, allProducts, closingPeriods);
+    create(command: NewOrderCommand, activeProducts: ProductInterface[], closingPeriods: ClosingPeriodInterface[]): Order {
+      return new Order({} as OrderInterface, command, activeProducts, closingPeriods);
     },
     copy(order: OrderInterface): Order {
       return new Order(order, {} as NewOrderCommand, [], []);
@@ -31,14 +32,14 @@ export class Order implements OrderInterface {
   pickUpDate?: Date;
   deliveryAddress?: string;
 
-  private constructor(order: OrderInterface, command: NewOrderCommand, allProducts: Product[], closingPeriods: ClosingPeriodInterface[]) {
+  private constructor(order: OrderInterface, command: NewOrderCommand, activeProducts: ProductInterface[], closingPeriods: ClosingPeriodInterface[]) {
     if (!isEmpty(order)) {
       this.copy(order);
     } else {
       this.id = undefined;
 
       this.bindContactDetails(command);
-      this.bindProductSelection(command, allProducts);
+      this.bindProductSelection(command, activeProducts);
       this.bindOrderTypeSelection(command, closingPeriods);
     }
   }
@@ -114,8 +115,8 @@ export class Order implements OrderInterface {
     }
   }
 
-  private static toProductWithQuantity(productIdWithQuantity: ProductIdWithQuantity, allProducts: Product[]): ProductWithQuantity {
-    const foundProduct: Product | undefined = allProducts.find((product: Product) => product.id === productIdWithQuantity.productId);
+  private static toProductWithQuantity(productIdWithQuantity: ProductIdWithQuantity, activeProducts: ProductInterface[]): ProductWithQuantity {
+    const foundProduct: ProductInterface | undefined = activeProducts.find((product: Product) => product.id === productIdWithQuantity.productId);
     if (!foundProduct) {
       throw new InvalidOrderError(`product with id ${productIdWithQuantity.productId} not found`);
     }
@@ -130,12 +131,12 @@ export class Order implements OrderInterface {
     return date;
   }
 
-  updateWith(command: UpdateOrderCommand, allProducts: Product[], closingPeriods: ClosingPeriodInterface[]): void {
+  updateWith(command: UpdateOrderCommand, activeProducts: ProductInterface[], closingPeriods: ClosingPeriodInterface[]): void {
     if (this.id !== command.orderId) {
       throw new InvalidOrderError('existing order id does not match order id in command');
     }
 
-    this.bindProductSelection(command, allProducts);
+    this.bindProductSelection(command, activeProducts);
     this.bindOrderTypeSelection(command, closingPeriods);
   }
 
@@ -158,11 +159,11 @@ export class Order implements OrderInterface {
     this.clientEmailAddress = command.clientEmailAddress;
   }
 
-  private bindProductSelection(command: NewOrderCommand | UpdateOrderCommand, allProducts: Product[]): void {
+  private bindProductSelection(command: NewOrderCommand | UpdateOrderCommand, activeProducts: ProductInterface[]): void {
     Order.assertProductsAreValid(command.products);
 
     this.products = command.products.map((productIdWithQuantity: ProductIdWithQuantity) =>
-      Order.toProductWithQuantity(productIdWithQuantity, allProducts)
+      Order.toProductWithQuantity(productIdWithQuantity, activeProducts)
     );
   }
 
@@ -183,6 +184,6 @@ export class Order implements OrderInterface {
 }
 
 export interface OrderFactoryInterface {
-  create(command: NewOrderCommand, allProducts: Product[], closingPeriods: ClosingPeriodInterface[]): Order;
+  create(command: NewOrderCommand, activeProducts: ProductInterface[], closingPeriods: ClosingPeriodInterface[]): Order;
   copy(order: OrderInterface): Order;
 }

@@ -24,3 +24,12 @@ export const arrayValueTransformer: ValueTransformer = {
     return isEmpty(array) ? null : array.join(ARRAY_ITEM_SEPARATOR);
   },
 } as ValueTransformer;
+
+export const currencyValueTransformer: ValueTransformer = {
+  from: (numberWithoutDecimals: number): number => {
+    return numberWithoutDecimals / 100;
+  },
+  to: (numberWithDecimals: number): number => {
+    return numberWithDecimals * 100;
+  },
+} as ValueTransformer;

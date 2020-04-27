@@ -46,6 +46,7 @@ export default {
     // Doc: https://axios.nuxtjs.org/usage
     '@nuxtjs/axios',
     '@nuxtjs/auth',
+    '@nuxtjs/toast',
   ],
   /*
    ** Axios module configuration
@@ -103,6 +104,11 @@ export default {
     //     },
     //   },
     // },
+  },
+  toast: {
+    position: 'top-center',
+    duration: 30000,
+    iconPack: 'mdi',
   },
   /*
    ** Build configuration

@@ -88,7 +88,7 @@ describe('infrastructure/repositories/DatabaseOrderRepository', () => {
   });
 
   describe('findById()', () => {
-    it('should return found company in database', async () => {
+    it('should return found order in database', async () => {
       // given
       await databaseOrderRepository.save(orderWithoutId);
       const orderWithoutIdAndDifferentClientName: OrderInterface = { ...orderWithoutId, clientName: 'Harry Potter' };
@@ -115,7 +115,7 @@ describe('infrastructure/repositories/DatabaseOrderRepository', () => {
   });
 
   describe('findAll()', () => {
-    it('should return found companies in database', async () => {
+    it('should return found orders in database', async () => {
       // given
       await databaseOrderRepository.save(orderWithoutId);
       const orderWithoutIdAndDifferentClientName: OrderInterface = { ...orderWithoutId, clientName: 'Harry Potter' };

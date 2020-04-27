@@ -6,7 +6,8 @@ import { OrderNotification } from '../domain/order-notification';
 import { OrderNotificationRepository } from '../domain/order-notification.repository';
 import { OrderInterface } from '../domain/order.interface';
 import { OrderRepository } from '../domain/order.repository';
-import { Product } from '../domain/product';
+import { ProductStatus } from '../domain/product-status';
+import { ProductInterface } from '../domain/product.interface';
 import { ProductRepository } from '../domain/product.repository';
 import { OrderId } from '../domain/type-aliases';
 
@@ -26,17 +27,17 @@ export class OrderProducts {
   }
 
   private async createOrder(newOrderCommand: NewOrderCommand): Promise<OrderInterface> {
-    const allProducts: Product[] = await this.productRepository.findAll();
+    const activeProducts: ProductInterface[] = await this.productRepository.findAllByStatus(ProductStatus.ACTIVE);
     const closingPeriods: ClosingPeriodInterface[] = await this.closingPeriodRepository.findAll();
 
-    const order: Order = Order.factory.create(newOrderCommand, allProducts, closingPeriods);
+    const order: Order = Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
     const orderId: OrderId = await this.orderRepository.save(order);
 
     return { ...order, id: orderId };
   }
 
   private async sendOrderNotification(order: OrderInterface): Promise<void> {
-    const orderNotification: OrderNotification = new OrderNotification(order);
+    const orderNotification: OrderNotification = OrderNotification.factory.create(order);
     await this.orderNotificationRepository.send(orderNotification);
   }
 }

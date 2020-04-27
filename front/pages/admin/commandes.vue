@@ -12,6 +12,7 @@
           - {{ productWithQuantity.product.name }} : {{ productWithQuantity.quantity }}<br />
         </span>
       </template>
+
       <template v-slot:item.type="{ item }">
         <span v-if="isDeliveryOrder(item)">
           Livraison
@@ -20,6 +21,7 @@
           Cueillette
         </span>
       </template>
+
       <template v-slot:item.actions="{ item }">
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
@@ -43,13 +45,15 @@
     <v-dialog v-model="editOrderDialog">
       <v-card>
         <v-card-title>
-          <span class="headline">Éditer commande</span>
+          <span class="headline">Modification de la commande</span>
         </v-card-title>
 
         <v-card-text>
           <v-container>
-            <OrderTypeSelection :value="editedOrder" :closing-periods="closingPeriods" class="mb-5"></OrderTypeSelection>
-            <ProductSelection :value="editedOrder" :available-products="products" class="mb-5"></ProductSelection>
+            <v-form ref="editOrderForm">
+              <OrderTypeSelection :value="editedOrder" :closing-periods="closingPeriods" class="mb-5"></OrderTypeSelection>
+              <ProductSelection :value="editedOrder" :available-products="products" class="mb-5"></ProductSelection>
+            </v-form>
           </v-container>
         </v-card-text>
 
@@ -64,7 +68,7 @@
 </template>
 
 <script lang="ts">
-import { Context } from '@nuxt/types';
+import { Context, NuxtError } from '@nuxt/types';
 import Vue from 'vue';
 import OrderTypeSelection from '~/components/OrderTypeSelection.vue';
 import ProductSelection from '~/components/ProductSelection.vue';
@@ -81,6 +85,8 @@ interface CommandesData {
   searchedValue: string;
   headers: Array<{ text: string; value: string }>;
   orders: GetOrderResponse[];
+  closingPeriods: GetClosingPeriodResponse[];
+  products: GetProductResponse[];
   editedOrder: PutOrderRequest;
   editedOrderId: OrderId;
 }
@@ -108,6 +114,8 @@ export default Vue.extend({
         { text: 'Actions', value: 'actions', sortable: false },
       ],
       orders: [],
+      closingPeriods: [],
+      products: [],
       editedOrder: {} as PutOrderRequest,
       editedOrderId: -1,
     } as CommandesData;
@@ -149,9 +157,15 @@ export default Vue.extend({
     },
 
     async updateOrder(): Promise<void> {
-      await this.$apiService.putOrder(this.editedOrderId, this.editedOrder);
-      this.orders = await this.$apiService.getOrders();
-      this.closeEditOrderDialog();
+      if (this.$refs.editOrderForm.validate()) {
+        try {
+          await this.$apiService.putOrder(this.editedOrderId, this.editedOrder);
+          this.orders = await this.$apiService.getOrders();
+          this.closeEditOrderDialog();
+        } catch (e) {
+          this.handleError(e);
+        }
+      }
     },
 
     async deleteOrder(order: GetOrderResponse): Promise<void> {
@@ -160,13 +174,32 @@ export default Vue.extend({
           `Vous allez supprimer la commande #${order.id}.\nÊtes-vous certain de vouloir supprimer cette commande ?\n\nAttention, cette action est irréversible !`
         )
       ) {
-        await this.$apiService.deleteOrder(order.id);
-        this.orders = await this.$apiService.getOrders();
+        try {
+          await this.$apiService.deleteOrder(order.id);
+          this.orders = await this.$apiService.getOrders();
+        } catch (e) {
+          this.handleError(e);
+        }
       }
     },
 
     isDeliveryOrder(order: GetOrderResponse): boolean {
       return order.type === OrderType.DELIVERY;
+    },
+
+    handleError(e: NuxtError): void {
+      const message: string =
+        e.statusCode === 401
+          ? 'Votre session a expiré. Merci de <nuxt-link to="/admin/connexion">vous reconnecter en cliquant ici</nuxt-link>.'
+          : "Une erreur s'est produite, veuillez nous excuser ! Si le problème persiste, contactez-nous.";
+      // @ts-ignore
+      this.$toast.error(message, {
+        icon: 'mdi-alert',
+        action: {
+          text: 'Reconnexion',
+          href: '/admin/connexion',
+        },
+      });
     },
   },
 });

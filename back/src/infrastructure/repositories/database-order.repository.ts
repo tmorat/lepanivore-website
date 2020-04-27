@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Order } from '../../domain/order';
 import { OrderNotFoundError } from '../../domain/order-not-found.error';
 import { OrderInterface } from '../../domain/order.interface';
 import { OrderRepository } from '../../domain/order.repository';

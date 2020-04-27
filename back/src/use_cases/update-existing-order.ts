@@ -4,7 +4,8 @@ import { UpdateOrderCommand } from '../domain/commands/update-order-command';
 import { Order } from '../domain/order';
 import { OrderInterface } from '../domain/order.interface';
 import { OrderRepository } from '../domain/order.repository';
-import { Product } from '../domain/product';
+import { ProductStatus } from '../domain/product-status';
+import { ProductInterface } from '../domain/product.interface';
 import { ProductRepository } from '../domain/product.repository';
 
 export class UpdateExistingOrder {
@@ -15,12 +16,12 @@ export class UpdateExistingOrder {
   ) {}
 
   async execute(updateOrderCommand: UpdateOrderCommand): Promise<void> {
-    const allProducts: Product[] = await this.productRepository.findAll();
+    const activeProducts: ProductInterface[] = await this.productRepository.findAllByStatus(ProductStatus.ACTIVE);
     const closingPeriods: ClosingPeriodInterface[] = await this.closingPeriodRepository.findAll();
 
     const foundOrder: OrderInterface = await this.orderRepository.findById(updateOrderCommand.orderId);
     const orderToUpdate: Order = Order.factory.copy(foundOrder);
-    orderToUpdate.updateWith(updateOrderCommand, allProducts, closingPeriods);
+    orderToUpdate.updateWith(updateOrderCommand, activeProducts, closingPeriods);
     await this.orderRepository.save(orderToUpdate);
   }
 }

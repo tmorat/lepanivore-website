@@ -1,12 +1,15 @@
 import { NuxtAxiosInstance } from '@nuxtjs/axios';
 import { AxiosError } from 'axios';
-import { OrderId } from '../../back/src/domain/type-aliases';
+import { OrderId, ProductId } from '../../back/src/domain/type-aliases';
 import { GetClosingPeriodResponse } from '../../back/src/infrastructure/rest/models/get-closing-period-response';
 import { GetOrderResponse } from '../../back/src/infrastructure/rest/models/get-order-response';
 import { GetProductResponse } from '../../back/src/infrastructure/rest/models/get-product-response';
 import { PostOrderRequest } from '../../back/src/infrastructure/rest/models/post-order-request';
 import { PostOrderResponse } from '../../back/src/infrastructure/rest/models/post-order-response';
+import { PostProductRequest } from '../../back/src/infrastructure/rest/models/post-product-request';
+import { PostProductResponse } from '../../back/src/infrastructure/rest/models/post-product-response';
 import { PutOrderRequest } from '../../back/src/infrastructure/rest/models/put-order-request';
+import { PutProductRequest } from '../../back/src/infrastructure/rest/models/put-product-request';
 
 export default class ApiService {
   private readonly $axios: NuxtAxiosInstance;
@@ -38,6 +41,18 @@ export default class ApiService {
 
   getProducts(): Promise<GetProductResponse[]> {
     return this.$axios.$get('/api/products');
+  }
+
+  postProduct(postProductRequest: PostProductRequest): Promise<PostProductResponse> {
+    return this.$axios.$post('/api/products', postProductRequest);
+  }
+
+  putProduct(id: ProductId, putProductRequest: PutProductRequest): Promise<void> {
+    return this.$axios.$put(`/api/products/${id}`, putProductRequest);
+  }
+
+  deleteProduct(id: ProductId): Promise<void> {
+    return this.$axios.$delete(`/api/products/${id}`);
   }
 
   private attachResponseInterceptors($axios: NuxtAxiosInstance): void {

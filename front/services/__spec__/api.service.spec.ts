@@ -1,13 +1,16 @@
 import { NuxtAxiosInstance } from '@nuxtjs/axios';
 import { AxiosError, AxiosResponse } from 'axios';
 import ApiService from '~/services/api.service';
-import { OrderId } from '../../../back/src/domain/type-aliases';
+import { OrderId, ProductId } from '../../../back/src/domain/type-aliases';
 import { GetClosingPeriodResponse } from '../../../back/src/infrastructure/rest/models/get-closing-period-response';
 import { GetOrderResponse } from '../../../back/src/infrastructure/rest/models/get-order-response';
 import { GetProductResponse } from '../../../back/src/infrastructure/rest/models/get-product-response';
 import { PostOrderRequest } from '../../../back/src/infrastructure/rest/models/post-order-request';
 import { PostOrderResponse } from '../../../back/src/infrastructure/rest/models/post-order-response';
+import { PostProductRequest } from '../../../back/src/infrastructure/rest/models/post-product-request';
+import { PostProductResponse } from '../../../back/src/infrastructure/rest/models/post-product-response';
 import { PutOrderRequest } from '../../../back/src/infrastructure/rest/models/put-order-request';
+import { PutProductRequest } from '../../../back/src/infrastructure/rest/models/put-product-request';
 
 describe('services/ApiService', () => {
   let apiService: ApiService;
@@ -107,6 +110,7 @@ describe('services/ApiService', () => {
       expect($put).toHaveBeenCalledWith('/api/orders/42', request);
     });
   });
+
   describe('deleteOrder()', () => {
     it('should delete order to api', async () => {
       // given
@@ -159,6 +163,58 @@ describe('services/ApiService', () => {
 
       // then
       expect(result).toStrictEqual(response);
+    });
+  });
+
+  describe('postProduct()', () => {
+    it('should post product to api', async () => {
+      // given
+      const request: PostProductRequest = { name: 'fake product' } as PostProductRequest;
+
+      // when
+      await apiService.postProduct(request);
+
+      // then
+      expect($post).toHaveBeenCalledWith('/api/products', request);
+    });
+    it('should return product id', async () => {
+      // given
+      const request: PostProductRequest = { name: 'fake product' } as PostProductRequest;
+      const response: PostProductResponse = { id: 1337 };
+      $post.mockReturnValue(Promise.resolve(response));
+
+      // when
+      const result: PostProductResponse = await apiService.postProduct(request);
+
+      // then
+      expect(result).toStrictEqual(response);
+    });
+  });
+
+  describe('putProduct()', () => {
+    it('should put product to api', async () => {
+      // given
+      const productId: ProductId = 42;
+      const request: PutProductRequest = { description: 'new description' } as PutProductRequest;
+
+      // when
+      await apiService.putProduct(productId, request);
+
+      // then
+      expect($put).toHaveBeenCalledWith('/api/products/42', request);
+    });
+  });
+
+  describe('deleteProduct()', () => {
+    it('should delete product to api', async () => {
+      // given
+      const productId: ProductId = 42;
+
+      // when
+      await apiService.deleteProduct(productId);
+
+      // then
+      expect($delete).toHaveBeenCalledWith('/api/products/42');
     });
   });
 });

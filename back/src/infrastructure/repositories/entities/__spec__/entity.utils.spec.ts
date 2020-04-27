@@ -1,4 +1,4 @@
-import { arrayValueTransformer, dateIsoStringValueTransformer } from '../entity.utils';
+import { arrayValueTransformer, currencyValueTransformer, dateIsoStringValueTransformer } from '../entity.utils';
 
 describe('infrastructure/repositories/entities/entity.utils', () => {
   describe('dateIsoStringValueTransformer', () => {
@@ -91,6 +91,33 @@ describe('infrastructure/repositories/entities/entity.utils', () => {
 
         // then
         expect(result).toBeNull();
+      });
+    });
+  });
+
+  describe('currencyValueTransformer', () => {
+    describe('from()', () => {
+      it('should transform number without decimals to number with two decimals', () => {
+        // given
+        const numberWithoutDecimals: number = 1234;
+
+        // when
+        const result: number = currencyValueTransformer.from(numberWithoutDecimals);
+
+        // then
+        expect(result).toBe(12.34);
+      });
+    });
+    describe('to()', () => {
+      it('should transform number with two decimals to number without decimals', () => {
+        // given
+        const numberWithTwoDecimals: number = 12.34;
+
+        // when
+        const result: number = currencyValueTransformer.to(numberWithTwoDecimals);
+
+        // then
+        expect(result).toBe(1234);
       });
     });
   });
