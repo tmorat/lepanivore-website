@@ -1,16 +1,21 @@
 import * as os from 'os';
-import { Order } from './order';
 import { OrderNotificationInterface } from './order-notification.interface';
 import { OrderType } from './order-type';
 import { OrderInterface } from './order.interface';
 import { ProductWithQuantity } from './product-with-quantity';
 
 export class OrderNotification implements OrderNotificationInterface {
+  static factory: OrderNotificationFactoryInterface = {
+    create(order: OrderInterface): OrderNotification {
+      return new OrderNotification(order);
+    },
+  };
+
   recipient: string;
   subject: string;
   body: string;
 
-  constructor(order: OrderInterface) {
+  private constructor(order: OrderInterface) {
     this.recipient = order.clientEmailAddress;
     this.subject = `Boulangerie Le Panivore : votre commande #${order.id}`;
     this.body = OrderNotification.buildBody(order);
@@ -48,4 +53,8 @@ export class OrderNotification implements OrderNotificationInterface {
 
     return Math.round((totalPrice + Number.EPSILON) * 100) / 100;
   }
+}
+
+export interface OrderNotificationFactoryInterface {
+  create(order: OrderInterface): OrderNotification;
 }

@@ -1,19 +1,21 @@
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import request, { Response } from 'supertest';
+import { DeleteOrderCommand } from '../../src/domain/commands/delete-order-command';
+import { NewOrderCommand } from '../../src/domain/commands/new-order-command';
+import { UpdateOrderCommand } from '../../src/domain/commands/update-order-command';
 import { InvalidOrderError } from '../../src/domain/invalid-order.error';
 import { Order } from '../../src/domain/order';
 import { OrderType } from '../../src/domain/order-type';
 import { OrderId } from '../../src/domain/type-aliases';
 import { EnvironmentConfigService } from '../../src/infrastructure/config/environment-config/environment-config.service';
-import { GetOrderResponse } from '../../src/infrastructure/rest/models/get-order-response';
 import { PostOrderRequest } from '../../src/infrastructure/rest/models/post-order-request';
 import { PutOrderRequest } from '../../src/infrastructure/rest/models/put-order-request';
 import { RestModule } from '../../src/infrastructure/rest/rest.module';
 import { ProxyServicesDynamicModule } from '../../src/infrastructure/use_cases_proxy/proxy-services-dynamic.module';
 import { UseCaseProxy } from '../../src/infrastructure/use_cases_proxy/use-case-proxy';
 import { DeleteOrder } from '../../src/use_cases/delete-order';
-import { GetProducts } from '../../src/use_cases/get-products';
+import { GetOrders } from '../../src/use_cases/get-orders';
 import { OrderProducts } from '../../src/use_cases/order-products';
 import { UpdateExistingOrder } from '../../src/use_cases/update-existing-order';
 import { ADMIN_E2E_PASSWORD, ADMIN_E2E_USERNAME, e2eEnvironmentConfigService } from '../e2e-config';
@@ -21,17 +23,17 @@ import DoneCallback = jest.DoneCallback;
 
 describe('infrastructure/rest/OrderController (e2e)', () => {
   let app: INestApplication;
-  let mockGetOrders: GetProducts;
+  let mockGetOrders: GetOrders;
   let mockOrderProducts: OrderProducts;
   let mockUpdateExistingOrder: UpdateExistingOrder;
   let mockDeleteOrder: DeleteOrder;
 
   beforeAll(async () => {
-    mockGetOrders = {} as GetProducts;
+    mockGetOrders = {} as GetOrders;
     mockGetOrders.execute = jest.fn();
-    const mockGetProductsProxyService: UseCaseProxy<GetProducts> = {
+    const mockGetOrdersProxyService: UseCaseProxy<GetOrders> = {
       getInstance: () => mockGetOrders,
-    } as UseCaseProxy<GetProducts>;
+    } as UseCaseProxy<GetOrders>;
 
     mockOrderProducts = {} as OrderProducts;
     mockOrderProducts.execute = jest.fn();
@@ -55,7 +57,7 @@ describe('infrastructure/rest/OrderController (e2e)', () => {
       imports: [RestModule],
     })
       .overrideProvider(ProxyServicesDynamicModule.GET_ORDERS_PROXY_SERVICE)
-      .useValue(mockGetProductsProxyService)
+      .useValue(mockGetOrdersProxyService)
       .overrideProvider(ProxyServicesDynamicModule.ORDER_PRODUCTS_PROXY_SERVICE)
       .useValue(mockOrderProductsProxyService)
       .overrideProvider(ProxyServicesDynamicModule.UPDATE_EXISTING_ORDER_PROXY_SERVICE)
@@ -148,7 +150,7 @@ describe('infrastructure/rest/OrderController (e2e)', () => {
           type: OrderType.DELIVERY,
           pickUpDate: new Date('2020-06-13T04:41:20'),
           deliveryAddress: 'Montréal',
-        });
+        } as NewOrderCommand);
       });
     });
 
@@ -230,7 +232,7 @@ describe('infrastructure/rest/OrderController (e2e)', () => {
                 type: OrderType.DELIVERY,
                 pickUpDate: new Date('2020-06-13T04:41:20'),
                 deliveryAddress: 'Montréal',
-              });
+              } as UpdateOrderCommand);
             })
             .end(done);
         });
@@ -310,7 +312,7 @@ describe('infrastructure/rest/OrderController (e2e)', () => {
           testRequest
             .expect(204)
             .expect((response: Response) => {
-              expect(mockDeleteOrder.execute).toHaveBeenCalledWith({ orderId: 1337 });
+              expect(mockDeleteOrder.execute).toHaveBeenCalledWith({ orderId: 1337 } as DeleteOrderCommand);
             })
             .end(done);
         });

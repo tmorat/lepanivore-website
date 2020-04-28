@@ -5,10 +5,11 @@ import { InvalidOrderError } from '../invalid-order.error';
 import { Order } from '../order';
 import { OrderType } from '../order-type';
 import { OrderInterface } from '../order.interface';
-import { Product } from '../product';
+import { ProductStatus } from '../product-status';
+import { ProductInterface } from '../product.interface';
 
 describe('domain/Order', () => {
-  let allProducts: Product[];
+  let activeProducts: ProductInterface[];
   let closingPeriods: ClosingPeriodInterface[];
   let realDateConstructor: DateConstructor;
 
@@ -19,7 +20,7 @@ describe('domain/Order', () => {
   beforeEach(() => {
     global.Date = realDateConstructor;
 
-    allProducts = [{ id: 42, name: 'fake product' } as Product];
+    activeProducts = [{ id: 42, name: 'fake product' } as ProductInterface];
     closingPeriods = [];
   });
 
@@ -42,7 +43,7 @@ describe('domain/Order', () => {
       describe('id', () => {
         it('should initialize with no id', () => {
           // when
-          const result: Order = Order.factory.create(newOrderCommand, allProducts, closingPeriods);
+          const result: Order = Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
 
           // then
           expect(result.id).toBeUndefined();
@@ -55,7 +56,7 @@ describe('domain/Order', () => {
           newOrderCommand.clientName = 'Harry Potter';
 
           // when
-          const result: Order = Order.factory.create(newOrderCommand, allProducts, closingPeriods);
+          const result: Order = Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
 
           // then
           expect(result.clientName).toBe('Harry Potter');
@@ -66,7 +67,7 @@ describe('domain/Order', () => {
           newOrderCommand.clientName = '';
 
           // when
-          const result = () => Order.factory.create(newOrderCommand, allProducts, closingPeriods);
+          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
 
           // then
           expect(result).toThrow(new InvalidOrderError('client name must be defined'));
@@ -79,7 +80,7 @@ describe('domain/Order', () => {
           newOrderCommand.clientPhoneNumber = '+1-514-987-6543';
 
           // when
-          const result: Order = Order.factory.create(newOrderCommand, allProducts, closingPeriods);
+          const result: Order = Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
 
           // then
           expect(result.clientPhoneNumber).toBe('+1-514-987-6543');
@@ -90,7 +91,7 @@ describe('domain/Order', () => {
           newOrderCommand.clientPhoneNumber = '';
 
           // when
-          const result = () => Order.factory.create(newOrderCommand, allProducts, closingPeriods);
+          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
 
           // then
           expect(result).toThrow(new InvalidOrderError('client phone number must be defined'));
@@ -103,7 +104,7 @@ describe('domain/Order', () => {
           newOrderCommand.clientEmailAddress = 'test@example.org';
 
           // when
-          const result: Order = Order.factory.create(newOrderCommand, allProducts, closingPeriods);
+          const result: Order = Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
 
           // then
           expect(result.clientEmailAddress).toBe('test@example.org');
@@ -114,7 +115,7 @@ describe('domain/Order', () => {
           newOrderCommand.clientEmailAddress = '';
 
           // when
-          const result = () => Order.factory.create(newOrderCommand, allProducts, closingPeriods);
+          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
 
           // then
           expect(result).toThrow(new InvalidOrderError('client email address must be defined'));
@@ -125,7 +126,7 @@ describe('domain/Order', () => {
           newOrderCommand.clientEmailAddress = 'not-a-valid-email';
 
           // when
-          const result = () => Order.factory.create(newOrderCommand, allProducts, closingPeriods);
+          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
 
           // then
           expect(result).toThrow(new InvalidOrderError('invalid client email address'));
@@ -140,18 +141,12 @@ describe('domain/Order', () => {
             { productId: 1337, quantity: 2 },
           ];
 
-          const product1: Product = new Product();
-          product1.id = 42;
-          product1.name = 'Product 1';
-
-          const product2: Product = new Product();
-          product2.id = 1337;
-          product2.name = 'Product 2';
-
-          allProducts = [product1, product2];
+          const product1: ProductInterface = { id: 42, name: 'Product 1' } as ProductInterface;
+          const product2: ProductInterface = { id: 1337, name: 'Product 2' } as ProductInterface;
+          activeProducts = [product1, product2];
 
           // when
-          const result: Order = Order.factory.create(newOrderCommand, allProducts, closingPeriods);
+          const result: Order = Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
 
           // then
           expect(result.products).toStrictEqual([
@@ -165,7 +160,7 @@ describe('domain/Order', () => {
           newOrderCommand.products = [];
 
           // when
-          const result = () => Order.factory.create(newOrderCommand, allProducts, closingPeriods);
+          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
 
           // then
           expect(result).toThrow(new InvalidOrderError('an order must have at least one product'));
@@ -179,7 +174,7 @@ describe('domain/Order', () => {
           ];
 
           // when
-          const result = () => Order.factory.create(newOrderCommand, allProducts, closingPeriods);
+          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
 
           // then
           expect(result).toThrow(new InvalidOrderError('a product quantity must be positive'));
@@ -193,7 +188,7 @@ describe('domain/Order', () => {
           ];
 
           // when
-          const result = () => Order.factory.create(newOrderCommand, allProducts, closingPeriods);
+          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
 
           // then
           expect(result).toThrow(new InvalidOrderError('a product quantity must be positive'));
@@ -206,13 +201,11 @@ describe('domain/Order', () => {
             { productId: 1337, quantity: 2 },
           ];
 
-          const product1: Product = new Product();
-          product1.id = 42;
-          product1.name = 'Product 1';
-          allProducts = [product1];
+          const product1: ProductInterface = { id: 42, name: 'Product 1' } as ProductInterface;
+          activeProducts = [product1];
 
           // when
-          const result = () => Order.factory.create(newOrderCommand, allProducts, closingPeriods);
+          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
 
           // then
           expect(result).toThrow(new InvalidOrderError('product with id 1337 not found'));
@@ -225,7 +218,7 @@ describe('domain/Order', () => {
           newOrderCommand.type = OrderType.DELIVERY;
 
           // when
-          const result: Order = Order.factory.create(newOrderCommand, allProducts, closingPeriods);
+          const result: Order = Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
 
           // then
           expect(result.type).toBe(OrderType.DELIVERY);
@@ -236,7 +229,7 @@ describe('domain/Order', () => {
           newOrderCommand.type = undefined;
 
           // when
-          const result = () => Order.factory.create(newOrderCommand, allProducts, closingPeriods);
+          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
 
           // then
           expect(result).toThrow(new InvalidOrderError('order type must be defined'));
@@ -247,7 +240,7 @@ describe('domain/Order', () => {
           newOrderCommand.type = 'UNKNOWN_TYPE' as OrderType;
 
           // when
-          const result = () => Order.factory.create(newOrderCommand, allProducts, closingPeriods);
+          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
 
           // then
           expect(result).toThrow(new InvalidOrderError('unknown order type'));
@@ -280,7 +273,7 @@ describe('domain/Order', () => {
           newOrderCommand.pickUpDate = nowPlusTwoDays;
 
           // when
-          const result: Order = Order.factory.create(newOrderCommand, allProducts, closingPeriods);
+          const result: Order = Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
 
           // then
           expect(result.pickUpDate).toBe(nowPlusTwoDays);
@@ -292,7 +285,7 @@ describe('domain/Order', () => {
           newOrderCommand.type = OrderType.DELIVERY;
 
           // when
-          const result: Order = Order.factory.create(newOrderCommand, allProducts, closingPeriods);
+          const result: Order = Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
 
           // then
           expect(result.pickUpDate).toBeUndefined();
@@ -303,7 +296,7 @@ describe('domain/Order', () => {
           newOrderCommand.pickUpDate = null;
 
           // when
-          const result = () => Order.factory.create(newOrderCommand, allProducts, closingPeriods);
+          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
 
           // then
           expect(result).toThrow(new InvalidOrderError('a pick-up date must be defined when order type is pick-up'));
@@ -314,7 +307,7 @@ describe('domain/Order', () => {
           newOrderCommand.pickUpDate = nowMinusOneDay;
 
           // when
-          const result = () => Order.factory.create(newOrderCommand, allProducts, closingPeriods);
+          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
 
           // then
           expect(result).toThrow(new InvalidOrderError('pick-up date has to be at least two days after now'));
@@ -325,7 +318,7 @@ describe('domain/Order', () => {
           newOrderCommand.pickUpDate = now;
 
           // when
-          const result = () => Order.factory.create(newOrderCommand, allProducts, closingPeriods);
+          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
 
           // then
           expect(result).toThrow(new InvalidOrderError('pick-up date has to be at least two days after now'));
@@ -336,7 +329,7 @@ describe('domain/Order', () => {
           newOrderCommand.pickUpDate = nowPlusOneDay;
 
           // when
-          const result = () => Order.factory.create(newOrderCommand, allProducts, closingPeriods);
+          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
 
           // then
           expect(result).toThrow(new InvalidOrderError('pick-up date has to be at least two days after now'));
@@ -347,7 +340,7 @@ describe('domain/Order', () => {
           newOrderCommand.pickUpDate = aSundayInTheFuture;
 
           // when
-          const result = () => Order.factory.create(newOrderCommand, allProducts, closingPeriods);
+          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
 
           // then
           expect(result).toThrow(new InvalidOrderError('pick-up date must be between a Tuesday and a Saturday'));
@@ -358,7 +351,7 @@ describe('domain/Order', () => {
           newOrderCommand.pickUpDate = aMondayInTheFuture;
 
           // when
-          const result = () => Order.factory.create(newOrderCommand, allProducts, closingPeriods);
+          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
 
           // then
           expect(result).toThrow(new InvalidOrderError('pick-up date must be between a Tuesday and a Saturday'));
@@ -373,7 +366,7 @@ describe('domain/Order', () => {
           newOrderCommand.pickUpDate = nowPlusTwoDays;
 
           // when
-          const result = () => Order.factory.create(newOrderCommand, allProducts, closingPeriods);
+          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
 
           // then
           expect(result).toThrow(new InvalidOrderError('pick-up date must be outside closing periods'));
@@ -388,7 +381,7 @@ describe('domain/Order', () => {
           newOrderCommand.pickUpDate = nowPlusTwoDays;
 
           // when
-          const result = () => Order.factory.create(newOrderCommand, allProducts, closingPeriods);
+          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
 
           // then
           expect(result).not.toThrow();
@@ -405,7 +398,7 @@ describe('domain/Order', () => {
           newOrderCommand.deliveryAddress = '1224 Rue Bélanger, Montréal, QC H2S 1H8';
 
           // when
-          const result: Order = Order.factory.create(newOrderCommand, allProducts, closingPeriods);
+          const result: Order = Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
 
           // then
           expect(result.deliveryAddress).toBe('1224 Rue Bélanger, Montréal, QC H2S 1H8');
@@ -417,7 +410,7 @@ describe('domain/Order', () => {
           newOrderCommand.type = OrderType.PICK_UP;
 
           // when
-          const result: Order = Order.factory.create(newOrderCommand, allProducts, closingPeriods);
+          const result: Order = Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
 
           // then
           expect(result.deliveryAddress).toBeUndefined();
@@ -428,7 +421,7 @@ describe('domain/Order', () => {
           newOrderCommand.deliveryAddress = '';
 
           // when
-          const result = () => Order.factory.create(newOrderCommand, allProducts, closingPeriods);
+          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
 
           // then
           expect(result).toThrow(new InvalidOrderError('a delivery address must be defined when order type is delivery'));
@@ -445,8 +438,8 @@ describe('domain/Order', () => {
           clientPhoneNumber: '+1 514 111 1111',
           clientEmailAddress: 'test@example.org',
           products: [
-            { product: { id: 1, name: 'product 1', description: 'product 1 description', price: 1.11 }, quantity: 1 },
-            { product: { id: 2, name: 'product 2', description: 'product 2 description', price: 2.22 }, quantity: 2 },
+            { product: { id: 1, name: 'product 1', description: 'product 1 description', price: 1.11, status: ProductStatus.ACTIVE }, quantity: 1 },
+            { product: { id: 2, name: 'product 2', description: 'product 2 description', price: 2.22, status: ProductStatus.ARCHIVED }, quantity: 2 },
           ],
           type: OrderType.PICK_UP,
           pickUpDate: new Date('2020-06-13T04:41:20'),
@@ -475,11 +468,11 @@ describe('domain/Order', () => {
         clientEmailAddress: 'test@example.org',
         products: [
           {
-            product: { id: 9998, name: 'product 9998', description: 'product 9998 description', price: 99.98 },
+            product: { id: 9998, name: 'product 9998', price: 99.98 } as ProductInterface,
             quantity: 98,
           },
           {
-            product: { id: 9999, name: 'product 9999', description: 'product 9999 description', price: 99.99 },
+            product: { id: 9999, name: 'product 9999', price: 99.99 } as ProductInterface,
             quantity: 99,
           },
         ],
@@ -503,7 +496,7 @@ describe('domain/Order', () => {
         updateOrderCommand.orderId = 1337;
 
         // when
-        const result = () => existingOrder.updateWith(updateOrderCommand, allProducts, closingPeriods);
+        const result = () => existingOrder.updateWith(updateOrderCommand, activeProducts, closingPeriods);
 
         // then
         expect(result).toThrow(new InvalidOrderError('existing order id does not match order id in command'));
@@ -513,7 +506,7 @@ describe('domain/Order', () => {
     describe('clientName', () => {
       it('should not change existing client name value', () => {
         // when
-        existingOrder.updateWith(updateOrderCommand, allProducts, closingPeriods);
+        existingOrder.updateWith(updateOrderCommand, activeProducts, closingPeriods);
 
         // then
         expect(existingOrder.clientName).toBe('John Doe');
@@ -523,7 +516,7 @@ describe('domain/Order', () => {
     describe('clientPhoneNumber', () => {
       it('should not change existing client phone number value', () => {
         // when
-        existingOrder.updateWith(updateOrderCommand, allProducts, closingPeriods);
+        existingOrder.updateWith(updateOrderCommand, activeProducts, closingPeriods);
 
         // then
         expect(existingOrder.clientPhoneNumber).toBe('+1 514 111 1111');
@@ -533,7 +526,7 @@ describe('domain/Order', () => {
     describe('clientEmailAddress', () => {
       it('should not change existing client email address value', () => {
         // when
-        existingOrder.updateWith(updateOrderCommand, allProducts, closingPeriods);
+        existingOrder.updateWith(updateOrderCommand, activeProducts, closingPeriods);
 
         // then
         expect(existingOrder.clientEmailAddress).toBe('test@example.org');
@@ -548,18 +541,12 @@ describe('domain/Order', () => {
           { productId: 1337, quantity: 2 },
         ];
 
-        const product1: Product = new Product();
-        product1.id = 42;
-        product1.name = 'Product 1';
-
-        const product2: Product = new Product();
-        product2.id = 1337;
-        product2.name = 'Product 2';
-
-        allProducts = [product1, product2];
+        const product1: ProductInterface = { id: 42, name: 'Product 1' } as ProductInterface;
+        const product2: ProductInterface = { id: 1337, name: 'Product 2' } as ProductInterface;
+        activeProducts = [product1, product2];
 
         // when
-        existingOrder.updateWith(updateOrderCommand, allProducts, closingPeriods);
+        existingOrder.updateWith(updateOrderCommand, activeProducts, closingPeriods);
 
         // then
         expect(existingOrder.products).toStrictEqual([
@@ -573,7 +560,7 @@ describe('domain/Order', () => {
         updateOrderCommand.products = [];
 
         // when
-        const result = () => existingOrder.updateWith(updateOrderCommand, allProducts, closingPeriods);
+        const result = () => existingOrder.updateWith(updateOrderCommand, activeProducts, closingPeriods);
 
         // then
         expect(result).toThrow(new InvalidOrderError('an order must have at least one product'));
@@ -587,7 +574,7 @@ describe('domain/Order', () => {
         ];
 
         // when
-        const result = () => existingOrder.updateWith(updateOrderCommand, allProducts, closingPeriods);
+        const result = () => existingOrder.updateWith(updateOrderCommand, activeProducts, closingPeriods);
 
         // then
         expect(result).toThrow(new InvalidOrderError('a product quantity must be positive'));
@@ -601,7 +588,7 @@ describe('domain/Order', () => {
         ];
 
         // when
-        const result = () => existingOrder.updateWith(updateOrderCommand, allProducts, closingPeriods);
+        const result = () => existingOrder.updateWith(updateOrderCommand, activeProducts, closingPeriods);
 
         // then
         expect(result).toThrow(new InvalidOrderError('a product quantity must be positive'));
@@ -614,13 +601,11 @@ describe('domain/Order', () => {
           { productId: 1337, quantity: 2 },
         ];
 
-        const product1: Product = new Product();
-        product1.id = 42;
-        product1.name = 'Product 1';
-        allProducts = [product1];
+        const product1: ProductInterface = { id: 42, name: 'Product 1' } as ProductInterface;
+        activeProducts = [product1];
 
         // when
-        const result = () => existingOrder.updateWith(updateOrderCommand, allProducts, closingPeriods);
+        const result = () => existingOrder.updateWith(updateOrderCommand, activeProducts, closingPeriods);
 
         // then
         expect(result).toThrow(new InvalidOrderError('product with id 1337 not found'));
@@ -633,7 +618,7 @@ describe('domain/Order', () => {
         updateOrderCommand.type = OrderType.DELIVERY;
 
         // when
-        existingOrder.updateWith(updateOrderCommand, allProducts, closingPeriods);
+        existingOrder.updateWith(updateOrderCommand, activeProducts, closingPeriods);
 
         // then
         expect(existingOrder.type).toBe(OrderType.DELIVERY);
@@ -644,7 +629,7 @@ describe('domain/Order', () => {
         updateOrderCommand.type = undefined;
 
         // when
-        const result = () => existingOrder.updateWith(updateOrderCommand, allProducts, closingPeriods);
+        const result = () => existingOrder.updateWith(updateOrderCommand, activeProducts, closingPeriods);
 
         // then
         expect(result).toThrow(new InvalidOrderError('order type must be defined'));
@@ -655,7 +640,7 @@ describe('domain/Order', () => {
         updateOrderCommand.type = 'UNKNOWN_TYPE' as OrderType;
 
         // when
-        const result = () => existingOrder.updateWith(updateOrderCommand, allProducts, closingPeriods);
+        const result = () => existingOrder.updateWith(updateOrderCommand, activeProducts, closingPeriods);
 
         // then
         expect(result).toThrow(new InvalidOrderError('unknown order type'));
@@ -688,7 +673,7 @@ describe('domain/Order', () => {
         updateOrderCommand.pickUpDate = nowPlusTwoDays;
 
         // when
-        existingOrder.updateWith(updateOrderCommand, allProducts, closingPeriods);
+        existingOrder.updateWith(updateOrderCommand, activeProducts, closingPeriods);
 
         // then
         expect(existingOrder.pickUpDate).toBe(nowPlusTwoDays);
@@ -700,7 +685,7 @@ describe('domain/Order', () => {
         updateOrderCommand.type = OrderType.DELIVERY;
 
         // when
-        existingOrder.updateWith(updateOrderCommand, allProducts, closingPeriods);
+        existingOrder.updateWith(updateOrderCommand, activeProducts, closingPeriods);
 
         // then
         expect(existingOrder.pickUpDate).toBeUndefined();
@@ -711,7 +696,7 @@ describe('domain/Order', () => {
         updateOrderCommand.pickUpDate = null;
 
         // when
-        const result = () => existingOrder.updateWith(updateOrderCommand, allProducts, closingPeriods);
+        const result = () => existingOrder.updateWith(updateOrderCommand, activeProducts, closingPeriods);
 
         // then
         expect(result).toThrow(new InvalidOrderError('a pick-up date must be defined when order type is pick-up'));
@@ -722,7 +707,7 @@ describe('domain/Order', () => {
         updateOrderCommand.pickUpDate = nowMinusOneDay;
 
         // when
-        const result = () => existingOrder.updateWith(updateOrderCommand, allProducts, closingPeriods);
+        const result = () => existingOrder.updateWith(updateOrderCommand, activeProducts, closingPeriods);
 
         // then
         expect(result).toThrow(new InvalidOrderError('pick-up date has to be at least two days after now'));
@@ -733,7 +718,7 @@ describe('domain/Order', () => {
         updateOrderCommand.pickUpDate = now;
 
         // when
-        const result = () => existingOrder.updateWith(updateOrderCommand, allProducts, closingPeriods);
+        const result = () => existingOrder.updateWith(updateOrderCommand, activeProducts, closingPeriods);
 
         // then
         expect(result).toThrow(new InvalidOrderError('pick-up date has to be at least two days after now'));
@@ -744,7 +729,7 @@ describe('domain/Order', () => {
         updateOrderCommand.pickUpDate = nowPlusOneDay;
 
         // when
-        const result = () => existingOrder.updateWith(updateOrderCommand, allProducts, closingPeriods);
+        const result = () => existingOrder.updateWith(updateOrderCommand, activeProducts, closingPeriods);
 
         // then
         expect(result).toThrow(new InvalidOrderError('pick-up date has to be at least two days after now'));
@@ -755,7 +740,7 @@ describe('domain/Order', () => {
         updateOrderCommand.pickUpDate = aSundayInTheFuture;
 
         // when
-        const result = () => existingOrder.updateWith(updateOrderCommand, allProducts, closingPeriods);
+        const result = () => existingOrder.updateWith(updateOrderCommand, activeProducts, closingPeriods);
 
         // then
         expect(result).toThrow(new InvalidOrderError('pick-up date must be between a Tuesday and a Saturday'));
@@ -766,7 +751,7 @@ describe('domain/Order', () => {
         updateOrderCommand.pickUpDate = aMondayInTheFuture;
 
         // when
-        const result = () => existingOrder.updateWith(updateOrderCommand, allProducts, closingPeriods);
+        const result = () => existingOrder.updateWith(updateOrderCommand, activeProducts, closingPeriods);
 
         // then
         expect(result).toThrow(new InvalidOrderError('pick-up date must be between a Tuesday and a Saturday'));
@@ -781,7 +766,7 @@ describe('domain/Order', () => {
         updateOrderCommand.pickUpDate = nowPlusTwoDays;
 
         // when
-        const result = () => existingOrder.updateWith(updateOrderCommand, allProducts, closingPeriods);
+        const result = () => existingOrder.updateWith(updateOrderCommand, activeProducts, closingPeriods);
 
         // then
         expect(result).toThrow(new InvalidOrderError('pick-up date must be outside closing periods'));
@@ -796,7 +781,7 @@ describe('domain/Order', () => {
         updateOrderCommand.pickUpDate = nowPlusTwoDays;
 
         // when
-        const result = () => existingOrder.updateWith(updateOrderCommand, allProducts, closingPeriods);
+        const result = () => existingOrder.updateWith(updateOrderCommand, activeProducts, closingPeriods);
 
         // then
         expect(result).not.toThrow();
@@ -813,7 +798,7 @@ describe('domain/Order', () => {
         updateOrderCommand.deliveryAddress = '1224 Rue Bélanger, Montréal, QC H2S 1H8';
 
         // when
-        existingOrder.updateWith(updateOrderCommand, allProducts, closingPeriods);
+        existingOrder.updateWith(updateOrderCommand, activeProducts, closingPeriods);
 
         // then
         expect(existingOrder.deliveryAddress).toBe('1224 Rue Bélanger, Montréal, QC H2S 1H8');
@@ -825,7 +810,7 @@ describe('domain/Order', () => {
         updateOrderCommand.type = OrderType.PICK_UP;
 
         // when
-        existingOrder.updateWith(updateOrderCommand, allProducts, closingPeriods);
+        existingOrder.updateWith(updateOrderCommand, activeProducts, closingPeriods);
 
         // then
         expect(existingOrder.deliveryAddress).toBeUndefined();
@@ -836,7 +821,7 @@ describe('domain/Order', () => {
         updateOrderCommand.deliveryAddress = '';
 
         // when
-        const result = () => existingOrder.updateWith(updateOrderCommand, allProducts, closingPeriods);
+        const result = () => existingOrder.updateWith(updateOrderCommand, activeProducts, closingPeriods);
 
         // then
         expect(result).toThrow(new InvalidOrderError('a delivery address must be defined when order type is delivery'));

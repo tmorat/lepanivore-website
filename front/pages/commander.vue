@@ -10,7 +10,7 @@
 
           <v-alert type="warning" v-if="hasValidationError">Les données entrées sont invalides.</v-alert>
           <v-alert type="error" v-if="hasUnknownError"
-            >Une erreur s'est produite, veuillez nous excuser ! Si le problème persiste, contactez nous.
+            >Une erreur s'est produite, veuillez nous excuser ! Si le problème persiste, contactez-nous.
           </v-alert>
           <v-btn color="primary" type="submit" x-large>
             Valider la commande

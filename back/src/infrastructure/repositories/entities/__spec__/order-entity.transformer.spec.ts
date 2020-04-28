@@ -1,6 +1,6 @@
-import { Order } from '../../../../domain/order';
 import { OrderType } from '../../../../domain/order-type';
 import { OrderInterface } from '../../../../domain/order.interface';
+import { ProductStatus } from '../../../../domain/product-status';
 import { OrderEntityTransformer } from '../order-entity.transformer';
 import { OrderEntity } from '../order.entity';
 
@@ -11,7 +11,7 @@ describe('infrastructure/repositories/entities/OrderEntityTransformer', () => {
   });
 
   describe('from()', () => {
-    it('should transform OrderEntity to Order', () => {
+    it('should transform OrderEntity to OrderInterface', () => {
       // given
       const orderEntity: OrderEntity = {
         id: 42,
@@ -19,8 +19,8 @@ describe('infrastructure/repositories/entities/OrderEntityTransformer', () => {
         clientEmailAddress: 'test@example.org',
         clientPhoneNumber: '+1 514 111 1111',
         products: [
-          '{"id":1,"name":"product 1","description":"product 1 description","price":1.11}:::1',
-          '{"id":2,"name":"product 2","description":"product 2 description","price":2.22}:::2',
+          '{"id":1,"name":"product 1","description":"product 1 description","price":1.11,"status":"ACTIVE"}:::1',
+          '{"id":2,"name":"product 2","description":"product 2 description","price":2.22,"status":"ARCHIVED"}:::2',
         ],
         type: 'PICK_UP',
         pickUpDate: new Date('2020-06-13T04:41:20'),
@@ -37,18 +37,18 @@ describe('infrastructure/repositories/entities/OrderEntityTransformer', () => {
         clientPhoneNumber: '+1 514 111 1111',
         clientEmailAddress: 'test@example.org',
         products: [
-          { product: { id: 1, name: 'product 1', description: 'product 1 description', price: 1.11 }, quantity: 1 },
-          { product: { id: 2, name: 'product 2', description: 'product 2 description', price: 2.22 }, quantity: 2 },
+          { product: { id: 1, name: 'product 1', description: 'product 1 description', price: 1.11, status: ProductStatus.ACTIVE }, quantity: 1 },
+          { product: { id: 2, name: 'product 2', description: 'product 2 description', price: 2.22, status: ProductStatus.ARCHIVED }, quantity: 2 },
         ],
         type: OrderType.PICK_UP,
         pickUpDate: new Date('2020-06-13T04:41:20'),
         deliveryAddress: 'Montréal',
-      } as Order);
+      } as OrderInterface);
     });
   });
 
   describe('to()', () => {
-    it('should transform Order to OrderEntity', () => {
+    it('should transform OrderInterface to OrderEntity', () => {
       // given
       const order: OrderInterface = {
         id: 42,
@@ -56,8 +56,8 @@ describe('infrastructure/repositories/entities/OrderEntityTransformer', () => {
         clientPhoneNumber: '+1 514 111 1111',
         clientEmailAddress: 'test@example.org',
         products: [
-          { product: { id: 1, name: 'product 1', description: 'product 1 description', price: 1.11 }, quantity: 1 },
-          { product: { id: 2, name: 'product 2', description: 'product 2 description', price: 2.22 }, quantity: 2 },
+          { product: { id: 1, name: 'product 1', description: 'product 1 description', price: 1.11, status: ProductStatus.ACTIVE }, quantity: 1 },
+          { product: { id: 2, name: 'product 2', description: 'product 2 description', price: 2.22, status: ProductStatus.ARCHIVED }, quantity: 2 },
         ],
         type: OrderType.PICK_UP,
         pickUpDate: new Date('2020-06-13T04:41:20'),
@@ -74,8 +74,8 @@ describe('infrastructure/repositories/entities/OrderEntityTransformer', () => {
         clientEmailAddress: 'test@example.org',
         clientPhoneNumber: '+1 514 111 1111',
         products: [
-          '{"id":1,"name":"product 1","description":"product 1 description","price":1.11}:::1',
-          '{"id":2,"name":"product 2","description":"product 2 description","price":2.22}:::2',
+          '{"id":1,"name":"product 1","description":"product 1 description","price":1.11,"status":"ACTIVE"}:::1',
+          '{"id":2,"name":"product 2","description":"product 2 description","price":2.22,"status":"ARCHIVED"}:::2',
         ],
         type: 'PICK_UP',
         pickUpDate: new Date('2020-06-13T04:41:20'),

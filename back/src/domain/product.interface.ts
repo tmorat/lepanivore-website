@@ -1,3 +1,4 @@
+import { ProductStatus } from './product-status';
 import { ProductId } from './type-aliases';
 
 export interface ProductInterface {
@@ -5,4 +6,5 @@ export interface ProductInterface {
   name: string;
   description: string;
   price: number;
+  status: ProductStatus;
 }

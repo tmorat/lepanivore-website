@@ -2,16 +2,15 @@ import { ClosingPeriodInterface } from '../../domain/closing-period.interface';
 import { ClosingPeriodRepository } from '../../domain/closing-period.repository';
 import { NewOrderCommand } from '../../domain/commands/new-order-command';
 import { Order, OrderFactoryInterface } from '../../domain/order';
-import { OrderNotification } from '../../domain/order-notification';
+import { OrderNotification, OrderNotificationFactoryInterface } from '../../domain/order-notification';
 import { OrderNotificationRepository } from '../../domain/order-notification.repository';
 import { OrderType } from '../../domain/order-type';
 import { OrderRepository } from '../../domain/order.repository';
 import { Product } from '../../domain/product';
+import { ProductStatus } from '../../domain/product-status';
 import { ProductRepository } from '../../domain/product.repository';
 import { OrderId } from '../../domain/type-aliases';
 import { OrderProducts } from '../order-products';
-
-jest.mock('../../domain/order-notification');
 
 describe('uses_cases/OrderProducts', () => {
   let orderProducts: OrderProducts;
@@ -25,10 +24,11 @@ describe('uses_cases/OrderProducts', () => {
     Order.factory = {} as OrderFactoryInterface;
     Order.factory.create = jest.fn();
 
-    ((OrderNotification as unknown) as jest.Mock).mockClear();
+    OrderNotification.factory = {} as OrderNotificationFactoryInterface;
+    OrderNotification.factory.create = jest.fn();
 
     mockProductRepository = {} as ProductRepository;
-    mockProductRepository.findAll = jest.fn();
+    mockProductRepository.findAllByStatus = jest.fn();
 
     mockClosingPeriodRepository = {} as ClosingPeriodRepository;
     mockClosingPeriodRepository.findAll = jest.fn();
@@ -52,10 +52,24 @@ describe('uses_cases/OrderProducts', () => {
   });
 
   describe('execute()', () => {
+    it('should search for active products', async () => {
+      // when
+      await orderProducts.execute(newOrderCommand);
+
+      // then
+      expect(mockProductRepository.findAllByStatus).toHaveBeenCalledWith(ProductStatus.ACTIVE);
+    });
+
     it('should create new order using given command, all products, and closing periods', async () => {
       // given
-      const allProducts: Product[] = [{ id: 42, name: 'Product 1' } as Product, { id: 1337, name: 'Product 2' } as Product];
-      (mockProductRepository.findAll as jest.Mock).mockReturnValue(Promise.resolve(allProducts));
+      const activeProducts: Product[] = [
+        { id: 42, name: 'Product 1' } as Product,
+        {
+          id: 1337,
+          name: 'Product 2',
+        } as Product,
+      ];
+      (mockProductRepository.findAllByStatus as jest.Mock).mockReturnValue(Promise.resolve(activeProducts));
 
       const closingPeriods: ClosingPeriodInterface[] = [
         { start: new Date('2019-12-23T12:00:00.000Z'), end: new Date('2019-12-28T12:00:00.000Z') },
@@ -67,7 +81,7 @@ describe('uses_cases/OrderProducts', () => {
       await orderProducts.execute(newOrderCommand);
 
       // then
-      expect(Order.factory.create).toHaveBeenCalledWith(newOrderCommand, allProducts, closingPeriods);
+      expect(Order.factory.create).toHaveBeenCalledWith(newOrderCommand, activeProducts, closingPeriods);
     });
 
     it('should save created order using repository', async () => {
@@ -94,13 +108,13 @@ describe('uses_cases/OrderProducts', () => {
       await orderProducts.execute(newOrderCommand);
 
       // then
-      expect(OrderNotification).toHaveBeenCalledWith({ id: 42, clientName: 'Fake order' } as Order);
+      expect(OrderNotification.factory.create).toHaveBeenCalledWith({ id: 42, clientName: 'Fake order' } as Order);
     });
 
     it('should send created order notification', async () => {
       // given
       const createdOrderNotification: OrderNotification = { recipient: 'test@example.org' } as OrderNotification;
-      ((OrderNotification as unknown) as jest.Mock).mockImplementation(() => createdOrderNotification);
+      (OrderNotification.factory.create as jest.Mock).mockReturnValue(createdOrderNotification);
 
       // when
       await orderProducts.execute(newOrderCommand);

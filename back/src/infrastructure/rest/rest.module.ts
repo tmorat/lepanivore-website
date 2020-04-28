@@ -5,7 +5,9 @@ import { ProxyServicesDynamicModule } from '../use_cases_proxy/proxy-services-dy
 import { AuthenticationController } from './authentication.controller';
 import { ClosingPeriodController } from './closing-period.controller';
 import { InvalidOrderErrorFilter } from './filters/invalid-order-error.filter';
+import { InvalidProductErrorFilter } from './filters/invalid-product-error.filter';
 import { OrderNotFoundErrorFilter } from './filters/order-not-found-error.filter';
+import { ProductNotFoundErrorFilter } from './filters/product-not-found-error.filter';
 import { OrderController } from './order.controller';
 import { ProductController } from './product.controller';
 
@@ -15,6 +17,8 @@ import { ProductController } from './product.controller';
   providers: [
     { provide: APP_FILTER, useClass: InvalidOrderErrorFilter },
     { provide: APP_FILTER, useClass: OrderNotFoundErrorFilter },
+    { provide: APP_FILTER, useClass: InvalidProductErrorFilter },
+    { provide: APP_FILTER, useClass: ProductNotFoundErrorFilter },
   ],
 })
 export class RestModule {}

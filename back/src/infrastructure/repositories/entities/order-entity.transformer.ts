@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { ValueTransformer } from 'typeorm';
-import { Order } from '../../../domain/order';
 import { OrderType } from '../../../domain/order-type';
 import { OrderInterface } from '../../../domain/order.interface';
 import { Product } from '../../../domain/product';
