@@ -13,6 +13,8 @@ describe('infrastructure/config/environment-config/EnvironmentConfigService', ()
       DATABASE_USERNAME: 'database-username',
       DATABASE_PASSWORD: 'database-password',
       DATABASE_NAME: 'database-name',
+      APP_ADMIN_USERNAME: 'app-admin-username',
+      APP_ADMIN_ENCRYPTED_PASSWORD: 'app-admin-encrypted-password',
       APP_EMAIL_ORDER_NOTIFICATION_FROM: 'app-email-order-notification-from',
       APP_EMAIL_ORDER_NOTIFICATION_CC: 'app-email-order-notification-cc',
       APP_JWT_SECRET: repeat('x', 128),
@@ -202,6 +204,32 @@ describe('infrastructure/config/environment-config/EnvironmentConfigService', ()
           // then
           expect(result).not.toThrow();
         });
+      });
+    });
+
+    describe('APP_ADMIN_USERNAME', () => {
+      it('should fail when empty', () => {
+        // given
+        process.env.APP_ADMIN_USERNAME = '';
+
+        // when
+        const result = () => new EnvironmentConfigService();
+
+        // then
+        expect(result).toThrow(new EnvironmentConfigError('Config validation error: "APP_ADMIN_USERNAME" is not allowed to be empty'));
+      });
+    });
+
+    describe('APP_ADMIN_ENCRYPTED_PASSWORD', () => {
+      it('should fail when empty', () => {
+        // given
+        process.env.APP_ADMIN_ENCRYPTED_PASSWORD = '';
+
+        // when
+        const result = () => new EnvironmentConfigService();
+
+        // then
+        expect(result).toThrow(new EnvironmentConfigError('Config validation error: "APP_ADMIN_ENCRYPTED_PASSWORD" is not allowed to be empty'));
       });
     });
 

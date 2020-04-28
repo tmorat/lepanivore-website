@@ -24,6 +24,8 @@ export class EnvironmentConfigService {
       DATABASE_PORT: Joi.number().when('DATABASE_TYPE', { is: 'sqlite', then: Joi.optional(), otherwise: Joi.required() }),
       DATABASE_USERNAME: Joi.string().when('DATABASE_TYPE', { is: 'sqlite', then: Joi.optional(), otherwise: Joi.required() }),
       DATABASE_PASSWORD: Joi.string().when('DATABASE_TYPE', { is: 'sqlite', then: Joi.optional(), otherwise: Joi.required() }),
+      APP_ADMIN_USERNAME: Joi.string().required(),
+      APP_ADMIN_ENCRYPTED_PASSWORD: Joi.string().required(),
       APP_EMAIL_ORDER_NOTIFICATION_FROM: Joi.string().required(),
       APP_EMAIL_ORDER_NOTIFICATION_CC: Joi.string().required(),
       APP_JWT_SECRET: Joi.string().required().min(128),
