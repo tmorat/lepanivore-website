@@ -99,25 +99,25 @@ describe('infrastructure/repositories/entities/entity.utils', () => {
     describe('from()', () => {
       it('should transform number without decimals to number with two decimals', () => {
         // given
-        const numberWithoutDecimals: number = 1234;
+        const numberWithoutDecimals: number = 510;
 
         // when
         const result: number = currencyValueTransformer.from(numberWithoutDecimals);
 
         // then
-        expect(result).toBe(12.34);
+        expect(result).toBe(5.1);
       });
     });
     describe('to()', () => {
       it('should transform number with two decimals to number without decimals', () => {
         // given
-        const numberWithTwoDecimals: number = 12.34;
+        const numberWithTwoDecimals: number = 5.1;
 
         // when
         const result: number = currencyValueTransformer.to(numberWithTwoDecimals);
 
         // then
-        expect(result).toBe(1234);
+        expect(result).toBe(510);
       });
     });
   });

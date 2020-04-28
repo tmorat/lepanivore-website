@@ -30,6 +30,6 @@ export const currencyValueTransformer: ValueTransformer = {
     return numberWithoutDecimals / 100;
   },
   to: (numberWithDecimals: number): number => {
-    return numberWithDecimals * 100;
+    return Math.round(numberWithDecimals * 100);
   },
 } as ValueTransformer;

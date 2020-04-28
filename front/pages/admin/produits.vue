@@ -60,7 +60,7 @@
         </v-toolbar>
       </template>
 
-      <template v-slot:item.price="{ item }"> {{ item.price }} $ </template>
+      <template v-slot:item.price="{ item }"> {{ item.price.toFixed(2) }} $ </template>
 
       <template v-slot:item.actions="{ item }">
         <v-tooltip bottom>

@@ -4,6 +4,7 @@ import request, { Response } from 'supertest';
 import { EnvironmentConfigService } from '../../src/infrastructure/config/environment-config/environment-config.service';
 import { RestModule } from '../../src/infrastructure/rest/rest.module';
 import { ADMIN_E2E_PASSWORD, ADMIN_E2E_USERNAME, e2eEnvironmentConfigService } from '../e2e-config';
+import DoneCallback = jest.DoneCallback;
 
 describe('infrastructure/rest/AuthenticationController (e2e)', () => {
   let app: INestApplication;
@@ -51,6 +52,47 @@ describe('infrastructure/rest/AuthenticationController (e2e)', () => {
       return testRequest.expect(401).expect((response: Response) => {
         expect(response.body.accessToken).toBeUndefined();
       });
+    });
+  });
+
+  describe('GET /api/authentication/profile', () => {
+    it('should return OK with admin user profile', (done: DoneCallback) => {
+      // given
+      const loginRequest: request.Test = request(app.getHttpServer()).post('/api/authentication/login').send({
+        username: ADMIN_E2E_USERNAME,
+        password: ADMIN_E2E_PASSWORD,
+      });
+
+      let accessToken: string;
+      loginRequest
+        .expect(200)
+        .expect((loginResponse: Response) => {
+          accessToken = loginResponse.body.accessToken;
+        })
+        .end(() => {
+          // when
+          const testRequest: request.Test = request(app.getHttpServer())
+            .get('/api/authentication/profile')
+            .set({ Authorization: `Bearer ${accessToken}` });
+
+          // then
+          testRequest
+            .expect(200)
+            .expect((response: Response) => {
+              expect(response.body).toStrictEqual({
+                username: 'ADMIN',
+              });
+            })
+            .end(done);
+        });
+    });
+
+    it('should return http status code Unauthorized when not authenticated as admin', () => {
+      // when
+      const testRequestWithoutAuthorizationHeader: request.Test = request(app.getHttpServer()).get('/api/authentication/profile');
+
+      // then
+      return testRequestWithoutAuthorizationHeader.expect(401);
     });
   });
 

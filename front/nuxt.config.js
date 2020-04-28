@@ -74,7 +74,7 @@ export default {
       local: {
         endpoints: {
           login: { url: '/api/authentication/login', method: 'post', propertyName: 'accessToken' },
-          user: false,
+          user: { url: '/api/authentication/profile', method: 'get', propertyName: false },
           logout: false,
         },
       },
