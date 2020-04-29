@@ -7,5 +7,6 @@ export interface PostOrderRequest {
   products: ProductIdWithQuantity[];
   type: string;
   pickUpDate?: string;
+  deliveryDate?: string;
   deliveryAddress?: string;
 }

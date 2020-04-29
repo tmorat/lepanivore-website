@@ -110,6 +110,7 @@ export default Vue.extend({
         { text: 'Produits sélectionnés', value: 'products' },
         { text: 'Type de commande', value: 'type' },
         { text: 'Date de cueillette', value: 'pickUpDate' },
+        { text: 'Date de livraison', value: 'deliveryDate' },
         { text: 'Adresse de livraison', value: 'deliveryAddress' },
         { text: 'Actions', value: 'actions', sortable: false },
       ],
@@ -140,6 +141,7 @@ export default Vue.extend({
           ({ productId: productWithQuantity.product.id, quantity: productWithQuantity.quantity } as ProductIdWithQuantity)
       );
       orderToEdit.type = order.type;
+      orderToEdit.deliveryDate = order.deliveryDate;
       orderToEdit.deliveryAddress = order.deliveryAddress;
       orderToEdit.pickUpDate = order.pickUpDate;
 

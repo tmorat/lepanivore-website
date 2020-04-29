@@ -8,7 +8,7 @@
           <OrderTypeSelection :value="order" :closing-periods="closingPeriods" class="mb-5"></OrderTypeSelection>
           <ProductSelection :value="order" :available-products="products" class="mb-5"></ProductSelection>
 
-          <v-alert type="warning" v-if="hasValidationError">Les données entrées sont invalides.</v-alert>
+          <v-alert type="warning" v-if="hasValidationError">Les données entrées sont invalides. Si le problème persiste, contactez-nous.</v-alert>
           <v-alert type="error" v-if="hasUnknownError"
             >Une erreur s'est produite, veuillez nous excuser ! Si le problème persiste, contactez-nous.
           </v-alert>
@@ -68,6 +68,7 @@ export default Vue.extend({
       // @ts-ignore
       if (this.$refs.form.validate()) {
         try {
+          this.resetErrors();
           const postOrderResponse: PostOrderResponse = await this.$apiService.postOrder(this.order);
           this.$router.push(`/confirmation-de-commande?orderId=${postOrderResponse.id}`);
         } catch (e) {
@@ -78,6 +79,10 @@ export default Vue.extend({
           }
         }
       }
+    },
+    resetErrors(): void {
+      this.hasValidationError = false;
+      this.hasUnknownError = false;
     },
   },
 });

@@ -10,5 +10,6 @@ export interface OrderInterface {
   products: ProductWithQuantity[];
   type: OrderType;
   pickUpDate?: Date;
+  deliveryDate?: Date;
   deliveryAddress?: string;
 }

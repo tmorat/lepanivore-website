@@ -7,5 +7,6 @@ export interface UpdateOrderCommand {
   products: ProductIdWithQuantity[];
   type: OrderType;
   pickUpDate?: Date;
+  deliveryDate?: Date;
   deliveryAddress?: string;
 }

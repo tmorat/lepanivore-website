@@ -37,6 +37,26 @@
           </v-menu>
         </v-col>
         <v-col cols="12" sm="6" md="8" v-if="isDeliveryOrderTypeSelected">
+          <v-menu v-model="showDeliveryDatePicker" :nudge-right="40" transition="scale-transition" offset-y min-width="290px">
+            <template v-slot:activator="{ on }">
+              <v-text-field
+                v-model="value.deliveryDate"
+                label="Date de livraison"
+                prepend-icon="mdi-calendar"
+                readonly
+                v-on="on"
+                required
+                :rules="[(v) => !!v || 'La date de livraison est requise']"
+              ></v-text-field>
+            </template>
+            <v-date-picker
+              v-model="value.deliveryDate"
+              @input="showDeliveryDatePicker = false"
+              :min="deliveryDateMin"
+              :allowed-dates="deliveryAllowedDates"
+              locale="fr-ca"
+            ></v-date-picker>
+          </v-menu>
           <v-text-field
             v-model="value.deliveryAddress"
             :rules="[(v) => !!v || `L'adresse de livraison est requise`]"
@@ -50,12 +70,13 @@
         </v-col>
       </v-row>
     </v-container>
-  </v-card></template
->
+  </v-card>
+</template>
 
 <script lang="ts">
 import Vue, { PropOptions } from 'vue';
 import { ClosingDay } from '../../back/src/domain/closing-day';
+import { MAXIMUM_HOUR_FOR_DELIVERY_SAME_WEEK, THURSDAY, TUESDAY } from '../../back/src/domain/delivery-constraints';
 import { OrderType } from '../../back/src/domain/order-type';
 import { GetClosingPeriodResponse } from '../../back/src/infrastructure/rest/models/get-closing-period-response';
 import { PostOrderRequest } from '../../back/src/infrastructure/rest/models/post-order-request';
@@ -78,11 +99,22 @@ export default Vue.extend({
         { value: OrderType.PICK_UP, text: 'Cueillette' },
       ],
       showPickUpDatePicker: false,
+      showDeliveryDatePicker: false,
     } as OrderTypeSelectionData;
   },
   methods: {
     pickUpAllowedDates(dateAsIsoString: string): boolean {
-      const date: Date = new Date(`${dateAsIsoString}T12:00:00Z`);
+      const date: Date = this.toDate(dateAsIsoString);
+      return this.isStoreOpen(date);
+    },
+    deliveryAllowedDates(dateAsIsoString: string): boolean {
+      const date: Date = this.toDate(dateAsIsoString);
+      return this.isStoreOpen(date) && date.getDay() === THURSDAY;
+    },
+    toDate(dateAsIsoString: string): Date {
+      return new Date(`${dateAsIsoString}T12:00:00Z`);
+    },
+    isStoreOpen(date: Date): boolean {
       if (Object.values(ClosingDay).includes(date.getDay())) {
         return false;
       }
@@ -108,6 +140,19 @@ export default Vue.extend({
       date.setDate(date.getDate() + 2);
 
       return date.toISOString();
+    },
+    deliveryDateMin(): string {
+      const now = new Date();
+      const currentDayOfWeek: number = now.getDay();
+      if (
+        (currentDayOfWeek > TUESDAY && currentDayOfWeek <= THURSDAY) ||
+        (currentDayOfWeek === TUESDAY && now.getHours() >= MAXIMUM_HOUR_FOR_DELIVERY_SAME_WEEK)
+      ) {
+        const numberOfDaysToAddToOverlapNextThursday: number = THURSDAY - currentDayOfWeek + 1;
+        now.setDate(now.getDate() + numberOfDaysToAddToOverlapNextThursday);
+      }
+
+      return now.toISOString();
     },
   },
 });

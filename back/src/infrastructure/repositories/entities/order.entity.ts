@@ -22,13 +22,22 @@ export class OrderEntity {
   type: string;
 
   @Column({
-    name: 'pick_up_time',
+    name: 'pick_up_date',
     type: 'varchar',
     nullable: true,
     length: DATE_MAX_LENGTH,
     transformer: dateIsoStringValueTransformer,
   })
   pickUpDate?: Date;
+
+  @Column({
+    name: 'delivery_date',
+    type: 'varchar',
+    nullable: true,
+    length: DATE_MAX_LENGTH,
+    transformer: dateIsoStringValueTransformer,
+  })
+  deliveryDate?: Date;
 
   @Column({ name: 'delivery_address', type: 'text', nullable: true })
   deliveryAddress?: string;

@@ -1,0 +1,1 @@
+export const NUMBER_OF_MINIMUM_DAYS_FOR_A_PICK_UP_ORDER: number = 2;

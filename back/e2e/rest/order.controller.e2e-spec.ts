@@ -76,11 +76,12 @@ describe('infrastructure/rest/OrderController (e2e)', () => {
     it('should return http status code OK with found orders when authenticated as admin', (done: DoneCallback) => {
       // given
       const orders: Order[] = [
-        { id: 1, clientName: 'fake order 1', pickUpDate: new Date('2020-07-01T12:00:00Z') } as Order,
+        { id: 1, clientName: 'fake order 1', pickUpDate: new Date('2020-07-01T12:00:00Z'), deliveryDate: new Date('2030-07-01T12:00:00Z') } as Order,
         {
           id: 2,
           clientName: 'fake order 2',
           pickUpDate: new Date('2020-08-15T12:00:00Z'),
+          deliveryDate: new Date('2030-08-15T12:00:00Z'),
         } as Order,
       ];
       (mockGetOrders.execute as jest.Mock).mockReturnValue(Promise.resolve(orders));
@@ -107,8 +108,8 @@ describe('infrastructure/rest/OrderController (e2e)', () => {
             .expect(200)
             .expect((response: Response) => {
               expect(response.body).toStrictEqual([
-                { id: 1, clientName: 'fake order 1', pickUpDate: '2020-07-01' },
-                { id: 2, clientName: 'fake order 2', pickUpDate: '2020-08-15' },
+                { id: 1, clientName: 'fake order 1', pickUpDate: '2020-07-01', deliveryDate: '2030-07-01' },
+                { id: 2, clientName: 'fake order 2', pickUpDate: '2020-08-15', deliveryDate: '2030-08-15' },
               ]);
             })
             .end(done);
@@ -135,6 +136,7 @@ describe('infrastructure/rest/OrderController (e2e)', () => {
         type: 'DELIVERY',
         pickUpDate: '2020-06-13T04:41:20',
         deliveryAddress: 'Montréal',
+        deliveryDate: '2021-03-28T16:35:49',
       };
 
       // when
@@ -150,6 +152,7 @@ describe('infrastructure/rest/OrderController (e2e)', () => {
           type: OrderType.DELIVERY,
           pickUpDate: new Date('2020-06-13T04:41:20'),
           deliveryAddress: 'Montréal',
+          deliveryDate: new Date('2021-03-28T16:35:49'),
         } as NewOrderCommand);
       });
     });
@@ -202,6 +205,7 @@ describe('infrastructure/rest/OrderController (e2e)', () => {
         type: 'DELIVERY',
         pickUpDate: '2020-06-13T04:41:20',
         deliveryAddress: 'Montréal',
+        deliveryDate: '2021-03-28T16:35:49',
       };
 
       const loginRequest: request.Test = request(app.getHttpServer()).post('/api/authentication/login').send({
@@ -232,6 +236,7 @@ describe('infrastructure/rest/OrderController (e2e)', () => {
                 type: OrderType.DELIVERY,
                 pickUpDate: new Date('2020-06-13T04:41:20'),
                 deliveryAddress: 'Montréal',
+                deliveryDate: new Date('2021-03-28T16:35:49'),
               } as UpdateOrderCommand);
             })
             .end(done);
