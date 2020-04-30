@@ -145,6 +145,7 @@ interface ProduitsData {
 export default Vue.extend({
   name: 'commandes',
   middleware: 'auth',
+  layout: 'admin',
   data() {
     return {
       editProductDialog: false,

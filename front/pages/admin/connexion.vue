@@ -25,7 +25,7 @@
               Nom d'utilisateur ou mot de passe incorrect
             </v-alert>
             <v-layout justify-end>
-              <v-btn color="primary" type="submit" large>
+              <v-btn :loading="isLoading" color="primary" type="submit" large>
                 Se connecter
               </v-btn>
             </v-layout>
@@ -42,14 +42,17 @@ import Vue from 'vue';
 interface LoginDataInterface {
   username: string;
   password: string;
+  isLoading: boolean;
   hasError: boolean;
 }
 
 export default Vue.extend({
+  layout: 'admin',
   data() {
     return {
       username: '',
       password: '',
+      isLoading: false,
       hasError: false,
     } as LoginDataInterface;
   },
@@ -59,6 +62,7 @@ export default Vue.extend({
       // @ts-ignore
       if (this.$refs.form.validate()) {
         try {
+          this.isLoading = true;
           // @ts-ignore
           await this.$auth.loginWith('local', {
             data: {
@@ -68,6 +72,8 @@ export default Vue.extend({
           });
         } catch (e) {
           this.hasError = true;
+        } finally {
+          this.isLoading = false;
         }
       }
     },

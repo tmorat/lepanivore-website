@@ -6,7 +6,6 @@
 import Vue from 'vue';
 
 export default Vue.extend({
-  middleware: 'redirectToAdminLogin.middleware',
-  layout: 'admin',
+  middleware: 'redirectToOrder.middleware',
 });
 </script>
