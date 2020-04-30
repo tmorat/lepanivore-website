@@ -13,6 +13,11 @@
             label="Type de commande"
             required
           ></v-select>
+          <p class="text-left caption" v-if="isDeliveryOrderTypeSelected">
+            Livraison à domicile le jeudi soir. Service gratuit pour la Petite-Patrie (Jean Talon - Des Carrières - Des Érables - Christophe-Colomb).
+            <br />Pour une livraison en dehors de cette zone,
+            <a href="https://www.lepanivore.com/Home/Contact" target="_blank">veuillez nous contacter</a>.
+          </p>
         </v-col>
         <v-col cols="12" sm="6" md="8" v-if="isPickUpOrderTypeSelected">
           <v-menu v-model="showPickUpDatePicker" :nudge-right="40" transition="scale-transition" offset-y min-width="290px">
@@ -63,11 +68,6 @@
             label="Votre adresse de livraison"
             required
           ></v-text-field>
-          <small>
-            Service gratuit pour la Petite-Patrie (Jean Talon - Des Carrières - Des Érables - Christophe-Colomb).
-            <br />Pour une livraison en dehors de cette zone,
-            <a href="https://www.lepanivore.com/Home/Contact" target="_blank">veuillez nous contacter</a>.
-          </small>
         </v-col>
       </v-row>
     </v-container>
