@@ -71,9 +71,8 @@ export default Vue.extend({
             },
           });
         } catch (e) {
-          this.hasError = true;
-        } finally {
           this.isLoading = false;
+          this.hasError = true;
         }
       }
     },

@@ -82,13 +82,12 @@ export default Vue.extend({
           const postOrderResponse: PostOrderResponse = await this.$apiService.postOrder(this.order);
           this.$router.push(`/confirmation-de-commande?orderId=${postOrderResponse.id}`);
         } catch (e) {
+          this.isLoading = false;
           if (e.statusCode === 400) {
             this.hasValidationError = true;
           } else {
             this.hasUnknownError = true;
           }
-        } finally {
-          this.isLoading = false;
         }
       }
     },
