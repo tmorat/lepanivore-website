@@ -1,5 +1,5 @@
 <template>
-  <v-app>
+  <v-app class="body">
     <v-app-bar class="header" color="#8c5e32">
       <v-toolbar-title>Interface d'administration</v-toolbar-title>
       <v-spacer></v-spacer>
@@ -37,7 +37,11 @@ export default Vue.extend({
   max-height: 64px;
   color: #efd25c;
 }
-.main-content {
+.body {
   background-color: #dda;
+}
+.main-content {
+  margin-left: auto;
+  margin-right: auto;
 }
 </style>

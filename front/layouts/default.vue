@@ -1,5 +1,5 @@
 <template>
-  <v-app>
+  <v-app class="body">
     <v-app-bar class="header" color="#8c5e32">
       <v-toolbar-title><img class="logo" alt="Logo boulangerie Le Panivore" src="/img/logo-panivore.png" /></v-toolbar-title>
     </v-app-bar>
@@ -28,8 +28,12 @@ export default Vue.extend({
   max-height: 64px;
   color: #efd25c;
 }
-.main-content {
+.body {
   background-color: #dda;
+}
+.main-content {
+  margin-left: auto;
+  margin-right: auto;
 }
 .logo {
   margin-top: 8px;
