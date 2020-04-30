@@ -154,7 +154,7 @@ export default Vue.extend({
         { text: '#', value: 'id' },
         { text: 'Nom', value: 'name' },
         { text: 'Description', value: 'description' },
-        { text: 'Prix', value: 'price' },
+        { text: 'Prix unitaire', value: 'price' },
         { text: 'Actions', value: 'actions', sortable: false },
       ],
       products: [],

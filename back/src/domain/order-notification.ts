@@ -36,22 +36,12 @@ export class OrderNotification implements OrderNotificationInterface {
       `- Produits :${os.EOL}` +
       order.products
         .map((productWithQuantity: ProductWithQuantity) => {
-          return `  - ${productWithQuantity.product.name} (${productWithQuantity.product.price}$) : ${productWithQuantity.quantity}`;
+          return `  - ${productWithQuantity.product.name} : ${productWithQuantity.quantity}`;
         })
         .join(os.EOL);
-    const totalPrice: string = `- Prix total : ${OrderNotification.getTotalPrice(order.products)}$`;
     const note: string = `- Note : ${isEmpty(order.note) ? '-' : order.note}`;
 
-    return `${heading}${os.EOL}${orderId}${os.EOL}${name}${os.EOL}${phoneNumber}${os.EOL}${orderType}${os.EOL}${orderTypeDetails}${os.EOL}${products}${os.EOL}${totalPrice}${os.EOL}${note}`;
-  }
-
-  private static getTotalPrice(products: ProductWithQuantity[]): number {
-    let totalPrice: number = 0;
-    products.forEach((productWithQuantity: ProductWithQuantity) => {
-      totalPrice += productWithQuantity.product.price * productWithQuantity.quantity;
-    });
-
-    return Math.round((totalPrice + Number.EPSILON) * 100) / 100;
+    return `${heading}${os.EOL}${orderId}${os.EOL}${name}${os.EOL}${phoneNumber}${os.EOL}${orderType}${os.EOL}${orderTypeDetails}${os.EOL}${products}${os.EOL}${note}`;
   }
 }
 

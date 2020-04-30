@@ -71,9 +71,8 @@ describe('domain/OrderNotification', () => {
               '- Type de commande: Cueillette\n' +
               '- Date de cueillette : 2020-06-13\n' +
               '- Produits :\n' +
-              '  - product 1 (1.11$) : 1\n' +
-              '  - product 2 (2.22$) : 2\n' +
-              '- Prix total : 5.55$\n' +
+              '  - product 1 : 1\n' +
+              '  - product 2 : 2\n' +
               '- Note : a note'
           );
         });
@@ -97,9 +96,8 @@ describe('domain/OrderNotification', () => {
               '- Date de livraison : 2030-06-13\n' +
               '- Adresse de livraison : Montréal\n' +
               '- Produits :\n' +
-              '  - product 1 (1.11$) : 1\n' +
-              '  - product 2 (2.22$) : 2\n' +
-              '- Prix total : 5.55$\n' +
+              '  - product 1 : 1\n' +
+              '  - product 2 : 2\n' +
               '- Note : a note'
           );
         });
