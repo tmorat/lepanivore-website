@@ -1,7 +1,16 @@
 <template>
   <v-app class="body">
     <v-app-bar class="header" color="#8c5e32">
-      <v-toolbar-title><img class="logo" alt="Logo boulangerie Le Panivore" src="/img/logo-panivore.png" /></v-toolbar-title>
+      <v-toolbar-title>Interface d'administration</v-toolbar-title>
+      <v-spacer></v-spacer>
+      <v-toolbar-items>
+        <v-btn rounded class="mr-5 mt-2" color="primary" max-height="50px" nuxt to="/admin/commandes">
+          Commandes passées
+        </v-btn>
+        <v-btn rounded class="mr-5 mt-2" color="primary" max-height="50px" nuxt to="/admin/produits">
+          Configuration des produits
+        </v-btn>
+      </v-toolbar-items>
     </v-app-bar>
     <v-content class="main-content">
       <v-container fluid>
@@ -34,9 +43,5 @@ export default Vue.extend({
 .main-content {
   margin-left: auto;
   margin-right: auto;
-}
-.logo {
-  margin-top: 8px;
-  max-height: 55px;
 }
 </style>

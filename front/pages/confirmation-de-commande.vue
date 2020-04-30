@@ -8,13 +8,13 @@
             Votre commande a bien été enregistrée ! Votre numéro de commande est le : <b>{{ orderId }}</b>
           </p>
           <p>
-            Vous recevrez une confirmation de la commande par courriel dans les prochaines heures.
+            Nous vous recontacterons sous peu pour vous confirmer votre commande.
           </p>
-          <p>Si vous ne recevez pas de courriel, verifiez dans votre spam ou pourriel et contactez-nous si vous n'avez rien reçu.</p>
+          <p>Merci et à bientôt !</p>
         </v-card-text>
         <v-card-actions>
           <v-spacer />
-          <v-btn color="primary" nuxt to="/">
+          <v-btn color="primary" href="https://www.lepanivore.com/">
             Retour à l'accueil
           </v-btn>
           <v-spacer />

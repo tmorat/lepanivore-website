@@ -65,7 +65,8 @@
           ></v-text-field>
           <small>
             Service gratuit pour la Petite-Patrie (Jean Talon - Des Carrières - Des Érables - Christophe-Colomb).
-            <br />Pour une livraison en dehors de cette zone, veuillez nous contacter.
+            <br />Pour une livraison en dehors de cette zone,
+            <a href="https://www.lepanivore.com/Home/Contact" target="_blank">veuillez nous contacter</a>.
           </small>
         </v-col>
       </v-row>

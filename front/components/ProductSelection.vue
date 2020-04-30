@@ -3,6 +3,11 @@
     <v-card-title>
       Sélection de produits
     </v-card-title>
+    <v-card-subtitle align="start">
+      Tous nos pains sont au levain naturel à 100%, sans aucun ajout d'additif ou de levure, et sont faits exclusivement à partir de farines
+      biologiques du Québec.
+      <a href="https://www.lepanivore.com/Home/Products" target="_blank">Plus d'informations ici.</a>
+    </v-card-subtitle>
     <v-container>
       <v-sheet v-for="(product, index) in value.products" v-bind:key="product.id" v-bind:index="index">
         <v-row align="center" justify="center">

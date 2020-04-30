@@ -113,7 +113,7 @@ describe('uses_cases/OrderProducts', () => {
 
     it('should send created order notification', async () => {
       // given
-      const createdOrderNotification: OrderNotification = { recipient: 'test@example.org' } as OrderNotification;
+      const createdOrderNotification: OrderNotification = { subject: 'New order' } as OrderNotification;
       (OrderNotification.factory.create as jest.Mock).mockReturnValue(createdOrderNotification);
 
       // when

@@ -13,7 +13,7 @@ export default {
       {
         hid: 'description',
         name: 'description',
-        content: process.env.npm_package_description || '',
+        content: 'Commande en ligne',
       },
     ],
     link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
@@ -38,6 +38,12 @@ export default {
     // '@nuxtjs/eslint-module',
     '@nuxt/typescript-build',
     '@nuxtjs/vuetify',
+    [
+      '@nuxtjs/google-analytics',
+      {
+        id: process.env.GOOGLE_ANALYTICS_ID,
+      },
+    ],
   ],
   /*
    ** Nuxt.js modules

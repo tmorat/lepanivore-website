@@ -9,14 +9,18 @@
           <ProductSelection :value="order" :available-products="products" class="mb-5"></ProductSelection>
           <OrderNote :value="order" class="mb-5"></OrderNote>
 
-          <v-alert type="warning" v-if="hasValidationError">Les données entrées sont invalides. Si le problème persiste, contactez-nous. </v-alert>
+          <v-alert type="warning" v-if="hasValidationError"
+            >Les données entrées sont invalides. Si le problème persiste,
+            <a href="https://www.lepanivore.com/Home/Contact" target="_blank">contactez-nous</a>.</v-alert
+          >
           <v-alert type="error" v-if="hasUnknownError"
-            >Une erreur s'est produite, veuillez nous excuser ! Si le problème persiste, contactez-nous.
-          </v-alert>
-          <v-btn color="primary" type="submit" x-large>
+            >Une erreur s'est produite, veuillez nous excuser ! Si le problème persiste,
+            <a href="https://www.lepanivore.com/Home/Contact" target="_blank">contactez-nous</a>.</v-alert
+          >
+          <v-btn :loading="isLoading" color="primary" type="submit" x-large>
             Valider la commande
           </v-btn>
-          <div class="mt-2">Vous recevrez un récapitulatif de la commande par courriel</div>
+          <div class="mt-2">Après avoir validé votre commande, nous vous recontacterons pour vous confirmer sa prise en compte.</div>
         </v-container>
       </v-form>
     </v-flex>
@@ -39,6 +43,7 @@ interface CommanderData {
   order: PostOrderRequest;
   closingPeriods: GetClosingPeriodResponse[];
   products: GetProductResponse[];
+  isLoading: boolean;
   hasValidationError: boolean;
   hasUnknownError: boolean;
 }
@@ -56,6 +61,7 @@ export default Vue.extend({
       order: { products: [{}] } as PostOrderRequest,
       closingPeriods: [],
       products: [],
+      isLoading: false,
       hasValidationError: false,
       hasUnknownError: false,
     } as CommanderData;
@@ -71,6 +77,7 @@ export default Vue.extend({
       // @ts-ignore
       if (this.$refs.form.validate()) {
         try {
+          this.isLoading = true;
           this.resetErrors();
           const postOrderResponse: PostOrderResponse = await this.$apiService.postOrder(this.order);
           this.$router.push(`/confirmation-de-commande?orderId=${postOrderResponse.id}`);
@@ -80,6 +87,8 @@ export default Vue.extend({
           } else {
             this.hasUnknownError = true;
           }
+        } finally {
+          this.isLoading = false;
         }
       }
     },

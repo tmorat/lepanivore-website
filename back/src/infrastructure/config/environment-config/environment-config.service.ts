@@ -27,12 +27,13 @@ export class EnvironmentConfigService {
       APP_ADMIN_USERNAME: Joi.string().required(),
       APP_ADMIN_ENCRYPTED_PASSWORD: Joi.string().required(),
       APP_EMAIL_ORDER_NOTIFICATION_FROM: Joi.string().required(),
-      APP_EMAIL_ORDER_NOTIFICATION_CC: Joi.string().required(),
+      APP_EMAIL_ORDER_NOTIFICATION_TO: Joi.string().required(),
       APP_JWT_SECRET: Joi.string().required().min(128),
       SMTP_HOST: Joi.string().required(),
       SMTP_PORT: Joi.number().required(),
       SMTP_USERNAME: Joi.string().required(),
       SMTP_PASSWORD: Joi.string().required(),
+      SENTRY_DSN: Joi.string().required(),
     }).unknown(true);
 
     const { error, value: validatedEnvironmentConfig }: ValidationResult = envVarsSchema.validate(environmentConfig);

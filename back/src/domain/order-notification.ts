@@ -12,22 +12,24 @@ export class OrderNotification implements OrderNotificationInterface {
     },
   };
 
-  recipient: string;
   subject: string;
   body: string;
 
   private constructor(order: OrderInterface) {
-    this.recipient = order.clientEmailAddress;
-    this.subject = `Boulangerie Le Panivore : votre commande #${order.id}`;
+    this.subject = `Nouvelle commande en ligne: #${order.id}`;
     this.body = OrderNotification.buildBody(order);
   }
 
   private static buildBody(order: OrderInterface): string {
-    const heading: string = `Bonjour,${os.EOL}${os.EOL}Voici le récapitulatif de votre commande :`;
-    const orderId: string = `- Numéro de commande: ${order.id}`;
-    const name: string = `- Votre nom: ${order.clientName}`;
-    const phoneNumber: string = `- Votre numéro de téléphone: ${order.clientPhoneNumber}`;
-    const orderType: string = `- Type de commande: ${order.type === OrderType.DELIVERY ? 'Livraison' : 'Cueillette'}`;
+    const heading: string = `Bonjour,${os.EOL}${os.EOL}Une nouvelle commande (#${order.id}) a été passée en ligne !`;
+
+    const clientHeadline: string = 'Informations de contact :';
+    const clientName: string = `- Nom du client : ${order.clientName}`;
+    const clientPhoneNumber: string = `- Numéro de téléphone du client : ${order.clientPhoneNumber}`;
+    const clientEmailAddress: string = `- Courriel du client : ${order.clientEmailAddress}`;
+
+    const orderId: string = `- Numéro de commande : #${order.id}`;
+    const orderType: string = `- Type de commande : ${order.type === OrderType.DELIVERY ? 'Livraison' : 'Cueillette'}`;
     const orderTypeDetails: string =
       order.type === OrderType.DELIVERY
         ? `- Date de livraison : ${order.deliveryDate.toISOString().split('T')[0]}${os.EOL}- Adresse de livraison : ${order.deliveryAddress}`
@@ -36,22 +38,12 @@ export class OrderNotification implements OrderNotificationInterface {
       `- Produits :${os.EOL}` +
       order.products
         .map((productWithQuantity: ProductWithQuantity) => {
-          return `  - ${productWithQuantity.product.name} (${productWithQuantity.product.price}$) : ${productWithQuantity.quantity}`;
+          return `  - ${productWithQuantity.product.name} : ${productWithQuantity.quantity}`;
         })
         .join(os.EOL);
-    const totalPrice: string = `- Prix total : ${OrderNotification.getTotalPrice(order.products)}$`;
-    const note: string = `- Note : ${isEmpty(order.note) ? '-' : order.note}`;
+    const note: string = `- Note : ${isEmpty(order.note) ? 'N/A' : order.note}`;
 
-    return `${heading}${os.EOL}${orderId}${os.EOL}${name}${os.EOL}${phoneNumber}${os.EOL}${orderType}${os.EOL}${orderTypeDetails}${os.EOL}${products}${os.EOL}${totalPrice}${os.EOL}${note}`;
-  }
-
-  private static getTotalPrice(products: ProductWithQuantity[]): number {
-    let totalPrice: number = 0;
-    products.forEach((productWithQuantity: ProductWithQuantity) => {
-      totalPrice += productWithQuantity.product.price * productWithQuantity.quantity;
-    });
-
-    return Math.round((totalPrice + Number.EPSILON) * 100) / 100;
+    return `${heading}${os.EOL}${os.EOL}${clientHeadline}${os.EOL}${clientName}${os.EOL}${clientPhoneNumber}${os.EOL}${clientEmailAddress}${os.EOL}${os.EOL}${orderId}${os.EOL}${orderType}${os.EOL}${orderTypeDetails}${os.EOL}${products}${os.EOL}${note}`;
   }
 }
 

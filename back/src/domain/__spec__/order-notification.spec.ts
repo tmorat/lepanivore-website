@@ -26,19 +26,6 @@ describe('domain/OrderNotification', () => {
 
   describe('factory', () => {
     describe('create()', () => {
-      describe('recipient', () => {
-        it('should bind order client email address to recipient', () => {
-          // given
-          order.clientEmailAddress = 'client@example.org';
-
-          // when
-          const result: OrderNotification = OrderNotification.factory.create(order);
-
-          // then
-          expect(result.recipient).toBe('client@example.org');
-        });
-      });
-
       describe('subject', () => {
         it('should create subject using order id', () => {
           // given
@@ -48,7 +35,7 @@ describe('domain/OrderNotification', () => {
           const result: OrderNotification = OrderNotification.factory.create(order);
 
           // then
-          expect(result.subject).toBe('Boulangerie Le Panivore : votre commande #1337');
+          expect(result.subject).toBe('Nouvelle commande en ligne: #1337');
         });
       });
 
@@ -64,16 +51,19 @@ describe('domain/OrderNotification', () => {
           expect(result.body).toBe(
             'Bonjour,\n' +
               '\n' +
-              'Voici le récapitulatif de votre commande :\n' +
-              '- Numéro de commande: 42\n' +
-              '- Votre nom: John Doe\n' +
-              '- Votre numéro de téléphone: +1 514 111 1111\n' +
-              '- Type de commande: Cueillette\n' +
+              'Une nouvelle commande (#42) a été passée en ligne !\n' +
+              '\n' +
+              'Informations de contact :\n' +
+              '- Nom du client : John Doe\n' +
+              '- Numéro de téléphone du client : +1 514 111 1111\n' +
+              '- Courriel du client : test@example.org\n' +
+              '\n' +
+              '- Numéro de commande : #42\n' +
+              '- Type de commande : Cueillette\n' +
               '- Date de cueillette : 2020-06-13\n' +
               '- Produits :\n' +
-              '  - product 1 (1.11$) : 1\n' +
-              '  - product 2 (2.22$) : 2\n' +
-              '- Prix total : 5.55$\n' +
+              '  - product 1 : 1\n' +
+              '  - product 2 : 2\n' +
               '- Note : a note'
           );
         });
@@ -89,17 +79,20 @@ describe('domain/OrderNotification', () => {
           expect(result.body).toBe(
             'Bonjour,\n' +
               '\n' +
-              'Voici le récapitulatif de votre commande :\n' +
-              '- Numéro de commande: 42\n' +
-              '- Votre nom: John Doe\n' +
-              '- Votre numéro de téléphone: +1 514 111 1111\n' +
-              '- Type de commande: Livraison\n' +
+              'Une nouvelle commande (#42) a été passée en ligne !\n' +
+              '\n' +
+              'Informations de contact :\n' +
+              '- Nom du client : John Doe\n' +
+              '- Numéro de téléphone du client : +1 514 111 1111\n' +
+              '- Courriel du client : test@example.org\n' +
+              '\n' +
+              '- Numéro de commande : #42\n' +
+              '- Type de commande : Livraison\n' +
               '- Date de livraison : 2030-06-13\n' +
               '- Adresse de livraison : Montréal\n' +
               '- Produits :\n' +
-              '  - product 1 (1.11$) : 1\n' +
-              '  - product 2 (2.22$) : 2\n' +
-              '- Prix total : 5.55$\n' +
+              '  - product 1 : 1\n' +
+              '  - product 2 : 2\n' +
               '- Note : a note'
           );
         });
