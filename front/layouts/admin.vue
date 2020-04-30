@@ -17,18 +17,24 @@
         <nuxt />
       </v-container>
     </v-content>
-    <v-footer class="footer" color="#8c5e32">
-      <span>&copy; {{ new Date().getFullYear() }} - Boulangerie Le Panivore Inc.</span>
-    </v-footer>
+    <Footer />
   </v-app>
 </template>
+
+<script lang="ts">
+import Vue from 'vue';
+import Footer from '~/components/Footer.vue';
+
+export default Vue.extend({
+  components: {
+    Footer,
+  },
+});
+</script>
 
 <style scoped lang="scss">
 .header {
   max-height: 64px;
-}
-.header,
-.footer {
   color: #efd25c;
 }
 .main-content {

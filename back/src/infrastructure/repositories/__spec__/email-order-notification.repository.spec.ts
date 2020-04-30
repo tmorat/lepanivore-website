@@ -22,7 +22,6 @@ describe('infrastructure/repositories/EmailOrderNotificationRepository', () => {
     it('should send mail with options built from order notification and configuration', async () => {
       // given
       const orderNotification: OrderNotification = {
-        recipient: 'client@example.org',
         subject: 'order notification subject',
         body: 'order notification body',
       };
