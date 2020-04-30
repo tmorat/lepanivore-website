@@ -19,6 +19,8 @@ describe('domain/OrderNotification', () => {
       type: OrderType.PICK_UP,
       pickUpDate: new Date('2020-06-13T04:41:20'),
       deliveryAddress: 'Montréal',
+      deliveryDate: new Date('2030-06-13T04:41:20'),
+      note: 'a note',
     };
   });
 
@@ -51,7 +53,10 @@ describe('domain/OrderNotification', () => {
       });
 
       describe('body', () => {
-        it('should create body using order details', () => {
+        it('should create body using order details when order is pick-up', () => {
+          // given
+          order.type = OrderType.PICK_UP;
+
           // when
           const result: OrderNotification = OrderNotification.factory.create(order);
 
@@ -69,8 +74,33 @@ describe('domain/OrderNotification', () => {
               '  - product 1 (1.11$) : 1\n' +
               '  - product 2 (2.22$) : 2\n' +
               '- Prix total : 5.55$\n' +
+              '- Note : a note'
+          );
+        });
+
+        it('should create body using order details when order is delivery', () => {
+          // given
+          order.type = OrderType.DELIVERY;
+
+          // when
+          const result: OrderNotification = OrderNotification.factory.create(order);
+
+          // then
+          expect(result.body).toBe(
+            'Bonjour,\n' +
               '\n' +
-              "Merci d'avoir commandé et à très bientôt !"
+              'Voici le récapitulatif de votre commande :\n' +
+              '- Numéro de commande: 42\n' +
+              '- Votre nom: John Doe\n' +
+              '- Votre numéro de téléphone: +1 514 111 1111\n' +
+              '- Type de commande: Livraison\n' +
+              '- Date de livraison : 2030-06-13\n' +
+              '- Adresse de livraison : Montréal\n' +
+              '- Produits :\n' +
+              '  - product 1 (1.11$) : 1\n' +
+              '  - product 2 (2.22$) : 2\n' +
+              '- Prix total : 5.55$\n' +
+              '- Note : a note'
           );
         });
       });

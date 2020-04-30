@@ -7,8 +7,9 @@
           <ContactDetails :value="order" class="mb-5"></ContactDetails>
           <OrderTypeSelection :value="order" :closing-periods="closingPeriods" class="mb-5"></OrderTypeSelection>
           <ProductSelection :value="order" :available-products="products" class="mb-5"></ProductSelection>
+          <OrderNote :value="order" class="mb-5"></OrderNote>
 
-          <v-alert type="warning" v-if="hasValidationError">Les données entrées sont invalides.</v-alert>
+          <v-alert type="warning" v-if="hasValidationError">Les données entrées sont invalides. Si le problème persiste, contactez-nous. </v-alert>
           <v-alert type="error" v-if="hasUnknownError"
             >Une erreur s'est produite, veuillez nous excuser ! Si le problème persiste, contactez-nous.
           </v-alert>
@@ -26,6 +27,7 @@
 import { Context } from '@nuxt/types';
 import Vue from 'vue';
 import ContactDetails from '~/components/ContactDetails.vue';
+import OrderNote from '~/components/OrderNote.vue';
 import OrderTypeSelection from '~/components/OrderTypeSelection.vue';
 import ProductSelection from '~/components/ProductSelection.vue';
 import { GetClosingPeriodResponse } from '../../back/src/infrastructure/rest/models/get-closing-period-response';
@@ -47,6 +49,7 @@ export default Vue.extend({
     ContactDetails,
     OrderTypeSelection,
     ProductSelection,
+    OrderNote,
   },
   data() {
     return {
@@ -68,6 +71,7 @@ export default Vue.extend({
       // @ts-ignore
       if (this.$refs.form.validate()) {
         try {
+          this.resetErrors();
           const postOrderResponse: PostOrderResponse = await this.$apiService.postOrder(this.order);
           this.$router.push(`/confirmation-de-commande?orderId=${postOrderResponse.id}`);
         } catch (e) {
@@ -78,6 +82,10 @@ export default Vue.extend({
           }
         }
       }
+    },
+    resetErrors(): void {
+      this.hasValidationError = false;
+      this.hasUnknownError = false;
     },
   },
 });

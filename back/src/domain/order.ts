@@ -3,9 +3,11 @@ import { ClosingDay } from './closing-day';
 import { ClosingPeriodInterface } from './closing-period.interface';
 import { NewOrderCommand } from './commands/new-order-command';
 import { UpdateOrderCommand } from './commands/update-order-command';
+import { DELIVERY_DAY, MAXIMUM_DAY_FOR_DELIVERY_SAME_WEEK, MAXIMUM_HOUR_FOR_DELIVERY_SAME_WEEK } from './delivery-constraints';
 import { InvalidOrderError } from './invalid-order.error';
 import { OrderType } from './order-type';
 import { OrderInterface } from './order.interface';
+import { NUMBER_OF_MINIMUM_DAYS_FOR_A_PICK_UP_ORDER } from './pick-up-constraints';
 import { Product } from './product';
 import { ProductIdWithQuantity, ProductWithQuantity } from './product-with-quantity';
 import { ProductInterface } from './product.interface';
@@ -30,7 +32,9 @@ export class Order implements OrderInterface {
   products: ProductWithQuantity[];
   type: OrderType;
   pickUpDate?: Date;
+  deliveryDate?: Date;
   deliveryAddress?: string;
+  note?: string;
 
   private constructor(order: OrderInterface, command: NewOrderCommand, activeProducts: ProductInterface[], closingPeriods: ClosingPeriodInterface[]) {
     if (!isEmpty(order)) {
@@ -41,6 +45,7 @@ export class Order implements OrderInterface {
       this.bindContactDetails(command);
       this.bindProductSelection(command, activeProducts);
       this.bindOrderTypeSelection(command, closingPeriods);
+      this.note = command.note;
     }
   }
 
@@ -93,7 +98,7 @@ export class Order implements OrderInterface {
         throw new InvalidOrderError('a pick-up date must be defined when order type is pick-up');
       }
 
-      if (pickUpDate.getTime() < this.getCurrentDatePlusTwoDays().getTime()) {
+      if (pickUpDate.getTime() < this.getCurrentDatePlusDays(NUMBER_OF_MINIMUM_DAYS_FOR_A_PICK_UP_ORDER).getTime()) {
         throw new InvalidOrderError('pick-up date has to be at least two days after now');
       }
 
@@ -115,6 +120,39 @@ export class Order implements OrderInterface {
     }
   }
 
+  private static assertDeliveryDateIsValid(type: OrderType, closingPeriods: ClosingPeriodInterface[], deliveryDate?: Date): void {
+    if (type === OrderType.DELIVERY) {
+      if (!deliveryDate) {
+        throw new InvalidOrderError('a delivery date must be defined when order type is delivery');
+      }
+      const now: Date = new Date();
+
+      if (deliveryDate.getTime() < now.getTime()) {
+        throw new InvalidOrderError('delivery date has to be in the future');
+      }
+
+      closingPeriods.forEach((closingPeriod: ClosingPeriodInterface) => {
+        if (deliveryDate.getTime() >= closingPeriod.start.getTime() && deliveryDate.getTime() <= closingPeriod.end.getTime()) {
+          throw new InvalidOrderError('delivery date must be outside closing periods');
+        }
+      });
+
+      if (deliveryDate.getDay() !== DELIVERY_DAY) {
+        throw new InvalidOrderError('delivery date has to be a Thursday');
+      }
+
+      const numberOfDaysBetweenDeliveryDateAndNow: number = (deliveryDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24);
+      const isDeliveryDateIsInTheNextSixDays: boolean = numberOfDaysBetweenDeliveryDateAndNow <= 6;
+      if (
+        isDeliveryDateIsInTheNextSixDays &&
+        (now.getDay() > MAXIMUM_DAY_FOR_DELIVERY_SAME_WEEK ||
+          (now.getDay() === MAXIMUM_DAY_FOR_DELIVERY_SAME_WEEK && now.getHours() >= MAXIMUM_HOUR_FOR_DELIVERY_SAME_WEEK))
+      ) {
+        throw new InvalidOrderError('delivery date has to be one of the next available Thursday');
+      }
+    }
+  }
+
   private static toProductWithQuantity(productIdWithQuantity: ProductIdWithQuantity, activeProducts: ProductInterface[]): ProductWithQuantity {
     const foundProduct: ProductInterface | undefined = activeProducts.find((product: Product) => product.id === productIdWithQuantity.productId);
     if (!foundProduct) {
@@ -124,9 +162,9 @@ export class Order implements OrderInterface {
     return { product: foundProduct, quantity: productIdWithQuantity.quantity } as ProductWithQuantity;
   }
 
-  private static getCurrentDatePlusTwoDays(): Date {
+  private static getCurrentDatePlusDays(numberOfDaysToAdd: number): Date {
     const date: Date = new Date();
-    date.setDate(date.getDate() + 2);
+    date.setDate(date.getDate() + numberOfDaysToAdd);
 
     return date;
   }
@@ -138,6 +176,7 @@ export class Order implements OrderInterface {
 
     this.bindProductSelection(command, activeProducts);
     this.bindOrderTypeSelection(command, closingPeriods);
+    this.note = command.note;
   }
 
   private copy(otherOrder: OrderInterface): void {
@@ -170,15 +209,18 @@ export class Order implements OrderInterface {
   private bindOrderTypeSelection(command: NewOrderCommand | UpdateOrderCommand, closingPeriods: ClosingPeriodInterface[]): void {
     Order.assertTypeIsValid(command.type);
     Order.assertpickUpDateIsValid(command.type, closingPeriods, command.pickUpDate);
+    Order.assertDeliveryDateIsValid(command.type, closingPeriods, command.deliveryDate);
     Order.assertDeliveryAddressIsValid(command.type, command.deliveryAddress);
 
     this.type = command.type;
     if (this.type === OrderType.PICK_UP) {
       this.pickUpDate = command.pickUpDate;
+      this.deliveryDate = undefined;
       this.deliveryAddress = undefined;
     } else {
-      this.deliveryAddress = command.deliveryAddress;
       this.pickUpDate = undefined;
+      this.deliveryDate = command.deliveryDate;
+      this.deliveryAddress = command.deliveryAddress;
     }
   }
 }

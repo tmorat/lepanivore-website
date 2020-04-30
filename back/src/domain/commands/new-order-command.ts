@@ -8,5 +8,7 @@ export interface NewOrderCommand {
   products: ProductIdWithQuantity[];
   type: OrderType;
   pickUpDate?: Date;
+  deliveryDate?: Date;
   deliveryAddress?: string;
+  note?: string;
 }

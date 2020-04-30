@@ -45,13 +45,24 @@ export class CreateOrderTableMigration1586118263949 implements MigrationInterfac
             isNullable: false,
           },
           {
-            name: 'pick_up_time',
+            name: 'pick_up_date',
+            type: 'varchar',
+            length: '24',
+            isNullable: true,
+          },
+          {
+            name: 'delivery_date',
             type: 'varchar',
             length: '24',
             isNullable: true,
           },
           {
             name: 'delivery_address',
+            type: 'text',
+            isNullable: true,
+          },
+          {
+            name: 'note',
             type: 'text',
             isNullable: true,
           },

@@ -37,6 +37,8 @@ describe('domain/Order', () => {
           type: OrderType.DELIVERY,
           pickUpDate: new Date('2030-01-01T12:00:00Z'),
           deliveryAddress: 'Montréal',
+          deliveryDate: new Date('2030-01-10T12:00:00Z'),
+          note: 'a note',
         };
       });
 
@@ -263,7 +265,7 @@ describe('domain/Order', () => {
           aSundayInTheFuture = new Date('2030-03-31T04:41:20');
           aMondayInTheFuture = new Date('2030-04-01T04:41:20');
           // @ts-ignore
-          jest.spyOn(global, 'Date').mockImplementationOnce(() => now);
+          jest.spyOn(global, 'Date').mockImplementation(() => now);
 
           newOrderCommand.type = OrderType.PICK_UP;
         });
@@ -427,6 +429,234 @@ describe('domain/Order', () => {
           expect(result).toThrow(new InvalidOrderError('a delivery address must be defined when order type is delivery'));
         });
       });
+
+      describe('deliveryDate', () => {
+        let now: Date;
+        let nowMinusOneDay: Date;
+        let tuesdayBeforeSevenPM: Date;
+        let tuesdayAtSevenPM: Date;
+        let wednesdayAfterTuesday: Date;
+        let firstThursdayAfterTuesday: Date;
+        let secondThursdayAfterTuesday: Date;
+        let thirdThursdayAfterTuesday: Date;
+
+        beforeEach(() => {
+          now = new Date('2020-06-03T04:41:20');
+          nowMinusOneDay = new Date('2020-06-02T04:41:20');
+          tuesdayBeforeSevenPM = new Date('2020-06-09T18:59:59');
+          tuesdayAtSevenPM = new Date('2020-06-09T19:00:00');
+          wednesdayAfterTuesday = new Date('2020-06-10T19:00:00');
+          firstThursdayAfterTuesday = new Date('2020-06-11T19:00:00');
+          secondThursdayAfterTuesday = new Date('2020-06-18T19:00:00');
+          thirdThursdayAfterTuesday = new Date('2020-06-25T19:00:00');
+          // @ts-ignore
+          jest.spyOn(global, 'Date').mockImplementation(() => now);
+
+          newOrderCommand.type = OrderType.DELIVERY;
+        });
+
+        it('should bind delivery date from command', () => {
+          // given
+          newOrderCommand.deliveryDate = secondThursdayAfterTuesday;
+
+          // when
+          const result: Order = Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+
+          // then
+          expect(result.deliveryDate).toBe(secondThursdayAfterTuesday);
+        });
+
+        it('should not bind any delivery date from command when order type is pick-up', () => {
+          // given
+          newOrderCommand.deliveryDate = new Date('2020-06-05T04:41:20');
+          newOrderCommand.type = OrderType.PICK_UP;
+
+          // when
+          const result: Order = Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+
+          // then
+          expect(result.deliveryDate).toBeUndefined();
+        });
+
+        it('should fail when delivery date is empty and order type is delivery', () => {
+          // given
+          newOrderCommand.deliveryDate = undefined;
+
+          // when
+          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+
+          // then
+          expect(result).toThrow(new InvalidOrderError('a delivery date must be defined when order type is delivery'));
+        });
+
+        it('should fail when delivery date is before current date', () => {
+          // given
+          newOrderCommand.deliveryDate = nowMinusOneDay;
+
+          // when
+          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+
+          // then
+          expect(result).toThrow(new InvalidOrderError('delivery date has to be in the future'));
+        });
+
+        it('should fail when delivery date is not a Thursday', () => {
+          // given
+          newOrderCommand.deliveryDate = wednesdayAfterTuesday;
+
+          // when
+          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+
+          // then
+          expect(result).toThrow(new InvalidOrderError('delivery date has to be a Thursday'));
+        });
+
+        it('should not fail when delivery date is the Thursday same week as now when creating the order before Tuesday 7 PM', () => {
+          // given
+          newOrderCommand.deliveryDate = firstThursdayAfterTuesday;
+          // @ts-ignore
+          jest.spyOn(global, 'Date').mockImplementation(() => tuesdayBeforeSevenPM);
+
+          // when
+          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+
+          // then
+          expect(result).not.toThrow();
+        });
+
+        it('should fail when delivery date is the Thursday same week as now when creating the order Tuesday after 7 PM', () => {
+          // given
+          newOrderCommand.deliveryDate = firstThursdayAfterTuesday;
+          // @ts-ignore
+          jest.spyOn(global, 'Date').mockImplementation(() => tuesdayAtSevenPM);
+
+          // when
+          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+
+          // then
+          expect(result).toThrow(new InvalidOrderError('delivery date has to be one of the next available Thursday'));
+        });
+
+        it('should not fail when delivery date is the Thursday the week after now when creating the order Tuesday after 7 PM', () => {
+          // given
+          newOrderCommand.deliveryDate = secondThursdayAfterTuesday;
+          // @ts-ignore
+          jest.spyOn(global, 'Date').mockImplementation(() => tuesdayAtSevenPM);
+
+          // when
+          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+
+          // then
+          expect(result).not.toThrow();
+        });
+
+        it('should fail when delivery date is the Thursday same week as now when creating the order Wednesday', () => {
+          // given
+          newOrderCommand.deliveryDate = firstThursdayAfterTuesday;
+          // @ts-ignore
+          jest.spyOn(global, 'Date').mockImplementation(() => wednesdayAfterTuesday);
+
+          // when
+          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+
+          // then
+          expect(result).toThrow(new InvalidOrderError('delivery date has to be one of the next available Thursday'));
+        });
+
+        it('should not fail when delivery date is the Thursday the week after now when creating the order Wednesday', () => {
+          // given
+          newOrderCommand.deliveryDate = secondThursdayAfterTuesday;
+          // @ts-ignore
+          jest.spyOn(global, 'Date').mockImplementation(() => wednesdayAfterTuesday);
+
+          // when
+          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+
+          // then
+          expect(result).not.toThrow();
+        });
+
+        it('should fail when delivery date is the Thursday same week as now when creating the order Thursday', () => {
+          // given
+          newOrderCommand.deliveryDate = firstThursdayAfterTuesday;
+          // @ts-ignore
+          jest.spyOn(global, 'Date').mockImplementation(() => firstThursdayAfterTuesday);
+
+          // when
+          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+
+          // then
+          expect(result).toThrow(new InvalidOrderError('delivery date has to be one of the next available Thursday'));
+        });
+
+        it('should not fail when delivery date is the Thursday the week after now when creating the order Thursday', () => {
+          // given
+          newOrderCommand.deliveryDate = secondThursdayAfterTuesday;
+          // @ts-ignore
+          jest.spyOn(global, 'Date').mockImplementation(() => firstThursdayAfterTuesday);
+
+          // when
+          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+
+          // then
+          expect(result).not.toThrow();
+        });
+
+        it('should not fail when delivery date is the Thursday the week after now when creating the order Thursday and there is less than 7 days in milliseconds between dates', () => {
+          // given
+          secondThursdayAfterTuesday.setHours(1, 1, 1, 1);
+          newOrderCommand.deliveryDate = secondThursdayAfterTuesday;
+          // @ts-ignore
+          jest.spyOn(global, 'Date').mockImplementation(() => firstThursdayAfterTuesday);
+
+          // when
+          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+
+          // then
+          expect(result).not.toThrow();
+        });
+
+        it('should fail when delivery date is during a closing period', () => {
+          // given
+          closingPeriods = [{ start: tuesdayBeforeSevenPM, end: secondThursdayAfterTuesday }];
+          newOrderCommand.deliveryDate = firstThursdayAfterTuesday;
+          // @ts-ignore
+          jest.spyOn(global, 'Date').mockImplementation(() => tuesdayBeforeSevenPM);
+
+          // when
+          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+
+          // then
+          expect(result).toThrow(new InvalidOrderError('delivery date must be outside closing periods'));
+        });
+
+        it('should not fail when delivery date is outside a closing period', () => {
+          // given
+          closingPeriods = [{ start: tuesdayBeforeSevenPM, end: secondThursdayAfterTuesday }];
+          newOrderCommand.deliveryDate = thirdThursdayAfterTuesday;
+          // @ts-ignore
+          jest.spyOn(global, 'Date').mockImplementation(() => tuesdayBeforeSevenPM);
+
+          // when
+          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+
+          // then
+          expect(result).not.toThrow();
+        });
+      });
+
+      describe('note', () => {
+        it('should bind note from command', () => {
+          // given
+          newOrderCommand.note = 'Without something please';
+
+          // when
+          const result: Order = Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+
+          // then
+          expect(result.note).toBe('Without something please');
+        });
+      });
     });
 
     describe('copy()', () => {
@@ -438,12 +668,32 @@ describe('domain/Order', () => {
           clientPhoneNumber: '+1 514 111 1111',
           clientEmailAddress: 'test@example.org',
           products: [
-            { product: { id: 1, name: 'product 1', description: 'product 1 description', price: 1.11, status: ProductStatus.ACTIVE }, quantity: 1 },
-            { product: { id: 2, name: 'product 2', description: 'product 2 description', price: 2.22, status: ProductStatus.ARCHIVED }, quantity: 2 },
+            {
+              product: {
+                id: 1,
+                name: 'product 1',
+                description: 'product 1 description',
+                price: 1.11,
+                status: ProductStatus.ACTIVE,
+              },
+              quantity: 1,
+            },
+            {
+              product: {
+                id: 2,
+                name: 'product 2',
+                description: 'product 2 description',
+                price: 2.22,
+                status: ProductStatus.ARCHIVED,
+              },
+              quantity: 2,
+            },
           ],
           type: OrderType.PICK_UP,
           pickUpDate: new Date('2020-06-13T04:41:20'),
           deliveryAddress: 'Montréal',
+          deliveryDate: new Date('2030-06-13T04:41:20'),
+          note: 'a note',
         };
 
         // when
@@ -479,6 +729,8 @@ describe('domain/Order', () => {
         type: OrderType.PICK_UP,
         pickUpDate: new Date('2020-06-13T04:41:20'),
         deliveryAddress: 'Montréal',
+        deliveryDate: new Date('2020-01-09T12:00:00Z'),
+        note: 'a note',
       });
 
       updateOrderCommand = {
@@ -487,6 +739,8 @@ describe('domain/Order', () => {
         type: OrderType.DELIVERY,
         pickUpDate: new Date('2021-06-12T04:41:20'),
         deliveryAddress: 'Laval',
+        deliveryDate: new Date('2030-01-10T12:00:00Z'),
+        note: 'an updated note',
       };
     });
 
@@ -663,7 +917,7 @@ describe('domain/Order', () => {
         aSundayInTheFuture = new Date('2030-03-31T04:41:20');
         aMondayInTheFuture = new Date('2030-04-01T04:41:20');
         // @ts-ignore
-        jest.spyOn(global, 'Date').mockImplementationOnce(() => now);
+        jest.spyOn(global, 'Date').mockImplementation(() => now);
 
         updateOrderCommand.type = OrderType.PICK_UP;
       });
@@ -825,6 +1079,234 @@ describe('domain/Order', () => {
 
         // then
         expect(result).toThrow(new InvalidOrderError('a delivery address must be defined when order type is delivery'));
+      });
+    });
+
+    describe('deliveryDate', () => {
+      let now: Date;
+      let nowMinusOneDay: Date;
+      let tuesdayBeforeSevenPM: Date;
+      let tuesdayAtSevenPM: Date;
+      let wednesdayAfterTuesday: Date;
+      let firstThursdayAfterTuesday: Date;
+      let secondThursdayAfterTuesday: Date;
+      let thirdThursdayAfterTuesday: Date;
+
+      beforeEach(() => {
+        now = new Date('2020-06-03T04:41:20');
+        nowMinusOneDay = new Date('2020-06-02T04:41:20');
+        tuesdayBeforeSevenPM = new Date('2020-06-09T18:59:59');
+        tuesdayAtSevenPM = new Date('2020-06-09T19:00:00');
+        wednesdayAfterTuesday = new Date('2020-06-10T19:00:00');
+        firstThursdayAfterTuesday = new Date('2020-06-11T19:00:00');
+        secondThursdayAfterTuesday = new Date('2020-06-18T19:00:00');
+        thirdThursdayAfterTuesday = new Date('2020-06-25T19:00:00');
+        // @ts-ignore
+        jest.spyOn(global, 'Date').mockImplementation(() => now);
+
+        updateOrderCommand.type = OrderType.DELIVERY;
+      });
+
+      it('should bind delivery date from command', () => {
+        // given
+        updateOrderCommand.deliveryDate = secondThursdayAfterTuesday;
+
+        // when
+        existingOrder.updateWith(updateOrderCommand, activeProducts, closingPeriods);
+
+        // then
+        expect(existingOrder.deliveryDate).toBe(secondThursdayAfterTuesday);
+      });
+
+      it('should not bind any delivery date from command when order type is pick-up', () => {
+        // given
+        updateOrderCommand.deliveryDate = new Date('2020-06-05T04:41:20');
+        updateOrderCommand.type = OrderType.PICK_UP;
+
+        // when
+        existingOrder.updateWith(updateOrderCommand, activeProducts, closingPeriods);
+
+        // then
+        expect(existingOrder.deliveryDate).toBeUndefined();
+      });
+
+      it('should fail when delivery date is empty and order type is delivery', () => {
+        // given
+        updateOrderCommand.deliveryDate = undefined;
+
+        // when
+        const result = () => existingOrder.updateWith(updateOrderCommand, activeProducts, closingPeriods);
+
+        // then
+        expect(result).toThrow(new InvalidOrderError('a delivery date must be defined when order type is delivery'));
+      });
+
+      it('should fail when delivery date is before current date', () => {
+        // given
+        updateOrderCommand.deliveryDate = nowMinusOneDay;
+
+        // when
+        const result = () => existingOrder.updateWith(updateOrderCommand, activeProducts, closingPeriods);
+
+        // then
+        expect(result).toThrow(new InvalidOrderError('delivery date has to be in the future'));
+      });
+
+      it('should fail when delivery date is not a Thursday', () => {
+        // given
+        updateOrderCommand.deliveryDate = wednesdayAfterTuesday;
+
+        // when
+        const result = () => existingOrder.updateWith(updateOrderCommand, activeProducts, closingPeriods);
+
+        // then
+        expect(result).toThrow(new InvalidOrderError('delivery date has to be a Thursday'));
+      });
+
+      it('should not fail when delivery date is the Thursday same week as now when creating the order before Tuesday 7 PM', () => {
+        // given
+        updateOrderCommand.deliveryDate = firstThursdayAfterTuesday;
+        // @ts-ignore
+        jest.spyOn(global, 'Date').mockImplementation(() => tuesdayBeforeSevenPM);
+
+        // when
+        const result = () => existingOrder.updateWith(updateOrderCommand, activeProducts, closingPeriods);
+
+        // then
+        expect(result).not.toThrow();
+      });
+
+      it('should fail when delivery date is the Thursday same week as now when creating the order Tuesday after 7 PM', () => {
+        // given
+        updateOrderCommand.deliveryDate = firstThursdayAfterTuesday;
+        // @ts-ignore
+        jest.spyOn(global, 'Date').mockImplementation(() => tuesdayAtSevenPM);
+
+        // when
+        const result = () => existingOrder.updateWith(updateOrderCommand, activeProducts, closingPeriods);
+
+        // then
+        expect(result).toThrow(new InvalidOrderError('delivery date has to be one of the next available Thursday'));
+      });
+
+      it('should not fail when delivery date is the Thursday the week after now when creating the order Tuesday after 7 PM', () => {
+        // given
+        updateOrderCommand.deliveryDate = secondThursdayAfterTuesday;
+        // @ts-ignore
+        jest.spyOn(global, 'Date').mockImplementation(() => tuesdayAtSevenPM);
+
+        // when
+        const result = () => existingOrder.updateWith(updateOrderCommand, activeProducts, closingPeriods);
+
+        // then
+        expect(result).not.toThrow();
+      });
+
+      it('should fail when delivery date is the Thursday same week as now when creating the order Wednesday', () => {
+        // given
+        updateOrderCommand.deliveryDate = firstThursdayAfterTuesday;
+        // @ts-ignore
+        jest.spyOn(global, 'Date').mockImplementation(() => wednesdayAfterTuesday);
+
+        // when
+        const result = () => existingOrder.updateWith(updateOrderCommand, activeProducts, closingPeriods);
+
+        // then
+        expect(result).toThrow(new InvalidOrderError('delivery date has to be one of the next available Thursday'));
+      });
+
+      it('should not fail when delivery date is the Thursday the week after now when creating the order Wednesday', () => {
+        // given
+        updateOrderCommand.deliveryDate = secondThursdayAfterTuesday;
+        // @ts-ignore
+        jest.spyOn(global, 'Date').mockImplementation(() => wednesdayAfterTuesday);
+
+        // when
+        const result = () => existingOrder.updateWith(updateOrderCommand, activeProducts, closingPeriods);
+
+        // then
+        expect(result).not.toThrow();
+      });
+
+      it('should fail when delivery date is the Thursday same week as now when creating the order Thursday', () => {
+        // given
+        updateOrderCommand.deliveryDate = firstThursdayAfterTuesday;
+        // @ts-ignore
+        jest.spyOn(global, 'Date').mockImplementation(() => firstThursdayAfterTuesday);
+
+        // when
+        const result = () => existingOrder.updateWith(updateOrderCommand, activeProducts, closingPeriods);
+
+        // then
+        expect(result).toThrow(new InvalidOrderError('delivery date has to be one of the next available Thursday'));
+      });
+
+      it('should not fail when delivery date is the Thursday the week after now when creating the order Thursday', () => {
+        // given
+        updateOrderCommand.deliveryDate = secondThursdayAfterTuesday;
+        // @ts-ignore
+        jest.spyOn(global, 'Date').mockImplementation(() => firstThursdayAfterTuesday);
+
+        // when
+        const result = () => existingOrder.updateWith(updateOrderCommand, activeProducts, closingPeriods);
+
+        // then
+        expect(result).not.toThrow();
+      });
+
+      it('should not fail when delivery date is the Thursday the week after now when creating the order Thursday and there is less than 7 days in milliseconds between dates', () => {
+        // given
+        secondThursdayAfterTuesday.setHours(1, 1, 1, 1);
+        updateOrderCommand.deliveryDate = secondThursdayAfterTuesday;
+        // @ts-ignore
+        jest.spyOn(global, 'Date').mockImplementation(() => firstThursdayAfterTuesday);
+
+        // when
+        const result = () => existingOrder.updateWith(updateOrderCommand, activeProducts, closingPeriods);
+
+        // then
+        expect(result).not.toThrow();
+      });
+
+      it('should fail when delivery date is during a closing period', () => {
+        // given
+        closingPeriods = [{ start: tuesdayBeforeSevenPM, end: secondThursdayAfterTuesday }];
+        updateOrderCommand.deliveryDate = firstThursdayAfterTuesday;
+        // @ts-ignore
+        jest.spyOn(global, 'Date').mockImplementation(() => tuesdayBeforeSevenPM);
+
+        // when
+        const result = () => existingOrder.updateWith(updateOrderCommand, activeProducts, closingPeriods);
+
+        // then
+        expect(result).toThrow(new InvalidOrderError('delivery date must be outside closing periods'));
+      });
+
+      it('should not fail when delivery date is outside a closing period', () => {
+        // given
+        closingPeriods = [{ start: tuesdayBeforeSevenPM, end: secondThursdayAfterTuesday }];
+        updateOrderCommand.deliveryDate = thirdThursdayAfterTuesday;
+        // @ts-ignore
+        jest.spyOn(global, 'Date').mockImplementation(() => tuesdayBeforeSevenPM);
+
+        // when
+        const result = () => existingOrder.updateWith(updateOrderCommand, activeProducts, closingPeriods);
+
+        // then
+        expect(result).not.toThrow();
+      });
+    });
+
+    describe('note', () => {
+      it('should bind note from command', () => {
+        // given
+        updateOrderCommand.note = 'a new note';
+
+        // when
+        existingOrder.updateWith(updateOrderCommand, activeProducts, closingPeriods);
+
+        // then
+        expect(existingOrder.note).toBe('a new note');
       });
     });
   });

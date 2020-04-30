@@ -37,6 +37,7 @@ export class OrderController {
       (order: OrderInterface): GetOrderResponse => ({
         ...order,
         pickUpDate: order.pickUpDate ? order.pickUpDate.toISOString().split('T')[0] : undefined,
+        deliveryDate: order.deliveryDate ? order.deliveryDate.toISOString().split('T')[0] : undefined,
       })
     );
   }
@@ -70,8 +71,10 @@ export class OrderController {
       clientEmailAddress: postOrderRequest.clientEmailAddress,
       products: postOrderRequest.products,
       type: postOrderRequest.type as OrderType,
-      pickUpDate: postOrderRequest.pickUpDate ? new Date(postOrderRequest.pickUpDate) : undefined,
+      pickUpDate: this.toDate(postOrderRequest.pickUpDate),
+      deliveryDate: this.toDate(postOrderRequest.deliveryDate),
       deliveryAddress: postOrderRequest.deliveryAddress,
+      note: postOrderRequest.note,
     };
   }
 
@@ -80,12 +83,25 @@ export class OrderController {
       orderId: parseInt(id, 10),
       products: putOrderRequest.products,
       type: putOrderRequest.type as OrderType,
-      pickUpDate: putOrderRequest.pickUpDate ? new Date(putOrderRequest.pickUpDate) : undefined,
+      pickUpDate: this.toDate(putOrderRequest.pickUpDate),
+      deliveryDate: this.toDate(putOrderRequest.deliveryDate),
       deliveryAddress: putOrderRequest.deliveryAddress,
+      note: putOrderRequest.note,
     };
   }
 
   private toDeleteCommand(id: string): DeleteOrderCommand {
     return { orderId: parseInt(id, 10) };
+  }
+
+  private toDate(dateAsString: string): Date {
+    if (!dateAsString) {
+      return undefined;
+    }
+    if (dateAsString.length > 10) {
+      return new Date(dateAsString);
+    } else {
+      return new Date(`${dateAsString}T12:00:00Z`);
+    }
   }
 }

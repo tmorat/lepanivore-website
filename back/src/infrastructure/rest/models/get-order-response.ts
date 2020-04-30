@@ -10,5 +10,7 @@ export interface GetOrderResponse {
   products: ProductWithQuantity[];
   type: OrderType;
   pickUpDate?: string;
+  deliveryDate?: string;
   deliveryAddress?: string;
+  note?: string;
 }

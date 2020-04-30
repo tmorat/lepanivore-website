@@ -36,11 +36,12 @@ import ProductSelectionItem from '~/components/ProductSelectionItem.vue';
 import { ProductIdWithQuantity } from '../../back/src/domain/product-with-quantity';
 import { GetProductResponse } from '../../back/src/infrastructure/rest/models/get-product-response';
 import { PostOrderRequest } from '../../back/src/infrastructure/rest/models/post-order-request';
+import { PutOrderRequest } from '../../back/src/infrastructure/rest/models/put-order-request';
 
 export default Vue.extend({
   name: 'ProductSelection',
   props: {
-    value: { required: true } as PropOptions<PostOrderRequest>,
+    value: { required: true } as PropOptions<PostOrderRequest | PutOrderRequest>,
     availableProducts: { required: true } as PropOptions<GetProductResponse[]>,
   },
   components: {
