@@ -38,6 +38,12 @@ export default {
     // '@nuxtjs/eslint-module',
     '@nuxt/typescript-build',
     '@nuxtjs/vuetify',
+    [
+      '@nuxtjs/google-analytics',
+      {
+        id: process.env.GOOGLE_ANALYTICS_ID,
+      },
+    ],
   ],
   /*
    ** Nuxt.js modules
