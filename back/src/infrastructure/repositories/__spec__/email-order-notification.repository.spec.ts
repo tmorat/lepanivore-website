@@ -31,8 +31,8 @@ describe('infrastructure/repositories/EmailOrderNotificationRepository', () => {
         switch (key) {
           case 'APP_EMAIL_ORDER_NOTIFICATION_FROM':
             return 'from@example.org';
-          case 'APP_EMAIL_ORDER_NOTIFICATION_CC':
-            return 'cc@example.org';
+          case 'APP_EMAIL_ORDER_NOTIFICATION_TO':
+            return 'to@example.org';
           default:
             return null;
         }
@@ -44,8 +44,7 @@ describe('infrastructure/repositories/EmailOrderNotificationRepository', () => {
       // then
       expect(mockMailerService.sendMail).toHaveBeenCalledWith({
         from: 'from@example.org',
-        to: 'client@example.org',
-        cc: 'cc@example.org',
+        to: 'to@example.org',
         subject: 'order notification subject',
         text: 'order notification body',
       });

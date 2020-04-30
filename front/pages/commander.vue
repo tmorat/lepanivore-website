@@ -16,7 +16,7 @@
           <v-btn color="primary" type="submit" x-large>
             Valider la commande
           </v-btn>
-          <div class="mt-2">Vous recevrez un récapitulatif de la commande par courriel</div>
+          <div class="mt-2">Après avoir validé votre commande, nous vous recontacterons pour vous confirmer sa prise en compte.</div>
         </v-container>
       </v-form>
     </v-flex>

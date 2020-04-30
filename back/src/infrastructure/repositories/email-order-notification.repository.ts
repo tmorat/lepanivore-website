@@ -11,8 +11,7 @@ export class EmailOrderNotificationRepository implements OrderNotificationReposi
   async send(orderNotification: OrderNotificationInterface): Promise<void> {
     await this.mailerService.sendMail({
       from: this.environmentConfigService.get('APP_EMAIL_ORDER_NOTIFICATION_FROM'),
-      to: orderNotification.recipient,
-      cc: this.environmentConfigService.get('APP_EMAIL_ORDER_NOTIFICATION_CC'),
+      to: this.environmentConfigService.get('APP_EMAIL_ORDER_NOTIFICATION_TO'),
       subject: orderNotification.subject,
       text: orderNotification.body,
     });

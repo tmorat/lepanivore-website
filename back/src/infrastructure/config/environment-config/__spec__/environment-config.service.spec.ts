@@ -16,7 +16,7 @@ describe('infrastructure/config/environment-config/EnvironmentConfigService', ()
       APP_ADMIN_USERNAME: 'app-admin-username',
       APP_ADMIN_ENCRYPTED_PASSWORD: 'app-admin-encrypted-password',
       APP_EMAIL_ORDER_NOTIFICATION_FROM: 'app-email-order-notification-from',
-      APP_EMAIL_ORDER_NOTIFICATION_CC: 'app-email-order-notification-cc',
+      APP_EMAIL_ORDER_NOTIFICATION_TO: 'app-email-order-notification-cc',
       APP_JWT_SECRET: repeat('x', 128),
       SMTP_HOST: 'smtp-host',
       SMTP_PORT: '789',
@@ -246,16 +246,16 @@ describe('infrastructure/config/environment-config/EnvironmentConfigService', ()
       });
     });
 
-    describe('APP_EMAIL_ORDER_NOTIFICATION_CC', () => {
+    describe('APP_EMAIL_ORDER_NOTIFICATION_TO', () => {
       it('should fail when empty', () => {
         // given
-        process.env.APP_EMAIL_ORDER_NOTIFICATION_CC = '';
+        process.env.APP_EMAIL_ORDER_NOTIFICATION_TO = '';
 
         // when
         const result = () => new EnvironmentConfigService();
 
         // then
-        expect(result).toThrow(new EnvironmentConfigError('Config validation error: "APP_EMAIL_ORDER_NOTIFICATION_CC" is not allowed to be empty'));
+        expect(result).toThrow(new EnvironmentConfigError('Config validation error: "APP_EMAIL_ORDER_NOTIFICATION_TO" is not allowed to be empty'));
       });
     });
 

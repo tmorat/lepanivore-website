@@ -21,7 +21,7 @@
           label="Quantité"
           :rules="[
             (v) => !!v || 'La quantité est requise',
-            (v) => v <= 10 || 'La quantité ne peut pas dépasser 10',
+            (v) => v <= 24 || 'La quantité ne peut pas dépasser 24',
             (v) => v >= 1 || 'La quantité doit être positive',
           ]"
           outlined
