@@ -12,7 +12,7 @@
         </v-btn>
       </v-toolbar-items>
     </v-app-bar>
-    <v-content class="main-content">
+    <v-content>
       <v-container fluid>
         <nuxt />
       </v-container>
@@ -39,9 +39,5 @@ export default Vue.extend({
 }
 .body {
   background-color: #dda;
-}
-.main-content {
-  margin-left: auto;
-  margin-right: auto;
 }
 </style>
