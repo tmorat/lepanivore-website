@@ -9,4 +9,5 @@ export interface UpdateOrderCommand {
   pickUpDate?: Date;
   deliveryDate?: Date;
   deliveryAddress?: string;
+  note?: string;
 }

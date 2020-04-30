@@ -34,6 +34,7 @@ export class Order implements OrderInterface {
   pickUpDate?: Date;
   deliveryDate?: Date;
   deliveryAddress?: string;
+  note?: string;
 
   private constructor(order: OrderInterface, command: NewOrderCommand, activeProducts: ProductInterface[], closingPeriods: ClosingPeriodInterface[]) {
     if (!isEmpty(order)) {
@@ -44,6 +45,7 @@ export class Order implements OrderInterface {
       this.bindContactDetails(command);
       this.bindProductSelection(command, activeProducts);
       this.bindOrderTypeSelection(command, closingPeriods);
+      this.note = command.note;
     }
   }
 
@@ -174,6 +176,7 @@ export class Order implements OrderInterface {
 
     this.bindProductSelection(command, activeProducts);
     this.bindOrderTypeSelection(command, closingPeriods);
+    this.note = command.note;
   }
 
   private copy(otherOrder: OrderInterface): void {

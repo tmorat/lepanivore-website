@@ -74,6 +74,7 @@ export class OrderController {
       pickUpDate: this.toDate(postOrderRequest.pickUpDate),
       deliveryDate: this.toDate(postOrderRequest.deliveryDate),
       deliveryAddress: postOrderRequest.deliveryAddress,
+      note: postOrderRequest.note,
     };
   }
 
@@ -85,6 +86,7 @@ export class OrderController {
       pickUpDate: this.toDate(putOrderRequest.pickUpDate),
       deliveryDate: this.toDate(putOrderRequest.deliveryDate),
       deliveryAddress: putOrderRequest.deliveryAddress,
+      note: putOrderRequest.note,
     };
   }
 

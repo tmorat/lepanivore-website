@@ -1,11 +1,11 @@
 <template>
   <v-app>
     <v-app-bar class="header" color="#8c5e32">
-      <v-toolbar-title><img class="logo" alt="Logo boulangerie Le Panivore" src="/img/logo-panivore.png"/></v-toolbar-title>
+      <v-toolbar-title><img class="logo" alt="Logo boulangerie Le Panivore" src="/img/logo-panivore.png" /></v-toolbar-title>
       <v-toolbar-items></v-toolbar-items>
     </v-app-bar>
     <v-content class="main-content">
-      <v-container>
+      <v-container fluid>
         <nuxt />
       </v-container>
     </v-content>

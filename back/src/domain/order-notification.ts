@@ -1,3 +1,4 @@
+import { isEmpty } from 'lodash';
 import * as os from 'os';
 import { OrderNotificationInterface } from './order-notification.interface';
 import { OrderType } from './order-type';
@@ -27,11 +28,10 @@ export class OrderNotification implements OrderNotificationInterface {
     const name: string = `- Votre nom: ${order.clientName}`;
     const phoneNumber: string = `- Votre numéro de téléphone: ${order.clientPhoneNumber}`;
     const orderType: string = `- Type de commande: ${order.type === OrderType.DELIVERY ? 'Livraison' : 'Cueillette'}`;
-    const orderTypeDetails: string = `- ${
+    const orderTypeDetails: string =
       order.type === OrderType.DELIVERY
-        ? 'Adresse de livraison : ' + order.deliveryAddress
-        : 'Date de cueillette : ' + order.pickUpDate.toISOString().split('T')[0]
-    }`;
+        ? `- Date de livraison : ${order.deliveryDate.toISOString().split('T')[0]}${os.EOL}- Adresse de livraison : ${order.deliveryAddress}`
+        : `- Date de cueillette : ${order.pickUpDate.toISOString().split('T')[0]}`;
     const products: string =
       `- Produits :${os.EOL}` +
       order.products
@@ -40,9 +40,9 @@ export class OrderNotification implements OrderNotificationInterface {
         })
         .join(os.EOL);
     const totalPrice: string = `- Prix total : ${OrderNotification.getTotalPrice(order.products)}$`;
-    const thanks: string = "Merci d'avoir commandé et à très bientôt !";
+    const note: string = `- Note : ${isEmpty(order.note) ? '-' : order.note}`;
 
-    return `${heading}${os.EOL}${orderId}${os.EOL}${name}${os.EOL}${phoneNumber}${os.EOL}${orderType}${os.EOL}${orderTypeDetails}${os.EOL}${products}${os.EOL}${totalPrice}${os.EOL}${os.EOL}${thanks}`;
+    return `${heading}${os.EOL}${orderId}${os.EOL}${name}${os.EOL}${phoneNumber}${os.EOL}${orderType}${os.EOL}${orderTypeDetails}${os.EOL}${products}${os.EOL}${totalPrice}${os.EOL}${note}`;
   }
 
   private static getTotalPrice(products: ProductWithQuantity[]): number {

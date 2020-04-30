@@ -9,4 +9,5 @@ export interface PostOrderRequest {
   pickUpDate?: string;
   deliveryDate?: string;
   deliveryAddress?: string;
+  note?: string;
 }

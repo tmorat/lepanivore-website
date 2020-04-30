@@ -12,4 +12,5 @@ export interface GetOrderResponse {
   pickUpDate?: string;
   deliveryDate?: string;
   deliveryAddress?: string;
+  note?: string;
 }

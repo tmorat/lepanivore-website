@@ -32,6 +32,7 @@ export class OrderEntityTransformer implements ValueTransformer {
       pickUpDate: orderEntity.pickUpDate,
       deliveryDate: orderEntity.deliveryDate,
       deliveryAddress: orderEntity.deliveryAddress,
+      note: orderEntity.note,
     };
   }
 
@@ -49,6 +50,7 @@ export class OrderEntityTransformer implements ValueTransformer {
     orderEntity.pickUpDate = order.pickUpDate;
     orderEntity.deliveryDate = order.deliveryDate;
     orderEntity.deliveryAddress = order.deliveryAddress;
+    orderEntity.note = order.note;
 
     return orderEntity;
   }

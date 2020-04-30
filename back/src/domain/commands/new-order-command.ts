@@ -10,4 +10,5 @@ export interface NewOrderCommand {
   pickUpDate?: Date;
   deliveryDate?: Date;
   deliveryAddress?: string;
+  note?: string;
 }

@@ -61,6 +61,11 @@ export class CreateOrderTableMigration1586118263949 implements MigrationInterfac
             type: 'text',
             isNullable: true,
           },
+          {
+            name: 'note',
+            type: 'text',
+            isNullable: true,
+          },
         ],
       }),
       true

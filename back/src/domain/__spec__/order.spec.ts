@@ -38,6 +38,7 @@ describe('domain/Order', () => {
           pickUpDate: new Date('2030-01-01T12:00:00Z'),
           deliveryAddress: 'Montréal',
           deliveryDate: new Date('2030-01-10T12:00:00Z'),
+          note: 'a note',
         };
       });
 
@@ -643,6 +644,19 @@ describe('domain/Order', () => {
           expect(result).not.toThrow();
         });
       });
+
+      describe('note', () => {
+        it('should bind note from command', () => {
+          // given
+          newOrderCommand.note = 'Without something please';
+
+          // when
+          const result: Order = Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+
+          // then
+          expect(result.note).toBe('Without something please');
+        });
+      });
     });
 
     describe('copy()', () => {
@@ -654,12 +668,32 @@ describe('domain/Order', () => {
           clientPhoneNumber: '+1 514 111 1111',
           clientEmailAddress: 'test@example.org',
           products: [
-            { product: { id: 1, name: 'product 1', description: 'product 1 description', price: 1.11, status: ProductStatus.ACTIVE }, quantity: 1 },
-            { product: { id: 2, name: 'product 2', description: 'product 2 description', price: 2.22, status: ProductStatus.ARCHIVED }, quantity: 2 },
+            {
+              product: {
+                id: 1,
+                name: 'product 1',
+                description: 'product 1 description',
+                price: 1.11,
+                status: ProductStatus.ACTIVE,
+              },
+              quantity: 1,
+            },
+            {
+              product: {
+                id: 2,
+                name: 'product 2',
+                description: 'product 2 description',
+                price: 2.22,
+                status: ProductStatus.ARCHIVED,
+              },
+              quantity: 2,
+            },
           ],
           type: OrderType.PICK_UP,
           pickUpDate: new Date('2020-06-13T04:41:20'),
           deliveryAddress: 'Montréal',
+          deliveryDate: new Date('2030-06-13T04:41:20'),
+          note: 'a note',
         };
 
         // when
@@ -696,6 +730,7 @@ describe('domain/Order', () => {
         pickUpDate: new Date('2020-06-13T04:41:20'),
         deliveryAddress: 'Montréal',
         deliveryDate: new Date('2020-01-09T12:00:00Z'),
+        note: 'a note',
       });
 
       updateOrderCommand = {
@@ -705,6 +740,7 @@ describe('domain/Order', () => {
         pickUpDate: new Date('2021-06-12T04:41:20'),
         deliveryAddress: 'Laval',
         deliveryDate: new Date('2030-01-10T12:00:00Z'),
+        note: 'an updated note',
       };
     });
 
@@ -1258,6 +1294,19 @@ describe('domain/Order', () => {
 
         // then
         expect(result).not.toThrow();
+      });
+    });
+
+    describe('note', () => {
+      it('should bind note from command', () => {
+        // given
+        updateOrderCommand.note = 'a new note';
+
+        // when
+        existingOrder.updateWith(updateOrderCommand, activeProducts, closingPeriods);
+
+        // then
+        expect(existingOrder.note).toBe('a new note');
       });
     });
   });

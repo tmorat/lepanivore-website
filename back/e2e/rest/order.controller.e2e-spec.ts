@@ -137,6 +137,7 @@ describe('infrastructure/rest/OrderController (e2e)', () => {
         pickUpDate: '2020-06-13T04:41:20',
         deliveryAddress: 'Montréal',
         deliveryDate: '2021-03-28T16:35:49',
+        note: 'a note',
       };
 
       // when
@@ -153,6 +154,7 @@ describe('infrastructure/rest/OrderController (e2e)', () => {
           pickUpDate: new Date('2020-06-13T04:41:20'),
           deliveryAddress: 'Montréal',
           deliveryDate: new Date('2021-03-28T16:35:49'),
+          note: 'a note',
         } as NewOrderCommand);
       });
     });
@@ -206,6 +208,7 @@ describe('infrastructure/rest/OrderController (e2e)', () => {
         pickUpDate: '2020-06-13T04:41:20',
         deliveryAddress: 'Montréal',
         deliveryDate: '2021-03-28T16:35:49',
+        note: 'a note',
       };
 
       const loginRequest: request.Test = request(app.getHttpServer()).post('/api/authentication/login').send({
@@ -237,6 +240,7 @@ describe('infrastructure/rest/OrderController (e2e)', () => {
                 pickUpDate: new Date('2020-06-13T04:41:20'),
                 deliveryAddress: 'Montréal',
                 deliveryDate: new Date('2021-03-28T16:35:49'),
+                note: 'a note',
               } as UpdateOrderCommand);
             })
             .end(done);

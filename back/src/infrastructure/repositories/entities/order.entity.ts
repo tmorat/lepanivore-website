@@ -41,4 +41,7 @@ export class OrderEntity {
 
   @Column({ name: 'delivery_address', type: 'text', nullable: true })
   deliveryAddress?: string;
+
+  @Column({ name: 'note', type: 'text', nullable: true })
+  note?: string;
 }

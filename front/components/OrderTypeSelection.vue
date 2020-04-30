@@ -80,6 +80,7 @@ import { MAXIMUM_HOUR_FOR_DELIVERY_SAME_WEEK, THURSDAY, TUESDAY } from '../../ba
 import { OrderType } from '../../back/src/domain/order-type';
 import { GetClosingPeriodResponse } from '../../back/src/infrastructure/rest/models/get-closing-period-response';
 import { PostOrderRequest } from '../../back/src/infrastructure/rest/models/post-order-request';
+import { PutOrderRequest } from '../../back/src/infrastructure/rest/models/put-order-request';
 
 interface OrderTypeSelectionData {
   orderTypeItems: Array<{ value: OrderType; text: string }>;
@@ -89,7 +90,7 @@ interface OrderTypeSelectionData {
 export default Vue.extend({
   name: 'OrderTypeSelection',
   props: {
-    value: { required: true } as PropOptions<PostOrderRequest>,
+    value: { required: true } as PropOptions<PostOrderRequest | PutOrderRequest>,
     closingPeriods: { required: true } as PropOptions<GetClosingPeriodResponse[]>,
   },
   data() {

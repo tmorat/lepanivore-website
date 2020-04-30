@@ -53,6 +53,7 @@
             <v-form ref="editOrderForm">
               <OrderTypeSelection :value="editedOrder" :closing-periods="closingPeriods" class="mb-5"></OrderTypeSelection>
               <ProductSelection :value="editedOrder" :available-products="products" class="mb-5"></ProductSelection>
+              <OrderNote :value="editedOrder" class="mb-5"></OrderNote>
             </v-form>
           </v-container>
         </v-card-text>
@@ -70,6 +71,7 @@
 <script lang="ts">
 import { Context, NuxtError } from '@nuxt/types';
 import Vue from 'vue';
+import OrderNote from '~/components/OrderNote.vue';
 import OrderTypeSelection from '~/components/OrderTypeSelection.vue';
 import ProductSelection from '~/components/ProductSelection.vue';
 import { OrderType } from '../../../back/src/domain/order-type';
@@ -97,6 +99,7 @@ export default Vue.extend({
   components: {
     OrderTypeSelection,
     ProductSelection,
+    OrderNote,
   },
   data() {
     return {
@@ -112,6 +115,7 @@ export default Vue.extend({
         { text: 'Date de cueillette', value: 'pickUpDate' },
         { text: 'Date de livraison', value: 'deliveryDate' },
         { text: 'Adresse de livraison', value: 'deliveryAddress' },
+        { text: 'Note', value: 'note', sortable: false },
         { text: 'Actions', value: 'actions', sortable: false },
       ],
       orders: [],
@@ -138,12 +142,16 @@ export default Vue.extend({
       const orderToEdit: PutOrderRequest = {} as PutOrderRequest;
       orderToEdit.products = order.products.map(
         (productWithQuantity: ProductWithQuantity) =>
-          ({ productId: productWithQuantity.product.id, quantity: productWithQuantity.quantity } as ProductIdWithQuantity)
+          ({
+            productId: productWithQuantity.product.id,
+            quantity: productWithQuantity.quantity,
+          } as ProductIdWithQuantity)
       );
       orderToEdit.type = order.type;
       orderToEdit.deliveryDate = order.deliveryDate;
       orderToEdit.deliveryAddress = order.deliveryAddress;
       orderToEdit.pickUpDate = order.pickUpDate;
+      orderToEdit.note = order.note;
 
       this.editedOrder = Object.assign({}, orderToEdit);
       this.editedOrderId = order.id;

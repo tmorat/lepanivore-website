@@ -35,6 +35,7 @@
 <script lang="ts">
 import Vue, { PropOptions } from 'vue';
 import { PostOrderRequest } from '../../back/src/infrastructure/rest/models/post-order-request';
+import { PutOrderRequest } from '../../back/src/infrastructure/rest/models/put-order-request';
 
 interface ContactDetailsData {
   emailRegex: RegExp;
@@ -43,7 +44,7 @@ interface ContactDetailsData {
 export default Vue.extend({
   name: 'ContactDetails',
   props: {
-    value: { required: true } as PropOptions<PostOrderRequest>,
+    value: { required: true } as PropOptions<PostOrderRequest | PutOrderRequest>,
   },
   data() {
     return {
