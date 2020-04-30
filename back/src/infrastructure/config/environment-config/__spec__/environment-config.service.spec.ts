@@ -22,6 +22,7 @@ describe('infrastructure/config/environment-config/EnvironmentConfigService', ()
       SMTP_PORT: '789',
       SMTP_USERNAME: 'smtp-username',
       SMTP_PASSWORD: 'smtp-password',
+      SENTRY_DSN: 'sentry-dsn',
     } as ProcessEnv;
 
     process.env = {
@@ -331,6 +332,19 @@ describe('infrastructure/config/environment-config/EnvironmentConfigService', ()
 
         // then
         expect(result).toThrow(new EnvironmentConfigError('Config validation error: "SMTP_PASSWORD" is not allowed to be empty'));
+      });
+    });
+
+    describe('SENTRY_DSN', () => {
+      it('should fail when empty', () => {
+        // given
+        process.env.SENTRY_DSN = '';
+
+        // when
+        const result = () => new EnvironmentConfigService();
+
+        // then
+        expect(result).toThrow(new EnvironmentConfigError('Config validation error: "SENTRY_DSN" is not allowed to be empty'));
       });
     });
   });

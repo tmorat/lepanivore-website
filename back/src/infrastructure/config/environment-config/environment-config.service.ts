@@ -33,6 +33,7 @@ export class EnvironmentConfigService {
       SMTP_PORT: Joi.number().required(),
       SMTP_USERNAME: Joi.string().required(),
       SMTP_PASSWORD: Joi.string().required(),
+      SENTRY_DSN: Joi.string().required(),
     }).unknown(true);
 
     const { error, value: validatedEnvironmentConfig }: ValidationResult = envVarsSchema.validate(environmentConfig);
