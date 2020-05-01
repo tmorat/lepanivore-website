@@ -54,7 +54,6 @@
     "@nestjs/schematics": "7.0.0",
     "@nestjs/testing": "7.0.9",
     "@stryker-mutator/core": "3.1.0",
-    "@stryker-mutator/html-reporter": "3.1.0",
     "@stryker-mutator/jest-runner": "3.1.0",
     "@stryker-mutator/typescript": "3.1.0",
     "@types/bcrypt": "3.0.0",
