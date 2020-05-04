@@ -19,7 +19,7 @@ export default Vue.extend({
 </script>
 
 <style scoped lang="scss">
-.footer,
+.footer span,
 .footer-link {
   color: #efd25c;
 }
