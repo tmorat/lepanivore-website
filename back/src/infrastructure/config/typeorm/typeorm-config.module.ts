@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { ClosingPeriodEntity } from '../../repositories/entities/closing-period.entity';
 import { OrderEntity } from '../../repositories/entities/order.entity';
 import { ProductEntity } from '../../repositories/entities/product.entity';
 import { EnvironmentConfigModule } from '../environment-config/environment-config.module';
@@ -13,7 +14,7 @@ export const getTypeOrmModuleOptions = (environmentConfigService: EnvironmentCon
     username: environmentConfigService.get('DATABASE_USERNAME'),
     password: environmentConfigService.get('DATABASE_PASSWORD'),
     database: environmentConfigService.get('DATABASE_NAME'),
-    entities: [OrderEntity, ProductEntity],
+    entities: [OrderEntity, ProductEntity, ClosingPeriodEntity],
     ssl: {
       rejectUnauthorized: false,
     },

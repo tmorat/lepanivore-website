@@ -48,7 +48,7 @@ describe('domain/Order', () => {
           const result = () => Product.factory.create(newProductCommand);
 
           // then
-          expect(result).toThrow(new InvalidProductError('name must be defined'));
+          expect(result).toThrow(new InvalidProductError('name has to be defined'));
         });
       });
 
@@ -72,7 +72,7 @@ describe('domain/Order', () => {
           const result = () => Product.factory.create(newProductCommand);
 
           // then
-          expect(result).toThrow(new InvalidProductError('description must be defined'));
+          expect(result).toThrow(new InvalidProductError('description has to be defined'));
         });
       });
 
@@ -96,7 +96,7 @@ describe('domain/Order', () => {
           const result = () => Product.factory.create(newProductCommand);
 
           // then
-          expect(result).toThrow(new InvalidProductError('price must be a positive value'));
+          expect(result).toThrow(new InvalidProductError('price has to be a positive value'));
         });
 
         it('should fail when price is negative', () => {
@@ -107,7 +107,7 @@ describe('domain/Order', () => {
           const result = () => Product.factory.create(newProductCommand);
 
           // then
-          expect(result).toThrow(new InvalidProductError('price must be a positive value'));
+          expect(result).toThrow(new InvalidProductError('price has to be a positive value'));
         });
       });
 
@@ -225,7 +225,7 @@ describe('domain/Order', () => {
         const result = () => existingProduct.updateWith(updateProductCommand);
 
         // then
-        expect(result).toThrow(new InvalidProductError('description must be defined'));
+        expect(result).toThrow(new InvalidProductError('description has to be defined'));
       });
     });
 

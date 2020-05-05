@@ -72,7 +72,7 @@ describe('domain/Order', () => {
           const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
 
           // then
-          expect(result).toThrow(new InvalidOrderError('client name must be defined'));
+          expect(result).toThrow(new InvalidOrderError('client name has to be defined'));
         });
       });
 
@@ -96,7 +96,7 @@ describe('domain/Order', () => {
           const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
 
           // then
-          expect(result).toThrow(new InvalidOrderError('client phone number must be defined'));
+          expect(result).toThrow(new InvalidOrderError('client phone number has to be defined'));
         });
       });
 
@@ -120,7 +120,7 @@ describe('domain/Order', () => {
           const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
 
           // then
-          expect(result).toThrow(new InvalidOrderError('client email address must be defined'));
+          expect(result).toThrow(new InvalidOrderError('client email address has to be defined'));
         });
 
         it('should fail when client email address is not a valid email', () => {
@@ -179,7 +179,7 @@ describe('domain/Order', () => {
           const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
 
           // then
-          expect(result).toThrow(new InvalidOrderError('a product quantity must be positive'));
+          expect(result).toThrow(new InvalidOrderError('a product quantity has to be positive'));
         });
 
         it('should fail when having a product with negative quantity', () => {
@@ -193,7 +193,7 @@ describe('domain/Order', () => {
           const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
 
           // then
-          expect(result).toThrow(new InvalidOrderError('a product quantity must be positive'));
+          expect(result).toThrow(new InvalidOrderError('a product quantity has to be positive'));
         });
 
         it('should fail when having an unknown product id', () => {
@@ -234,7 +234,7 @@ describe('domain/Order', () => {
           const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
 
           // then
-          expect(result).toThrow(new InvalidOrderError('order type must be defined'));
+          expect(result).toThrow(new InvalidOrderError('order type has to be defined'));
         });
 
         it('should fail when unknown type', () => {
@@ -301,7 +301,7 @@ describe('domain/Order', () => {
           const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
 
           // then
-          expect(result).toThrow(new InvalidOrderError('a pick-up date must be defined when order type is pick-up'));
+          expect(result).toThrow(new InvalidOrderError('a pick-up date has to be defined when order type is pick-up'));
         });
 
         it('should fail when pick-up date is in the past', () => {
@@ -345,7 +345,7 @@ describe('domain/Order', () => {
           const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
 
           // then
-          expect(result).toThrow(new InvalidOrderError('pick-up date must be between a Tuesday and a Saturday'));
+          expect(result).toThrow(new InvalidOrderError('pick-up date has to be between a Tuesday and a Saturday'));
         });
 
         it('should fail when pick-up date is a Monday', () => {
@@ -356,14 +356,14 @@ describe('domain/Order', () => {
           const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
 
           // then
-          expect(result).toThrow(new InvalidOrderError('pick-up date must be between a Tuesday and a Saturday'));
+          expect(result).toThrow(new InvalidOrderError('pick-up date has to be between a Tuesday and a Saturday'));
         });
 
         it('should fail when pick-up date is in a closing period', () => {
           // given
           closingPeriods = [
-            { start: aSundayInTheFuture, end: aMondayInTheFuture },
-            { start: nowMinusOneDay, end: nowPlusTwoDays },
+            { startDate: aSundayInTheFuture, endDate: aMondayInTheFuture } as ClosingPeriodInterface,
+            { startDate: nowMinusOneDay, endDate: nowPlusTwoDays } as ClosingPeriodInterface,
           ];
           newOrderCommand.pickUpDate = nowPlusTwoDays;
 
@@ -371,14 +371,14 @@ describe('domain/Order', () => {
           const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
 
           // then
-          expect(result).toThrow(new InvalidOrderError('pick-up date must be outside closing periods'));
+          expect(result).toThrow(new InvalidOrderError('pick-up date has to be outside closing periods'));
         });
 
         it('should not fail when pick-up date is outside closing periods', () => {
           // given
           closingPeriods = [
-            { start: aSundayInTheFuture, end: aMondayInTheFuture },
-            { start: nowMinusOneDay, end: nowPlusOneDay },
+            { startDate: aSundayInTheFuture, endDate: aMondayInTheFuture } as ClosingPeriodInterface,
+            { startDate: nowMinusOneDay, endDate: nowPlusOneDay } as ClosingPeriodInterface,
           ];
           newOrderCommand.pickUpDate = nowPlusTwoDays;
 
@@ -426,7 +426,7 @@ describe('domain/Order', () => {
           const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
 
           // then
-          expect(result).toThrow(new InvalidOrderError('a delivery address must be defined when order type is delivery'));
+          expect(result).toThrow(new InvalidOrderError('a delivery address has to be defined when order type is delivery'));
         });
       });
 
@@ -486,7 +486,7 @@ describe('domain/Order', () => {
           const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
 
           // then
-          expect(result).toThrow(new InvalidOrderError('a delivery date must be defined when order type is delivery'));
+          expect(result).toThrow(new InvalidOrderError('a delivery date has to be defined when order type is delivery'));
         });
 
         it('should fail when delivery date is before current date', () => {
@@ -618,7 +618,7 @@ describe('domain/Order', () => {
 
         it('should fail when delivery date is during a closing period', () => {
           // given
-          closingPeriods = [{ start: tuesdayBeforeSevenPM, end: secondThursdayAfterTuesday }];
+          closingPeriods = [{ startDate: tuesdayBeforeSevenPM, endDate: secondThursdayAfterTuesday } as ClosingPeriodInterface];
           newOrderCommand.deliveryDate = firstThursdayAfterTuesday;
           // @ts-ignore
           jest.spyOn(global, 'Date').mockImplementation(() => tuesdayBeforeSevenPM);
@@ -627,12 +627,12 @@ describe('domain/Order', () => {
           const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
 
           // then
-          expect(result).toThrow(new InvalidOrderError('delivery date must be outside closing periods'));
+          expect(result).toThrow(new InvalidOrderError('delivery date has to be outside closing periods'));
         });
 
         it('should not fail when delivery date is outside a closing period', () => {
           // given
-          closingPeriods = [{ start: tuesdayBeforeSevenPM, end: secondThursdayAfterTuesday }];
+          closingPeriods = [{ startDate: tuesdayBeforeSevenPM, endDate: secondThursdayAfterTuesday } as ClosingPeriodInterface];
           newOrderCommand.deliveryDate = thirdThursdayAfterTuesday;
           // @ts-ignore
           jest.spyOn(global, 'Date').mockImplementation(() => tuesdayBeforeSevenPM);
@@ -831,7 +831,7 @@ describe('domain/Order', () => {
         const result = () => existingOrder.updateWith(updateOrderCommand, activeProducts, closingPeriods);
 
         // then
-        expect(result).toThrow(new InvalidOrderError('a product quantity must be positive'));
+        expect(result).toThrow(new InvalidOrderError('a product quantity has to be positive'));
       });
 
       it('should fail when having a product with negative quantity', () => {
@@ -845,7 +845,7 @@ describe('domain/Order', () => {
         const result = () => existingOrder.updateWith(updateOrderCommand, activeProducts, closingPeriods);
 
         // then
-        expect(result).toThrow(new InvalidOrderError('a product quantity must be positive'));
+        expect(result).toThrow(new InvalidOrderError('a product quantity has to be positive'));
       });
 
       it('should fail when having an unknown product id', () => {
@@ -886,7 +886,7 @@ describe('domain/Order', () => {
         const result = () => existingOrder.updateWith(updateOrderCommand, activeProducts, closingPeriods);
 
         // then
-        expect(result).toThrow(new InvalidOrderError('order type must be defined'));
+        expect(result).toThrow(new InvalidOrderError('order type has to be defined'));
       });
 
       it('should fail when unknown type', () => {
@@ -953,7 +953,7 @@ describe('domain/Order', () => {
         const result = () => existingOrder.updateWith(updateOrderCommand, activeProducts, closingPeriods);
 
         // then
-        expect(result).toThrow(new InvalidOrderError('a pick-up date must be defined when order type is pick-up'));
+        expect(result).toThrow(new InvalidOrderError('a pick-up date has to be defined when order type is pick-up'));
       });
 
       it('should fail when pick-up date is in the past', () => {
@@ -997,7 +997,7 @@ describe('domain/Order', () => {
         const result = () => existingOrder.updateWith(updateOrderCommand, activeProducts, closingPeriods);
 
         // then
-        expect(result).toThrow(new InvalidOrderError('pick-up date must be between a Tuesday and a Saturday'));
+        expect(result).toThrow(new InvalidOrderError('pick-up date has to be between a Tuesday and a Saturday'));
       });
 
       it('should fail when pick-up date is a Monday', () => {
@@ -1008,14 +1008,14 @@ describe('domain/Order', () => {
         const result = () => existingOrder.updateWith(updateOrderCommand, activeProducts, closingPeriods);
 
         // then
-        expect(result).toThrow(new InvalidOrderError('pick-up date must be between a Tuesday and a Saturday'));
+        expect(result).toThrow(new InvalidOrderError('pick-up date has to be between a Tuesday and a Saturday'));
       });
 
       it('should fail when pick-up date is in a closing period', () => {
         // given
         closingPeriods = [
-          { start: aSundayInTheFuture, end: aMondayInTheFuture },
-          { start: nowMinusOneDay, end: nowPlusTwoDays },
+          { startDate: aSundayInTheFuture, endDate: aMondayInTheFuture } as ClosingPeriodInterface,
+          { startDate: nowMinusOneDay, endDate: nowPlusTwoDays } as ClosingPeriodInterface,
         ];
         updateOrderCommand.pickUpDate = nowPlusTwoDays;
 
@@ -1023,14 +1023,14 @@ describe('domain/Order', () => {
         const result = () => existingOrder.updateWith(updateOrderCommand, activeProducts, closingPeriods);
 
         // then
-        expect(result).toThrow(new InvalidOrderError('pick-up date must be outside closing periods'));
+        expect(result).toThrow(new InvalidOrderError('pick-up date has to be outside closing periods'));
       });
 
       it('should not fail when pick-up date is outside closing periods', () => {
         // given
         closingPeriods = [
-          { start: aSundayInTheFuture, end: aMondayInTheFuture },
-          { start: nowMinusOneDay, end: nowPlusOneDay },
+          { startDate: aSundayInTheFuture, endDate: aMondayInTheFuture } as ClosingPeriodInterface,
+          { startDate: nowMinusOneDay, endDate: nowPlusOneDay } as ClosingPeriodInterface,
         ];
         updateOrderCommand.pickUpDate = nowPlusTwoDays;
 
@@ -1078,7 +1078,7 @@ describe('domain/Order', () => {
         const result = () => existingOrder.updateWith(updateOrderCommand, activeProducts, closingPeriods);
 
         // then
-        expect(result).toThrow(new InvalidOrderError('a delivery address must be defined when order type is delivery'));
+        expect(result).toThrow(new InvalidOrderError('a delivery address has to be defined when order type is delivery'));
       });
     });
 
@@ -1138,7 +1138,7 @@ describe('domain/Order', () => {
         const result = () => existingOrder.updateWith(updateOrderCommand, activeProducts, closingPeriods);
 
         // then
-        expect(result).toThrow(new InvalidOrderError('a delivery date must be defined when order type is delivery'));
+        expect(result).toThrow(new InvalidOrderError('a delivery date has to be defined when order type is delivery'));
       });
 
       it('should fail when delivery date is before current date', () => {
@@ -1270,7 +1270,7 @@ describe('domain/Order', () => {
 
       it('should fail when delivery date is during a closing period', () => {
         // given
-        closingPeriods = [{ start: tuesdayBeforeSevenPM, end: secondThursdayAfterTuesday }];
+        closingPeriods = [{ startDate: tuesdayBeforeSevenPM, endDate: secondThursdayAfterTuesday } as ClosingPeriodInterface];
         updateOrderCommand.deliveryDate = firstThursdayAfterTuesday;
         // @ts-ignore
         jest.spyOn(global, 'Date').mockImplementation(() => tuesdayBeforeSevenPM);
@@ -1279,12 +1279,12 @@ describe('domain/Order', () => {
         const result = () => existingOrder.updateWith(updateOrderCommand, activeProducts, closingPeriods);
 
         // then
-        expect(result).toThrow(new InvalidOrderError('delivery date must be outside closing periods'));
+        expect(result).toThrow(new InvalidOrderError('delivery date has to be outside closing periods'));
       });
 
       it('should not fail when delivery date is outside a closing period', () => {
         // given
-        closingPeriods = [{ start: tuesdayBeforeSevenPM, end: secondThursdayAfterTuesday }];
+        closingPeriods = [{ startDate: tuesdayBeforeSevenPM, endDate: secondThursdayAfterTuesday } as ClosingPeriodInterface];
         updateOrderCommand.deliveryDate = thirdThursdayAfterTuesday;
         // @ts-ignore
         jest.spyOn(global, 'Date').mockImplementation(() => tuesdayBeforeSevenPM);

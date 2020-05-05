@@ -5,6 +5,8 @@ import { AuthenticationModule } from '../config/authentication/authentication.mo
 import { ProxyServicesDynamicModule } from '../use_cases_proxy/proxy-services-dynamic.module';
 import { AuthenticationController } from './authentication.controller';
 import { ClosingPeriodController } from './closing-period.controller';
+import { ClosingPeriodNotFoundErrorFilter } from './filters/closing-period-not-found-error.filter';
+import { InvalidClosingPeriodErrorFilter } from './filters/invalid-closing-period-error.filter';
 import { InvalidOrderErrorFilter } from './filters/invalid-order-error.filter';
 import { InvalidProductErrorFilter } from './filters/invalid-product-error.filter';
 import { OrderNotFoundErrorFilter } from './filters/order-not-found-error.filter';
@@ -14,13 +16,15 @@ import { ProductController } from './product.controller';
 
 @Module({
   imports: [ProxyServicesDynamicModule.register(), AuthenticationModule, RavenModule],
-  controllers: [OrderController, ClosingPeriodController, ProductController, AuthenticationController],
+  controllers: [OrderController, ClosingPeriodController, ProductController, AuthenticationController, ClosingPeriodController],
   providers: [
     { provide: APP_INTERCEPTOR, useValue: new RavenInterceptor() },
     { provide: APP_FILTER, useClass: InvalidOrderErrorFilter },
     { provide: APP_FILTER, useClass: OrderNotFoundErrorFilter },
     { provide: APP_FILTER, useClass: InvalidProductErrorFilter },
     { provide: APP_FILTER, useClass: ProductNotFoundErrorFilter },
+    { provide: APP_FILTER, useClass: InvalidClosingPeriodErrorFilter },
+    { provide: APP_FILTER, useClass: ClosingPeriodNotFoundErrorFilter },
   ],
 })
 export class RestModule {}

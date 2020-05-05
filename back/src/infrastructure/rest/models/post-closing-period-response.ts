@@ -1,7 +1,5 @@
 import { ClosingPeriodId } from '../../../domain/type-aliases';
 
-export interface GetClosingPeriodResponse {
+export interface PostClosingPeriodResponse {
   id: ClosingPeriodId;
-  startDate: string;
-  endDate: string;
 }
