@@ -72,6 +72,27 @@ describe('services/ApiService', () => {
     });
   });
 
+  describe('getOrdersAsCsv()', () => {
+    it('should get orders as csv from api', async () => {
+      // when
+      await apiService.getOrdersAsCsv();
+
+      // then
+      expect($get).toHaveBeenCalledWith('/api/orders/csv');
+    });
+    it('should return orders', async () => {
+      // given
+      const response: string = 'a csv file content';
+      $get.mockReturnValue(Promise.resolve(response));
+
+      // when
+      const result: string = await apiService.getOrdersAsCsv();
+
+      // then
+      expect(result).toStrictEqual(response);
+    });
+  });
+
   describe('postOrder()', () => {
     it('should post order to api', async () => {
       // given

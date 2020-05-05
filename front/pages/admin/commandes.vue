@@ -4,6 +4,8 @@
       Commandes passées
       <v-spacer></v-spacer>
       <v-text-field v-model="searchedValue" append-icon="mdi-magnify" label="Rechercher une commande" single-line hide-details></v-text-field>
+      <v-spacer></v-spacer>
+      <v-btn color="success" @click="downloadCsv">Télécharger tout en CSV</v-btn>
     </v-card-title>
 
     <v-data-table :headers="headers" :items="orders" :search="searchedValue" sort-by="id" sort-desc class="elevation-1">
@@ -211,6 +213,21 @@ export default Vue.extend({
           href: '/admin/connexion',
         },
       });
+    },
+
+    async downloadCsv(): Promise<void> {
+      const csvContent: string = await this.$apiService.getOrdersAsCsv();
+
+      const link: HTMLElement = document.createElement('a');
+      link.setAttribute('href', 'data:text/csv;charset=utf-8,' + encodeURIComponent(csvContent));
+      link.setAttribute('download', `orders_export_${new Date().toISOString()}.csv`);
+
+      link.style.display = 'none';
+      document.body.appendChild(link);
+
+      link.click();
+
+      document.body.removeChild(link);
     },
   },
 });

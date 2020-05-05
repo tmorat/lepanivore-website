@@ -1,11 +1,14 @@
 import { Body, Controller, Delete, Get, HttpCode, Inject, Param, Post, Put, Req, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
+import { parseAsync } from 'json2csv';
+import * as os from 'os';
 import { DeleteOrderCommand } from '../../domain/commands/delete-order-command';
 import { NewOrderCommand } from '../../domain/commands/new-order-command';
 import { UpdateOrderCommand } from '../../domain/commands/update-order-command';
 import { OrderType } from '../../domain/order-type';
 import { OrderInterface } from '../../domain/order.interface';
+import { ProductWithQuantity } from '../../domain/product-with-quantity';
 import { OrderId } from '../../domain/type-aliases';
 import { DeleteOrder } from '../../use_cases/delete-order';
 import { GetOrders } from '../../use_cases/get-orders';
@@ -40,6 +43,17 @@ export class OrderController {
         deliveryDate: order.deliveryDate ? order.deliveryDate.toISOString().split('T')[0] : undefined,
       })
     );
+  }
+
+  @Get('/csv')
+  @UseGuards(AuthGuard('jwt'))
+  async getOrdersAsCsv(@Req() request: Request): Promise<string> {
+    const orders: OrderInterface[] = await this.getOrdersProxyService.getInstance().execute();
+
+    const ordersAsCsvLines: OrderAsCsvLine[] = orders.map(this.toOrderAsCsvLine);
+    request.res.contentType('text/csv');
+
+    return ordersAsCsvLines.length > 0 ? parseAsync(ordersAsCsvLines, { fields: Object.keys(ordersAsCsvLines[0]) }) : '';
   }
 
   @Post('/')
@@ -104,4 +118,37 @@ export class OrderController {
       return new Date(`${dateAsString}T12:00:00Z`);
     }
   }
+
+  private toOrderAsCsvLine(order: OrderInterface): OrderAsCsvLine {
+    const products: string = order.products
+      .map((productWithQuantity: ProductWithQuantity) => `- ${productWithQuantity.product.name} : ${productWithQuantity.quantity}`)
+      .join(os.EOL);
+    const type: string = order.type === OrderType.DELIVERY ? 'Livraison' : 'Cueillette';
+
+    return {
+      id: order.id,
+      clientName: order.clientName,
+      clientPhoneNumber: order.clientPhoneNumber,
+      clientEmailAddress: order.clientEmailAddress,
+      products,
+      type,
+      pickUpDate: order.pickUpDate ? order.pickUpDate.toISOString().split('T')[0] : undefined,
+      deliveryDate: order.deliveryDate ? order.deliveryDate.toISOString().split('T')[0] : undefined,
+      deliveryAddress: order.deliveryAddress,
+      note: order.note,
+    };
+  }
+}
+
+interface OrderAsCsvLine {
+  id: OrderId;
+  clientName: string;
+  clientPhoneNumber: string;
+  clientEmailAddress: string;
+  products: string;
+  type: string;
+  pickUpDate?: string;
+  deliveryDate?: string;
+  deliveryAddress?: string;
+  note?: string;
 }
