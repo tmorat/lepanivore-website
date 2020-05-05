@@ -10,71 +10,67 @@
         single-line
         hide-details
       ></v-text-field>
+      <v-spacer></v-spacer>
+      <v-dialog v-model="newClosingPeriodDialog" max-width="768px">
+        <template v-slot:activator="{ on }">
+          <v-btn color="primary" dark class="mb-2" v-on="on">Ajouter une nouvelle période de fermeture</v-btn>
+        </template>
+        <v-card>
+          <v-card-title>
+            <span class="headline">Nouvelle période de fermeture</span>
+          </v-card-title>
+
+          <v-card-text>
+            <v-container>
+              <v-form ref="newClosingPeriodForm">
+                <v-row>
+                  <v-col cols="12">
+                    <v-menu v-model="showStartDatePicker" :nudge-right="40" transition="scale-transition" offset-y min-width="290px">
+                      <template v-slot:activator="{ on }">
+                        <v-text-field
+                          v-model="newClosingPeriod.startDate"
+                          label="Date de début de fermeture"
+                          prepend-icon="mdi-calendar"
+                          readonly
+                          v-on="on"
+                          required
+                          :rules="[(v) => !!v || 'La date de début est requise']"
+                        ></v-text-field>
+                      </template>
+                      <v-date-picker v-model="newClosingPeriod.startDate" @input="showStartDatePicker = false" locale="fr-ca"></v-date-picker>
+                    </v-menu>
+                  </v-col>
+                  <v-col cols="12">
+                    <v-menu v-model="showEndDatePicker" :nudge-right="40" transition="scale-transition" offset-y min-width="290px">
+                      <template v-slot:activator="{ on }">
+                        <v-text-field
+                          v-model="newClosingPeriod.endDate"
+                          label="Date de fin de fermeture (incluse)"
+                          prepend-icon="mdi-calendar"
+                          readonly
+                          v-on="on"
+                          required
+                          :rules="[(v) => !!v || 'La date de fin est requise']"
+                        ></v-text-field>
+                      </template>
+                      <v-date-picker v-model="newClosingPeriod.endDate" @input="showEndDatePicker = false" locale="fr-ca"></v-date-picker>
+                    </v-menu>
+                  </v-col>
+                </v-row>
+              </v-form>
+            </v-container>
+          </v-card-text>
+
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="blue darken-1" text @click="closeNewClosingPeriodDialog">Annuler</v-btn>
+            <v-btn color="blue darken-1" text @click="saveClosingPeriod">Ajouter</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
     </v-card-title>
 
     <v-data-table :headers="headers" :items="closingPeriods" :search="searchedValue" sort-by="id" class="elevation-1">
-      <template v-slot:top>
-        <v-toolbar flat>
-          <v-dialog v-model="newClosingPeriodDialog" max-width="768px">
-            <template v-slot:activator="{ on }">
-              <v-btn color="primary" dark class="mb-2" v-on="on">Ajouter une nouvelle période de fermeture</v-btn>
-            </template>
-            <v-card>
-              <v-card-title>
-                <span class="headline">Nouvelle période de fermeture</span>
-              </v-card-title>
-
-              <v-card-text>
-                <v-container>
-                  <v-form ref="newClosingPeriodForm">
-                    <v-row>
-                      <v-col cols="12">
-                        <v-menu v-model="showStartDatePicker" :nudge-right="40" transition="scale-transition" offset-y min-width="290px">
-                          <template v-slot:activator="{ on }">
-                            <v-text-field
-                              v-model="newClosingPeriod.startDate"
-                              label="Date de début de fermeture"
-                              prepend-icon="mdi-calendar"
-                              readonly
-                              v-on="on"
-                              required
-                              :rules="[(v) => !!v || 'La date de début est requise']"
-                            ></v-text-field>
-                          </template>
-                          <v-date-picker v-model="newClosingPeriod.startDate" @input="showStartDatePicker = false" locale="fr-ca"></v-date-picker>
-                        </v-menu>
-                      </v-col>
-                      <v-col cols="12">
-                        <v-menu v-model="showEndDatePicker" :nudge-right="40" transition="scale-transition" offset-y min-width="290px">
-                          <template v-slot:activator="{ on }">
-                            <v-text-field
-                              v-model="newClosingPeriod.endDate"
-                              label="Date de fin de fermeture (incluse)"
-                              prepend-icon="mdi-calendar"
-                              readonly
-                              v-on="on"
-                              required
-                              :rules="[(v) => !!v || 'La date de fin est requise']"
-                            ></v-text-field>
-                          </template>
-                          <v-date-picker v-model="newClosingPeriod.endDate" @input="showEndDatePicker = false" locale="fr-ca"></v-date-picker>
-                        </v-menu>
-                      </v-col>
-                    </v-row>
-                  </v-form>
-                </v-container>
-              </v-card-text>
-
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" text @click="closeNewClosingPeriodDialog">Annuler</v-btn>
-                <v-btn color="blue darken-1" text @click="saveClosingPeriod">Ajouter</v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
-        </v-toolbar>
-      </template>
-
       <template v-slot:item.actions="{ item }">
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
