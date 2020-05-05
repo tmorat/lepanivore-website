@@ -76,7 +76,12 @@ describe('infrastructure/rest/OrderController (e2e)', () => {
     it('should return http status code OK with found orders when authenticated as admin', (done: DoneCallback) => {
       // given
       const orders: Order[] = [
-        { id: 1, clientName: 'fake order 1', pickUpDate: new Date('2020-07-01T12:00:00Z'), deliveryDate: new Date('2030-07-01T12:00:00Z') } as Order,
+        {
+          id: 1,
+          clientName: 'fake order 1',
+          pickUpDate: new Date('2020-07-01T12:00:00Z'),
+          deliveryDate: new Date('2030-07-01T12:00:00Z'),
+        } as Order,
         {
           id: 2,
           clientName: 'fake order 2',
@@ -119,6 +124,76 @@ describe('infrastructure/rest/OrderController (e2e)', () => {
     it('should return http status code Unauthorized when not authenticated as admin', () => {
       // when
       const testRequestWithoutAuthorizationHeader: request.Test = request(app.getHttpServer()).get('/api/orders');
+
+      // then
+      return testRequestWithoutAuthorizationHeader.expect(401);
+    });
+  });
+
+  describe('GET /api/orders/csv', () => {
+    it('should return http status code OK with found orders as csv when authenticated as admin', (done: DoneCallback) => {
+      // given
+      const orders: Order[] = [
+        {
+          id: 1,
+          clientName: 'fake order 1',
+          products: [
+            { product: { id: 1, name: 'product 1', description: 'product 1 description', price: 1.11 }, quantity: 1 },
+            { product: { id: 2, name: 'product 2', description: 'product 2 description', price: 2.22 }, quantity: 2 },
+          ],
+          pickUpDate: new Date('2020-07-01T12:00:00Z'),
+          deliveryDate: new Date('2030-07-01T12:00:00Z'),
+        } as Order,
+        {
+          id: 2,
+          clientName: 'fake order 2',
+          products: [
+            { product: { id: 3, name: 'product 3', description: 'product 3 description', price: 3.33 }, quantity: 3 },
+            { product: { id: 4, name: 'product 4', description: 'product 4 description', price: 4.44 }, quantity: 4 },
+          ],
+          pickUpDate: new Date('2020-08-15T12:00:00Z'),
+          deliveryDate: new Date('2030-08-15T12:00:00Z'),
+        } as Order,
+      ];
+      (mockGetOrders.execute as jest.Mock).mockReturnValue(Promise.resolve(orders));
+
+      const loginRequest: request.Test = request(app.getHttpServer()).post('/api/authentication/login').send({
+        username: ADMIN_E2E_USERNAME,
+        password: ADMIN_E2E_PASSWORD,
+      });
+
+      let accessToken: string;
+      loginRequest
+        .expect(200)
+        .expect((loginResponse: Response) => {
+          accessToken = loginResponse.body.accessToken;
+        })
+        .end(() => {
+          // when
+          const testRequest: request.Test = request(app.getHttpServer())
+            .get('/api/orders/csv')
+            .set({ Authorization: `Bearer ${accessToken}` });
+
+          // then
+          testRequest
+            .expect(200)
+            .expect('Content-Type', 'text/csv; charset=utf-8')
+            .expect((response: Response) => {
+              expect(response.text).toBe(
+                '"id","clientName","clientPhoneNumber","clientEmailAddress","products","type","pickUpDate","deliveryDate","deliveryAddress","note"\n' +
+                  '1,"fake order 1",,,"- product 1 : 1\n' +
+                  '- product 2 : 2","Cueillette","2020-07-01","2030-07-01",,\n' +
+                  '2,"fake order 2",,,"- product 3 : 3\n' +
+                  '- product 4 : 4","Cueillette","2020-08-15","2030-08-15",,'
+              );
+            })
+            .end(done);
+        });
+    });
+
+    it('should return http status code Unauthorized when not authenticated as admin', () => {
+      // when
+      const testRequestWithoutAuthorizationHeader: request.Test = request(app.getHttpServer()).get('/api/orders/csv');
 
       // then
       return testRequestWithoutAuthorizationHeader.expect(401);

@@ -23,6 +23,10 @@ export default class ApiService {
     return this.$axios.$get('/api/orders');
   }
 
+  getOrdersAsCsv(): Promise<string> {
+    return this.$axios.$get('/api/orders/csv');
+  }
+
   postOrder(postOrderRequest: PostOrderRequest): Promise<PostOrderResponse> {
     return this.$axios.$post('/api/orders', postOrderRequest);
   }
