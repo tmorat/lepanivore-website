@@ -51,19 +51,19 @@ export class Order implements OrderInterface {
 
   private static assertClientNameIsValid(clientName: string): void {
     if (isEmpty(clientName)) {
-      throw new InvalidOrderError('client name must be defined');
+      throw new InvalidOrderError('client name has to be defined');
     }
   }
 
   private static assertClientPhoneNumberIsValid(clientPhoneNumber: string): void {
     if (isEmpty(clientPhoneNumber)) {
-      throw new InvalidOrderError('client phone number must be defined');
+      throw new InvalidOrderError('client phone number has to be defined');
     }
   }
 
   private static assertClientEmailAddressIsValid(clientEmailAddress: string): void {
     if (isEmpty(clientEmailAddress)) {
-      throw new InvalidOrderError('client email address must be defined');
+      throw new InvalidOrderError('client email address has to be defined');
     }
     if (!this.EMAIL_REGEX.test(clientEmailAddress)) {
       throw new InvalidOrderError('invalid client email address');
@@ -72,7 +72,7 @@ export class Order implements OrderInterface {
 
   private static assertTypeIsValid(type: OrderType): void {
     if (isEmpty(type)) {
-      throw new InvalidOrderError('order type must be defined');
+      throw new InvalidOrderError('order type has to be defined');
     }
     if (!Object.keys(OrderType).includes(type)) {
       throw new InvalidOrderError('unknown order type');
@@ -88,14 +88,14 @@ export class Order implements OrderInterface {
       (productWithQuantity: ProductIdWithQuantity) => productWithQuantity.quantity < 1
     ).length;
     if (numberOfProductsHavingANegativeOrZeroQuantity > 0) {
-      throw new InvalidOrderError('a product quantity must be positive');
+      throw new InvalidOrderError('a product quantity has to be positive');
     }
   }
 
   private static assertpickUpDateIsValid(type: OrderType, closingPeriods: ClosingPeriodInterface[], pickUpDate?: Date): void {
     if (type === OrderType.PICK_UP) {
       if (!pickUpDate) {
-        throw new InvalidOrderError('a pick-up date must be defined when order type is pick-up');
+        throw new InvalidOrderError('a pick-up date has to be defined when order type is pick-up');
       }
 
       if (pickUpDate.getTime() < this.getCurrentDatePlusDays(NUMBER_OF_MINIMUM_DAYS_FOR_A_PICK_UP_ORDER).getTime()) {
@@ -103,12 +103,12 @@ export class Order implements OrderInterface {
       }
 
       if (Object.values(ClosingDay).includes(pickUpDate.getDay())) {
-        throw new InvalidOrderError('pick-up date must be between a Tuesday and a Saturday');
+        throw new InvalidOrderError('pick-up date has to be between a Tuesday and a Saturday');
       }
 
       closingPeriods.forEach((closingPeriod: ClosingPeriodInterface) => {
-        if (pickUpDate.getTime() >= closingPeriod.start.getTime() && pickUpDate.getTime() <= closingPeriod.end.getTime()) {
-          throw new InvalidOrderError('pick-up date must be outside closing periods');
+        if (pickUpDate.getTime() >= closingPeriod.startDate.getTime() && pickUpDate.getTime() <= closingPeriod.endDate.getTime()) {
+          throw new InvalidOrderError('pick-up date has to be outside closing periods');
         }
       });
     }
@@ -116,14 +116,14 @@ export class Order implements OrderInterface {
 
   private static assertDeliveryAddressIsValid(type: OrderType, deliveryAddress?: string): void {
     if (type === OrderType.DELIVERY && isEmpty(deliveryAddress)) {
-      throw new InvalidOrderError('a delivery address must be defined when order type is delivery');
+      throw new InvalidOrderError('a delivery address has to be defined when order type is delivery');
     }
   }
 
   private static assertDeliveryDateIsValid(type: OrderType, closingPeriods: ClosingPeriodInterface[], deliveryDate?: Date): void {
     if (type === OrderType.DELIVERY) {
       if (!deliveryDate) {
-        throw new InvalidOrderError('a delivery date must be defined when order type is delivery');
+        throw new InvalidOrderError('a delivery date has to be defined when order type is delivery');
       }
       const now: Date = new Date();
 
@@ -132,8 +132,8 @@ export class Order implements OrderInterface {
       }
 
       closingPeriods.forEach((closingPeriod: ClosingPeriodInterface) => {
-        if (deliveryDate.getTime() >= closingPeriod.start.getTime() && deliveryDate.getTime() <= closingPeriod.end.getTime()) {
-          throw new InvalidOrderError('delivery date must be outside closing periods');
+        if (deliveryDate.getTime() >= closingPeriod.startDate.getTime() && deliveryDate.getTime() <= closingPeriod.endDate.getTime()) {
+          throw new InvalidOrderError('delivery date has to be outside closing periods');
         }
       });
 

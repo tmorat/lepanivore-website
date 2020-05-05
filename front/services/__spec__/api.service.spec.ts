@@ -1,10 +1,12 @@
 import { NuxtAxiosInstance } from '@nuxtjs/axios';
 import { AxiosError, AxiosResponse } from 'axios';
 import ApiService from '~/services/api.service';
-import { OrderId, ProductId } from '../../../back/src/domain/type-aliases';
+import { ClosingPeriodId, OrderId, ProductId } from '../../../back/src/domain/type-aliases';
 import { GetClosingPeriodResponse } from '../../../back/src/infrastructure/rest/models/get-closing-period-response';
 import { GetOrderResponse } from '../../../back/src/infrastructure/rest/models/get-order-response';
 import { GetProductResponse } from '../../../back/src/infrastructure/rest/models/get-product-response';
+import { PostClosingPeriodRequest } from '../../../back/src/infrastructure/rest/models/post-closing-period-request';
+import { PostClosingPeriodResponse } from '../../../back/src/infrastructure/rest/models/post-closing-period-response';
 import { PostOrderRequest } from '../../../back/src/infrastructure/rest/models/post-order-request';
 import { PostOrderResponse } from '../../../back/src/infrastructure/rest/models/post-order-response';
 import { PostProductRequest } from '../../../back/src/infrastructure/rest/models/post-product-request';
@@ -145,27 +147,6 @@ describe('services/ApiService', () => {
     });
   });
 
-  describe('getClosingPeriods()', () => {
-    it('should get closing periods from api', async () => {
-      // when
-      await apiService.getClosingPeriods();
-
-      // then
-      expect($get).toHaveBeenCalledWith('/api/closing-periods');
-    });
-    it('should return closing periods', async () => {
-      // given
-      const response: GetClosingPeriodResponse[] = [{ start: '2020-04-09T00:00:00Z', end: '2020-04-20T00:00:00Z' }];
-      $get.mockReturnValue(Promise.resolve(response));
-
-      // when
-      const result: GetClosingPeriodResponse[] = await apiService.getClosingPeriods();
-
-      // then
-      expect(result).toStrictEqual(response);
-    });
-  });
-
   describe('getProducts()', () => {
     it('should get products from api', async () => {
       // when
@@ -236,6 +217,65 @@ describe('services/ApiService', () => {
 
       // then
       expect($delete).toHaveBeenCalledWith('/api/products/42');
+    });
+  });
+
+  describe('getClosingPeriods()', () => {
+    it('should get closing periods from api', async () => {
+      // when
+      await apiService.getClosingPeriods();
+
+      // then
+      expect($get).toHaveBeenCalledWith('/api/closing-periods');
+    });
+    it('should return closing periods', async () => {
+      // given
+      const response: GetClosingPeriodResponse[] = [{ id: 1, startDate: '2020-04-09T00:00:00Z', endDate: '2020-04-20T00:00:00Z' }];
+      $get.mockReturnValue(Promise.resolve(response));
+
+      // when
+      const result: GetClosingPeriodResponse[] = await apiService.getClosingPeriods();
+
+      // then
+      expect(result).toStrictEqual(response);
+    });
+  });
+
+  describe('postClosingPeriod()', () => {
+    it('should post closing period to api', async () => {
+      // given
+      const request: PostClosingPeriodRequest = { startDate: '2020-04-09T00:00:00Z' } as PostClosingPeriodRequest;
+
+      // when
+      await apiService.postClosingPeriod(request);
+
+      // then
+      expect($post).toHaveBeenCalledWith('/api/closing-periods', request);
+    });
+    it('should return closing period id', async () => {
+      // given
+      const request: PostClosingPeriodRequest = { startDate: '2020-04-09T00:00:00Z' } as PostClosingPeriodRequest;
+      const response: PostClosingPeriodResponse = { id: 1337 };
+      $post.mockReturnValue(Promise.resolve(response));
+
+      // when
+      const result: PostClosingPeriodResponse = await apiService.postClosingPeriod(request);
+
+      // then
+      expect(result).toStrictEqual(response);
+    });
+  });
+
+  describe('deleteClosingPeriod()', () => {
+    it('should delete closing period to api', async () => {
+      // given
+      const closingPeriodId: ClosingPeriodId = 42;
+
+      // when
+      await apiService.deleteClosingPeriod(closingPeriodId);
+
+      // then
+      expect($delete).toHaveBeenCalledWith('/api/closing-periods/42');
     });
   });
 });

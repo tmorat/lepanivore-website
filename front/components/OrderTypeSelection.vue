@@ -114,7 +114,11 @@ export default Vue.extend({
       return this.isStoreOpen(date) && date.getDay() === THURSDAY;
     },
     toDate(dateAsIsoString: string): Date {
-      return new Date(`${dateAsIsoString}T12:00:00Z`);
+      if (dateAsIsoString.length > 10) {
+        return new Date(dateAsIsoString);
+      } else {
+        return new Date(`${dateAsIsoString}T12:00:00Z`);
+      }
     },
     isStoreOpen(date: Date): boolean {
       if (Object.values(ClosingDay).includes(date.getDay())) {
@@ -122,7 +126,7 @@ export default Vue.extend({
       }
 
       for (const closingPeriod of this.closingPeriods) {
-        if (date.getTime() >= new Date(closingPeriod.start).getTime() && date.getTime() <= new Date(closingPeriod.end).getTime()) {
+        if (date.getTime() >= this.toDate(closingPeriod.startDate).getTime() && date.getTime() <= this.toDate(closingPeriod.endDate).getTime()) {
           return false;
         }
       }

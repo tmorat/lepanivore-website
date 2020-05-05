@@ -84,8 +84,8 @@ describe('uses_cases/UpdateExistingOrder', () => {
       (mockProductRepository.findAllByStatus as jest.Mock).mockReturnValue(Promise.resolve(activeProducts));
 
       const closingPeriods: ClosingPeriodInterface[] = [
-        { start: new Date('2019-12-23T12:00:00.000Z'), end: new Date('2019-12-28T12:00:00.000Z') },
-        { start: new Date('2020-07-15T12:00:00.000Z'), end: new Date('2020-08-15T12:00:00.000Z') },
+        { id: 1, startDate: new Date('2019-12-23T12:00:00.000Z'), endDate: new Date('2019-12-28T12:00:00.000Z') },
+        { id: 2, startDate: new Date('2020-07-15T12:00:00.000Z'), endDate: new Date('2020-08-15T12:00:00.000Z') },
       ];
       (mockClosingPeriodRepository.findAll as jest.Mock).mockReturnValue(Promise.resolve(closingPeriods));
 

@@ -17,8 +17,8 @@ describe('use_cases/GetClosingPeriods', () => {
     it('should return found closing periods', async () => {
       // given
       const closingPeriods: ClosingPeriodInterface[] = [
-        { start: new Date('2020-07-01T12:00:00Z'), end: new Date('2020-08-15T12:00:00Z') },
-        { start: new Date('2020-12-15T12:00:00Z'), end: new Date('2021-01-02T12:00:00Z') },
+        { id: 1, startDate: new Date('2020-07-01T12:00:00Z'), endDate: new Date('2020-08-15T12:00:00Z') },
+        { id: 2, startDate: new Date('2020-12-15T12:00:00Z'), endDate: new Date('2021-01-02T12:00:00Z') },
       ];
       (mockClosingPeriodRepository.findAll as jest.Mock).mockReturnValue(Promise.resolve(closingPeriods));
 

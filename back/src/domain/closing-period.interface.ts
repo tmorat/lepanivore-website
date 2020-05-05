@@ -1,4 +1,7 @@
+import { ClosingPeriodId } from './type-aliases';
+
 export interface ClosingPeriodInterface {
-  start: Date;
-  end: Date;
+  id: ClosingPeriodId;
+  startDate: Date;
+  endDate: Date;
 }

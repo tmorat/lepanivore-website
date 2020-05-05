@@ -1,9 +1,11 @@
 import { NuxtAxiosInstance } from '@nuxtjs/axios';
 import { AxiosError } from 'axios';
-import { OrderId, ProductId } from '../../back/src/domain/type-aliases';
+import { ClosingPeriodId, OrderId, ProductId } from '../../back/src/domain/type-aliases';
 import { GetClosingPeriodResponse } from '../../back/src/infrastructure/rest/models/get-closing-period-response';
 import { GetOrderResponse } from '../../back/src/infrastructure/rest/models/get-order-response';
 import { GetProductResponse } from '../../back/src/infrastructure/rest/models/get-product-response';
+import { PostClosingPeriodRequest } from '../../back/src/infrastructure/rest/models/post-closing-period-request';
+import { PostClosingPeriodResponse } from '../../back/src/infrastructure/rest/models/post-closing-period-response';
 import { PostOrderRequest } from '../../back/src/infrastructure/rest/models/post-order-request';
 import { PostOrderResponse } from '../../back/src/infrastructure/rest/models/post-order-response';
 import { PostProductRequest } from '../../back/src/infrastructure/rest/models/post-product-request';
@@ -39,10 +41,6 @@ export default class ApiService {
     return this.$axios.$delete(`/api/orders/${id}`);
   }
 
-  getClosingPeriods(): Promise<GetClosingPeriodResponse[]> {
-    return this.$axios.$get('/api/closing-periods');
-  }
-
   getProducts(): Promise<GetProductResponse[]> {
     return this.$axios.$get('/api/products');
   }
@@ -57,6 +55,18 @@ export default class ApiService {
 
   deleteProduct(id: ProductId): Promise<void> {
     return this.$axios.$delete(`/api/products/${id}`);
+  }
+
+  getClosingPeriods(): Promise<GetClosingPeriodResponse[]> {
+    return this.$axios.$get('/api/closing-periods');
+  }
+
+  postClosingPeriod(postClosingPeriodRequest: PostClosingPeriodRequest): Promise<PostClosingPeriodResponse> {
+    return this.$axios.$post('/api/closing-periods', postClosingPeriodRequest);
+  }
+
+  deleteClosingPeriod(id: ClosingPeriodId): Promise<void> {
+    return this.$axios.$delete(`/api/closing-periods/${id}`);
   }
 
   private attachResponseInterceptors($axios: NuxtAxiosInstance): void {

@@ -40,19 +40,19 @@ export class Product implements ProductInterface {
 
   private static assertNameIsValid(name: string): void {
     if (isEmpty(name)) {
-      throw new InvalidProductError('name must be defined');
+      throw new InvalidProductError('name has to be defined');
     }
   }
 
   private static assertDescriptionIsValid(description: string): void {
     if (isEmpty(description)) {
-      throw new InvalidProductError('description must be defined');
+      throw new InvalidProductError('description has to be defined');
     }
   }
 
   private static assertPriceIsValid(price: number): void {
     if (price <= 0) {
-      throw new InvalidProductError('price must be a positive value');
+      throw new InvalidProductError('price has to be a positive value');
     }
   }
 
