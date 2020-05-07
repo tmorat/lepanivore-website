@@ -79,7 +79,7 @@ export default Vue.extend({
   async asyncData(ctx: Context): Promise<object> {
     const closingPeriods: GetClosingPeriodResponse[] = await ctx.app.$apiService.getClosingPeriods();
     const products: GetProductResponse[] = await ctx.app.$apiService.getProducts();
-    const productOrdering: GetProductOrderingResponse = await ctx.app.$apiService.getProductOrderingStatus();
+    const productOrdering: GetProductOrderingResponse = await ctx.app.$apiService.getProductOrdering();
 
     return { closingPeriods, products, productOrderingStatus: productOrdering.status === FeatureStatus.ENABLED };
   },

@@ -70,15 +70,15 @@ export default class ApiService {
     return this.$axios.$delete(`/api/closing-periods/${id}`);
   }
 
-  getProductOrderingStatus(): Promise<GetProductOrderingResponse> {
+  getProductOrdering(): Promise<GetProductOrderingResponse> {
     return this.$axios.$get('/api/product-ordering/status');
   }
 
-  putEnableProductOrdering(): Promise<void> {
+  putProductOrderingEnable(): Promise<void> {
     return this.$axios.$put('/api/product-ordering/enable');
   }
 
-  putDisableProductOrdering(): Promise<void> {
+  putProductOrderingDisable(): Promise<void> {
     return this.$axios.$put('/api/product-ordering/disable');
   }
 

@@ -287,10 +287,10 @@ describe('services/ApiService', () => {
     });
   });
 
-  describe('getProductOrderingStatus()', () => {
+  describe('getProductOrdering()', () => {
     it('should get product ordering status from api', async () => {
       // when
-      await apiService.getProductOrderingStatus();
+      await apiService.getProductOrdering();
 
       // then
       expect($get).toHaveBeenCalledWith('/api/product-ordering/status');
@@ -301,27 +301,27 @@ describe('services/ApiService', () => {
       $get.mockReturnValue(Promise.resolve(response));
 
       // when
-      const result: GetProductOrderingResponse = await apiService.getProductOrderingStatus();
+      const result: GetProductOrderingResponse = await apiService.getProductOrdering();
 
       // then
       expect(result).toStrictEqual(response);
     });
   });
 
-  describe('putEnableProductOrdering()', () => {
+  describe('putProductOrderingEnable()', () => {
     it('should put enable product ordering to api', async () => {
       // when
-      await apiService.putEnableProductOrdering();
+      await apiService.putProductOrderingEnable();
 
       // then
       expect($put).toHaveBeenCalledWith('/api/product-ordering/enable');
     });
   });
 
-  describe('putDisableProductOrdering()', () => {
+  describe('putProductOrderingDisable()', () => {
     it('should put enable product ordering to api', async () => {
       // when
-      await apiService.putDisableProductOrdering();
+      await apiService.putProductOrderingDisable();
 
       // then
       expect($put).toHaveBeenCalledWith('/api/product-ordering/disable');

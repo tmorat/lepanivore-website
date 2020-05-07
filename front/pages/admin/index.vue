@@ -54,7 +54,7 @@ export default Vue.extend({
     } as AdminIndexData;
   },
   async asyncData(ctx: Context): Promise<object> {
-    const productOrdering: GetProductOrderingResponse = await ctx.app.$apiService.getProductOrderingStatus();
+    const productOrdering: GetProductOrderingResponse = await ctx.app.$apiService.getProductOrdering();
 
     return { productOrderingStatus: productOrdering.status === FeatureStatus.ENABLED };
   },
@@ -68,9 +68,9 @@ export default Vue.extend({
       try {
         this.productOrderingStatusSwitchLoading = true;
         if (value) {
-          await this.$apiService.putEnableProductOrdering();
+          await this.$apiService.putProductOrderingEnable();
         } else {
-          await this.$apiService.putDisableProductOrdering();
+          await this.$apiService.putProductOrderingDisable();
         }
         this.productOrderingStatusSwitchLoading = false;
       } catch (e) {
