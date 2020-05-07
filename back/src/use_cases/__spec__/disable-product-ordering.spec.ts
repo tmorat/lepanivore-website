@@ -1,6 +1,6 @@
-import { Feature, FeatureFactoryInterface } from '../../domain/feature';
-import { FeatureInterface } from '../../domain/feature.interface';
-import { FeatureRepository } from '../../domain/feature.repository';
+import { Feature, FeatureFactoryInterface } from '../../domain/feature/feature';
+import { FeatureInterface } from '../../domain/feature/feature.interface';
+import { FeatureRepository } from '../../domain/feature/feature.repository';
 import { DisableProductOrdering } from '../disable-product-ordering';
 
 describe('uses_cases/DisableProductOrdering', () => {

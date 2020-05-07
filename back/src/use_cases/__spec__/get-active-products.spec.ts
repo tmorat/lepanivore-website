@@ -1,7 +1,7 @@
-import { Product } from '../../domain/product';
-import { ProductStatus } from '../../domain/product-status';
-import { ProductInterface } from '../../domain/product.interface';
-import { ProductRepository } from '../../domain/product.repository';
+import { Product } from '../../domain/product/product';
+import { ProductStatus } from '../../domain/product/product-status';
+import { ProductInterface } from '../../domain/product/product.interface';
+import { ProductRepository } from '../../domain/product/product.repository';
 import { GetActiveProducts } from '../get-active-products';
 
 describe('use_cases/GetActiveProducts', () => {

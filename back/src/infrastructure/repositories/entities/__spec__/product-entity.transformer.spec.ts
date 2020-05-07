@@ -1,5 +1,5 @@
-import { ProductStatus } from '../../../../domain/product-status';
-import { ProductInterface } from '../../../../domain/product.interface';
+import { ProductStatus } from '../../../../domain/product/product-status';
+import { ProductInterface } from '../../../../domain/product/product.interface';
 import { ProductEntityTransformer } from '../product-entity.transformer';
 import { ProductEntity } from '../product.entity';
 

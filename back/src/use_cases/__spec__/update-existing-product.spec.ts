@@ -1,7 +1,7 @@
-import { UpdateProductCommand } from '../../domain/commands/update-product-command';
-import { Product, ProductFactoryInterface } from '../../domain/product';
-import { ProductInterface } from '../../domain/product.interface';
-import { ProductRepository } from '../../domain/product.repository';
+import { UpdateProductCommand } from '../../domain/product/commands/update-product-command';
+import { Product, ProductFactoryInterface } from '../../domain/product/product';
+import { ProductInterface } from '../../domain/product/product.interface';
+import { ProductRepository } from '../../domain/product/product.repository';
 import { UpdateExistingProduct } from '../update-existing-product';
 
 describe('uses_cases/UpdateExistingProduct', () => {

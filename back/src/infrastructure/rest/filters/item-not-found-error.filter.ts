@@ -1,7 +1,7 @@
 import { ArgumentsHost, Catch, ExceptionFilter, HttpStatus } from '@nestjs/common';
 import { HttpArgumentsHost } from '@nestjs/common/interfaces';
 import { Response } from 'express';
-import { ItemNotFoundError } from '../../../domain/item-not-found.error';
+import { ItemNotFoundError } from '../../../domain/errors/item-not-found.error';
 
 @Catch(ItemNotFoundError)
 export class ItemNotFoundErrorFilter implements ExceptionFilter {

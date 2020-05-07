@@ -1,7 +1,7 @@
 import { Controller, Get, HttpCode, Post, Req, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
-import { User } from '../../domain/user';
+import { User } from '../../domain/user/user';
 import { AuthenticationService } from '../config/authentication/authentication.service';
 import { PostLoginResponse } from './models/post-login-response';
 

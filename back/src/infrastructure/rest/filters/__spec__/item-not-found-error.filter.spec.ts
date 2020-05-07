@@ -1,5 +1,5 @@
 import { ArgumentsHost } from '@nestjs/common';
-import { ItemNotFoundError } from '../../../../domain/item-not-found.error';
+import { ItemNotFoundError } from '../../../../domain/errors/item-not-found.error';
 import { ItemNotFoundErrorFilter } from '../item-not-found-error.filter';
 
 describe('infrastructure/rest/filters/ItemNotFoundErrorFilter', () => {

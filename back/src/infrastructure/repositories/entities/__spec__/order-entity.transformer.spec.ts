@@ -1,6 +1,6 @@
-import { OrderType } from '../../../../domain/order-type';
-import { OrderInterface } from '../../../../domain/order.interface';
-import { ProductStatus } from '../../../../domain/product-status';
+import { OrderType } from '../../../../domain/order/order-type';
+import { OrderInterface } from '../../../../domain/order/order.interface';
+import { ProductStatus } from '../../../../domain/product/product-status';
 import { OrderEntityTransformer } from '../order-entity.transformer';
 import { OrderEntity } from '../order.entity';
 

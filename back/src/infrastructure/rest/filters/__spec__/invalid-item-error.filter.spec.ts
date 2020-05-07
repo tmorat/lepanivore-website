@@ -1,5 +1,5 @@
 import { ArgumentsHost } from '@nestjs/common';
-import { InvalidItemError } from '../../../../domain/invalid-item.error';
+import { InvalidItemError } from '../../../../domain/errors/invalid-item.error';
 import { InvalidItemErrorFilter } from '../invalid-item-error.filter';
 
 describe('infrastructure/rest/filters/InvalidItemErrorFilter', () => {

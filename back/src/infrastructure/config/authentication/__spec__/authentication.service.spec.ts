@@ -1,5 +1,5 @@
 import { JwtService } from '@nestjs/jwt';
-import { ADMIN } from '../../../../domain/user';
+import { ADMIN } from '../../../../domain/user/user';
 import { AuthenticationService } from '../authentication.service';
 
 describe('infrastructure/config/authentication/AuthenticationService', () => {

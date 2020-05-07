@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { FeatureNotFoundError } from '../../domain/feature-not-found.error';
-import { FeatureInterface } from '../../domain/feature.interface';
-import { FeatureRepository } from '../../domain/feature.repository';
+import { FeatureNotFoundError } from '../../domain/feature/errors/feature-not-found.error';
+import { FeatureInterface } from '../../domain/feature/feature.interface';
+import { FeatureRepository } from '../../domain/feature/feature.repository';
 import { FeatureId } from '../../domain/type-aliases';
 import { FeatureEntityTransformer } from './entities/feature-entity.transformer';
 import { FeatureEntity } from './entities/feature.entity';

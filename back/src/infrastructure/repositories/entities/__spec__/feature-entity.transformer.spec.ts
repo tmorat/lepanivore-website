@@ -1,5 +1,5 @@
-import { FeatureStatus } from '../../../../domain/feature-status';
-import { FeatureInterface } from '../../../../domain/feature.interface';
+import { FeatureStatus } from '../../../../domain/feature/feature-status';
+import { FeatureInterface } from '../../../../domain/feature/feature.interface';
 import { FeatureEntityTransformer } from '../feature-entity.transformer';
 import { FeatureEntity } from '../feature.entity';
 

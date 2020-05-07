@@ -1,6 +1,6 @@
-import { NewProductCommand } from '../domain/commands/new-product-command';
-import { Product } from '../domain/product';
-import { ProductRepository } from '../domain/product.repository';
+import { NewProductCommand } from '../domain/product/commands/new-product-command';
+import { Product } from '../domain/product/product';
+import { ProductRepository } from '../domain/product/product.repository';
 import { ProductId } from '../domain/type-aliases';
 
 export class AddNewProduct {

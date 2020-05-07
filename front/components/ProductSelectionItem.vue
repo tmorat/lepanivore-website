@@ -33,7 +33,7 @@
 
 <script lang="ts">
 import Vue, { PropOptions } from 'vue';
-import { ProductIdWithQuantity } from '../../back/src/domain/product-with-quantity';
+import { ProductIdWithQuantity } from '../../back/src/domain/product/product-with-quantity';
 import { ProductId } from '../../back/src/domain/type-aliases';
 import { GetProductResponse } from '../../back/src/infrastructure/rest/models/get-product-response';
 

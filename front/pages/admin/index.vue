@@ -35,7 +35,7 @@
 <script lang="ts">
 import { Context, NuxtError } from '@nuxt/types';
 import Vue from 'vue';
-import { FeatureStatus } from '../../../back/src/domain/feature-status';
+import { FeatureStatus } from '../../../back/src/domain/feature/feature-status';
 import { GetProductOrderingResponse } from '../../../back/src/infrastructure/rest/models/get-product-ordering-response';
 
 interface AdminIndexData {

@@ -1,8 +1,8 @@
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Repository } from 'typeorm';
-import { ClosingPeriodNotFoundError } from '../../src/domain/closing-period-not-found.error';
-import { ClosingPeriodInterface } from '../../src/domain/closing-period.interface';
+import { ClosingPeriodInterface } from '../../src/domain/closing-period/closing-period.interface';
+import { ClosingPeriodNotFoundError } from '../../src/domain/closing-period/errors/closing-period-not-found.error';
 import { ClosingPeriodId } from '../../src/domain/type-aliases';
 import { EnvironmentConfigService } from '../../src/infrastructure/config/environment-config/environment-config.service';
 import { DatabaseClosingPeriodRepository } from '../../src/infrastructure/repositories/database-closing-period.repository';

@@ -1,7 +1,7 @@
 import { MailerService } from '@nestjs-modules/mailer';
 import { Injectable } from '@nestjs/common';
-import { OrderNotificationInterface } from '../../domain/order-notification.interface';
-import { OrderNotificationRepository } from '../../domain/order-notification.repository';
+import { OrderNotificationInterface } from '../../domain/order-notification/order-notification.interface';
+import { OrderNotificationRepository } from '../../domain/order-notification/order-notification.repository';
 import { EnvironmentConfigService } from '../config/environment-config/environment-config.service';
 
 @Injectable()

@@ -1,7 +1,7 @@
 import { ArgumentsHost, Catch, ExceptionFilter, HttpStatus } from '@nestjs/common';
 import { HttpArgumentsHost } from '@nestjs/common/interfaces';
 import { Response } from 'express';
-import { ProductOrderingDisabledError } from '../../../domain/product-ordering-disabled.error';
+import { ProductOrderingDisabledError } from '../../../domain/feature/errors/product-ordering-disabled.error';
 
 @Catch(ProductOrderingDisabledError)
 export class ProductOrderingDisabledErrorFilter implements ExceptionFilter {

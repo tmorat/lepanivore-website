@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ValueTransformer } from 'typeorm';
-import { ClosingPeriodInterface } from '../../../domain/closing-period.interface';
+import { ClosingPeriodInterface } from '../../../domain/closing-period/closing-period.interface';
 import { ClosingPeriodEntity } from './closing-period.entity';
 
 @Injectable()

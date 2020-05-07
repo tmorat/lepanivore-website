@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ValueTransformer } from 'typeorm';
-import { ProductStatus } from '../../../domain/product-status';
-import { ProductInterface } from '../../../domain/product.interface';
+import { ProductStatus } from '../../../domain/product/product-status';
+import { ProductInterface } from '../../../domain/product/product.interface';
 import { ProductEntity } from './product.entity';
 
 @Injectable()

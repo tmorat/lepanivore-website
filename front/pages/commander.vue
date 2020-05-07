@@ -40,7 +40,7 @@ import ContactDetails from '~/components/ContactDetails.vue';
 import OrderNote from '~/components/OrderNote.vue';
 import OrderTypeSelection from '~/components/OrderTypeSelection.vue';
 import ProductSelection from '~/components/ProductSelection.vue';
-import { FeatureStatus } from '../../back/src/domain/feature-status';
+import { FeatureStatus } from '../../back/src/domain/feature/feature-status';
 import { GetClosingPeriodResponse } from '../../back/src/infrastructure/rest/models/get-closing-period-response';
 import { GetProductOrderingResponse } from '../../back/src/infrastructure/rest/models/get-product-ordering-response';
 import { GetProductResponse } from '../../back/src/infrastructure/rest/models/get-product-response';

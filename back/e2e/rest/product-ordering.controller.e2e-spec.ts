@@ -1,8 +1,8 @@
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import request, { Response } from 'supertest';
-import { FeatureStatus } from '../../src/domain/feature-status';
-import { FeatureInterface } from '../../src/domain/feature.interface';
+import { FeatureStatus } from '../../src/domain/feature/feature-status';
+import { FeatureInterface } from '../../src/domain/feature/feature.interface';
 import { EnvironmentConfigService } from '../../src/infrastructure/config/environment-config/environment-config.service';
 import { GetProductOrderingResponse } from '../../src/infrastructure/rest/models/get-product-ordering-response';
 import { RestModule } from '../../src/infrastructure/rest/rest.module';

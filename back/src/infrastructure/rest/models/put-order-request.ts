@@ -1,4 +1,4 @@
-import { ProductIdWithQuantity } from '../../../domain/product-with-quantity';
+import { ProductIdWithQuantity } from '../../../domain/product/product-with-quantity';
 
 export interface PutOrderRequest {
   products: ProductIdWithQuantity[];

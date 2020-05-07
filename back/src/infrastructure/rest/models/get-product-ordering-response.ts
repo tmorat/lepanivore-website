@@ -1,3 +1,3 @@
-import { FeatureInterface } from '../../../domain/feature.interface';
+import { FeatureInterface } from '../../../domain/feature/feature.interface';
 
 export type GetProductOrderingResponse = FeatureInterface;

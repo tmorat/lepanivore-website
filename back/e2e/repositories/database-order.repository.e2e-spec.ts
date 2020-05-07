@@ -1,9 +1,9 @@
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Repository } from 'typeorm';
-import { OrderNotFoundError } from '../../src/domain/order-not-found.error';
-import { OrderType } from '../../src/domain/order-type';
-import { OrderInterface } from '../../src/domain/order.interface';
+import { OrderNotFoundError } from '../../src/domain/order/errors/order-not-found.error';
+import { OrderType } from '../../src/domain/order/order-type';
+import { OrderInterface } from '../../src/domain/order/order.interface';
 import { OrderId } from '../../src/domain/type-aliases';
 import { EnvironmentConfigService } from '../../src/infrastructure/config/environment-config/environment-config.service';
 import { DatabaseOrderRepository } from '../../src/infrastructure/repositories/database-order.repository';

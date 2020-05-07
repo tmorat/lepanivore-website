@@ -1,9 +1,9 @@
 import { Body, Controller, Delete, Get, HttpCode, Inject, Param, Post, Req, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
-import { ClosingPeriodInterface } from '../../domain/closing-period.interface';
-import { DeleteClosingPeriodCommand } from '../../domain/commands/delete-closing-period-command';
-import { NewClosingPeriodCommand } from '../../domain/commands/new-closing-period-command';
+import { ClosingPeriodInterface } from '../../domain/closing-period/closing-period.interface';
+import { DeleteClosingPeriodCommand } from '../../domain/closing-period/commands/delete-closing-period-command';
+import { NewClosingPeriodCommand } from '../../domain/closing-period/commands/new-closing-period-command';
 import { ClosingPeriodId } from '../../domain/type-aliases';
 import { AddNewClosingPeriod } from '../../use_cases/add-new-closing-period';
 import { DeleteClosingPeriod } from '../../use_cases/delete-closing-period';

@@ -1,6 +1,6 @@
-import { DeleteOrderCommand } from '../../domain/commands/delete-order-command';
-import { OrderInterface } from '../../domain/order.interface';
-import { OrderRepository } from '../../domain/order.repository';
+import { DeleteOrderCommand } from '../../domain/order/commands/delete-order-command';
+import { OrderInterface } from '../../domain/order/order.interface';
+import { OrderRepository } from '../../domain/order/order.repository';
 import { DeleteOrder } from '../delete-order';
 
 describe('uses_cases/DeleteOrder', () => {

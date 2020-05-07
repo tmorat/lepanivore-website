@@ -1,7 +1,7 @@
-import { ArchiveProductCommand } from '../../domain/commands/archive-product-command';
-import { Product, ProductFactoryInterface } from '../../domain/product';
-import { ProductInterface } from '../../domain/product.interface';
-import { ProductRepository } from '../../domain/product.repository';
+import { ArchiveProductCommand } from '../../domain/product/commands/archive-product-command';
+import { Product, ProductFactoryInterface } from '../../domain/product/product';
+import { ProductInterface } from '../../domain/product/product.interface';
+import { ProductRepository } from '../../domain/product/product.repository';
 import { ArchiveProduct } from '../archive-product';
 
 describe('uses_cases/ArchiveProduct', () => {

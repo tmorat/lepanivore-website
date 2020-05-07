@@ -1,4 +1,4 @@
-import { ClosingPeriodInterface } from '../../../../domain/closing-period.interface';
+import { ClosingPeriodInterface } from '../../../../domain/closing-period/closing-period.interface';
 import { ClosingPeriodEntityTransformer } from '../closing-period-entity.transformer';
 import { ClosingPeriodEntity } from '../closing-period.entity';
 

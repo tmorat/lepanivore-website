@@ -1,6 +1,6 @@
-import { Feature } from '../domain/feature';
-import { FeatureInterface } from '../domain/feature.interface';
-import { FeatureRepository } from '../domain/feature.repository';
+import { Feature } from '../domain/feature/feature';
+import { FeatureInterface } from '../domain/feature/feature.interface';
+import { FeatureRepository } from '../domain/feature/feature.repository';
 
 export class GetProductOrderingStatus {
   constructor(private readonly featureRepository: FeatureRepository) {}

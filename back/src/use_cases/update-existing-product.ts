@@ -1,7 +1,7 @@
-import { UpdateProductCommand } from '../domain/commands/update-product-command';
-import { Product } from '../domain/product';
-import { ProductInterface } from '../domain/product.interface';
-import { ProductRepository } from '../domain/product.repository';
+import { UpdateProductCommand } from '../domain/product/commands/update-product-command';
+import { Product } from '../domain/product/product';
+import { ProductInterface } from '../domain/product/product.interface';
+import { ProductRepository } from '../domain/product/product.repository';
 
 export class UpdateExistingProduct {
   constructor(private readonly productRepository: ProductRepository) {}

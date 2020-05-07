@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { ValueTransformer } from 'typeorm';
-import { OrderType } from '../../../domain/order-type';
-import { OrderInterface } from '../../../domain/order.interface';
-import { Product } from '../../../domain/product';
-import { ProductWithQuantity } from '../../../domain/product-with-quantity';
+import { OrderType } from '../../../domain/order/order-type';
+import { OrderInterface } from '../../../domain/order/order.interface';
+import { Product } from '../../../domain/product/product';
+import { ProductWithQuantity } from '../../../domain/product/product-with-quantity';
 import { OrderEntity } from './order.entity';
 
 @Injectable()

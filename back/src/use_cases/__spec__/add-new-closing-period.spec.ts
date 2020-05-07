@@ -1,6 +1,6 @@
-import { ClosingPeriod, ClosingPeriodFactoryInterface } from '../../domain/closing-period';
-import { ClosingPeriodRepository } from '../../domain/closing-period.repository';
-import { NewClosingPeriodCommand } from '../../domain/commands/new-closing-period-command';
+import { ClosingPeriod, ClosingPeriodFactoryInterface } from '../../domain/closing-period/closing-period';
+import { ClosingPeriodRepository } from '../../domain/closing-period/closing-period.repository';
+import { NewClosingPeriodCommand } from '../../domain/closing-period/commands/new-closing-period-command';
 import { AddNewClosingPeriod } from '../add-new-closing-period';
 
 describe('uses_cases/AddNewClosingPeriod', () => {

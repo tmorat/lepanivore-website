@@ -1,11 +1,11 @@
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import request, { Response } from 'supertest';
-import { ClosingPeriodNotFoundError } from '../../src/domain/closing-period-not-found.error';
-import { ClosingPeriodInterface } from '../../src/domain/closing-period.interface';
-import { DeleteClosingPeriodCommand } from '../../src/domain/commands/delete-closing-period-command';
-import { NewClosingPeriodCommand } from '../../src/domain/commands/new-closing-period-command';
-import { InvalidClosingPeriodError } from '../../src/domain/invalid-closing-period.error';
+import { ClosingPeriodInterface } from '../../src/domain/closing-period/closing-period.interface';
+import { DeleteClosingPeriodCommand } from '../../src/domain/closing-period/commands/delete-closing-period-command';
+import { NewClosingPeriodCommand } from '../../src/domain/closing-period/commands/new-closing-period-command';
+import { ClosingPeriodNotFoundError } from '../../src/domain/closing-period/errors/closing-period-not-found.error';
+import { InvalidClosingPeriodError } from '../../src/domain/closing-period/errors/invalid-closing-period.error';
 import { ClosingPeriodId } from '../../src/domain/type-aliases';
 import { EnvironmentConfigService } from '../../src/infrastructure/config/environment-config/environment-config.service';
 import { GetClosingPeriodResponse } from '../../src/infrastructure/rest/models/get-closing-period-response';

@@ -1,5 +1,5 @@
 import { MailerService } from '@nestjs-modules/mailer';
-import { OrderNotification } from '../../../domain/order-notification';
+import { OrderNotification } from '../../../domain/order-notification/order-notification';
 import { EnvironmentConfigService } from '../../config/environment-config/environment-config.service';
 import { EmailOrderNotificationRepository } from '../email-order-notification.repository';
 

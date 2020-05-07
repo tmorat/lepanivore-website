@@ -1,19 +1,19 @@
-import { ClosingPeriodInterface } from '../domain/closing-period.interface';
-import { ClosingPeriodRepository } from '../domain/closing-period.repository';
-import { NewOrderCommand } from '../domain/commands/new-order-command';
-import { Feature } from '../domain/feature';
-import { FeatureStatus } from '../domain/feature-status';
-import { FeatureInterface } from '../domain/feature.interface';
-import { FeatureRepository } from '../domain/feature.repository';
-import { Order } from '../domain/order';
-import { OrderNotification } from '../domain/order-notification';
-import { OrderNotificationRepository } from '../domain/order-notification.repository';
-import { OrderInterface } from '../domain/order.interface';
-import { OrderRepository } from '../domain/order.repository';
-import { ProductOrderingDisabledError } from '../domain/product-ordering-disabled.error';
-import { ProductStatus } from '../domain/product-status';
-import { ProductInterface } from '../domain/product.interface';
-import { ProductRepository } from '../domain/product.repository';
+import { ClosingPeriodInterface } from '../domain/closing-period/closing-period.interface';
+import { ClosingPeriodRepository } from '../domain/closing-period/closing-period.repository';
+import { ProductOrderingDisabledError } from '../domain/feature/errors/product-ordering-disabled.error';
+import { Feature } from '../domain/feature/feature';
+import { FeatureStatus } from '../domain/feature/feature-status';
+import { FeatureInterface } from '../domain/feature/feature.interface';
+import { FeatureRepository } from '../domain/feature/feature.repository';
+import { OrderNotification } from '../domain/order-notification/order-notification';
+import { OrderNotificationRepository } from '../domain/order-notification/order-notification.repository';
+import { NewOrderCommand } from '../domain/order/commands/new-order-command';
+import { Order } from '../domain/order/order';
+import { OrderInterface } from '../domain/order/order.interface';
+import { OrderRepository } from '../domain/order/order.repository';
+import { ProductStatus } from '../domain/product/product-status';
+import { ProductInterface } from '../domain/product/product.interface';
+import { ProductRepository } from '../domain/product/product.repository';
 import { OrderId } from '../domain/type-aliases';
 
 export class OrderProducts {

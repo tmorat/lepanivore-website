@@ -1,5 +1,5 @@
-import { ClosingPeriodInterface } from '../domain/closing-period.interface';
-import { ClosingPeriodRepository } from '../domain/closing-period.repository';
+import { ClosingPeriodInterface } from '../domain/closing-period/closing-period.interface';
+import { ClosingPeriodRepository } from '../domain/closing-period/closing-period.repository';
 
 export class GetClosingPeriods {
   constructor(private readonly closingPeriodRepository: ClosingPeriodRepository) {}

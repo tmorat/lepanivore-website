@@ -1,9 +1,9 @@
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Repository } from 'typeorm';
-import { ProductNotFoundError } from '../../src/domain/product-not-found.error';
-import { ProductStatus } from '../../src/domain/product-status';
-import { ProductInterface } from '../../src/domain/product.interface';
+import { ProductNotFoundError } from '../../src/domain/product/errors/product-not-found.error';
+import { ProductStatus } from '../../src/domain/product/product-status';
+import { ProductInterface } from '../../src/domain/product/product.interface';
 import { ProductId } from '../../src/domain/type-aliases';
 import { EnvironmentConfigService } from '../../src/infrastructure/config/environment-config/environment-config.service';
 import { DatabaseProductRepository } from '../../src/infrastructure/repositories/database-product.repository';

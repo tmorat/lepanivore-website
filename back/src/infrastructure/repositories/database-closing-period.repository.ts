@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { ClosingPeriodNotFoundError } from '../../domain/closing-period-not-found.error';
-import { ClosingPeriodInterface } from '../../domain/closing-period.interface';
-import { ClosingPeriodRepository } from '../../domain/closing-period.repository';
+import { ClosingPeriodInterface } from '../../domain/closing-period/closing-period.interface';
+import { ClosingPeriodRepository } from '../../domain/closing-period/closing-period.repository';
+import { ClosingPeriodNotFoundError } from '../../domain/closing-period/errors/closing-period-not-found.error';
 import { ClosingPeriodId } from '../../domain/type-aliases';
 import { ClosingPeriodEntityTransformer } from './entities/closing-period-entity.transformer';
 import { ClosingPeriodEntity } from './entities/closing-period.entity';

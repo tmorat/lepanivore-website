@@ -1,9 +1,9 @@
 import { Body, Controller, Delete, Get, HttpCode, Inject, Param, Post, Put, Req, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
-import { ArchiveProductCommand } from '../../domain/commands/archive-product-command';
-import { NewProductCommand } from '../../domain/commands/new-product-command';
-import { UpdateProductCommand } from '../../domain/commands/update-product-command';
+import { ArchiveProductCommand } from '../../domain/product/commands/archive-product-command';
+import { NewProductCommand } from '../../domain/product/commands/new-product-command';
+import { UpdateProductCommand } from '../../domain/product/commands/update-product-command';
 import { ProductId } from '../../domain/type-aliases';
 import { AddNewProduct } from '../../use_cases/add-new-product';
 import { ArchiveProduct } from '../../use_cases/archive-product';

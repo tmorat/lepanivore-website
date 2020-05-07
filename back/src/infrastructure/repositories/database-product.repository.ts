@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { ProductNotFoundError } from '../../domain/product-not-found.error';
-import { ProductStatus } from '../../domain/product-status';
-import { ProductInterface } from '../../domain/product.interface';
-import { ProductRepository } from '../../domain/product.repository';
+import { ProductNotFoundError } from '../../domain/product/errors/product-not-found.error';
+import { ProductStatus } from '../../domain/product/product-status';
+import { ProductInterface } from '../../domain/product/product.interface';
+import { ProductRepository } from '../../domain/product/product.repository';
 import { ProductId } from '../../domain/type-aliases';
 import { ProductEntityTransformer } from './entities/product-entity.transformer';
 import { ProductEntity } from './entities/product.entity';

@@ -1,12 +1,12 @@
-import { ClosingPeriodInterface } from '../domain/closing-period.interface';
-import { ClosingPeriodRepository } from '../domain/closing-period.repository';
-import { UpdateOrderCommand } from '../domain/commands/update-order-command';
-import { Order } from '../domain/order';
-import { OrderInterface } from '../domain/order.interface';
-import { OrderRepository } from '../domain/order.repository';
-import { ProductStatus } from '../domain/product-status';
-import { ProductInterface } from '../domain/product.interface';
-import { ProductRepository } from '../domain/product.repository';
+import { ClosingPeriodInterface } from '../domain/closing-period/closing-period.interface';
+import { ClosingPeriodRepository } from '../domain/closing-period/closing-period.repository';
+import { UpdateOrderCommand } from '../domain/order/commands/update-order-command';
+import { Order } from '../domain/order/order';
+import { OrderInterface } from '../domain/order/order.interface';
+import { OrderRepository } from '../domain/order/order.repository';
+import { ProductStatus } from '../domain/product/product-status';
+import { ProductInterface } from '../domain/product/product.interface';
+import { ProductRepository } from '../domain/product/product.repository';
 
 export class UpdateExistingOrder {
   constructor(

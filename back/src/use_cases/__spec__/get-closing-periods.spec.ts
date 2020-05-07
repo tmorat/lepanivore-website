@@ -1,5 +1,5 @@
-import { ClosingPeriodInterface } from '../../domain/closing-period.interface';
-import { ClosingPeriodRepository } from '../../domain/closing-period.repository';
+import { ClosingPeriodInterface } from '../../domain/closing-period/closing-period.interface';
+import { ClosingPeriodRepository } from '../../domain/closing-period/closing-period.repository';
 import { GetClosingPeriods } from '../get-closing-periods';
 
 describe('use_cases/GetClosingPeriods', () => {

@@ -1,7 +1,7 @@
-import { ArchiveProductCommand } from '../domain/commands/archive-product-command';
-import { Product } from '../domain/product';
-import { ProductInterface } from '../domain/product.interface';
-import { ProductRepository } from '../domain/product.repository';
+import { ArchiveProductCommand } from '../domain/product/commands/archive-product-command';
+import { Product } from '../domain/product/product';
+import { ProductInterface } from '../domain/product/product.interface';
+import { ProductRepository } from '../domain/product/product.repository';
 
 export class ArchiveProduct {
   constructor(private readonly productRepository: ProductRepository) {}

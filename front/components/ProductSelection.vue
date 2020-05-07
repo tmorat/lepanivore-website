@@ -38,7 +38,7 @@
 <script lang="ts">
 import Vue, { PropOptions } from 'vue';
 import ProductSelectionItem from '~/components/ProductSelectionItem.vue';
-import { ProductIdWithQuantity } from '../../back/src/domain/product-with-quantity';
+import { ProductIdWithQuantity } from '../../back/src/domain/product/product-with-quantity';
 import { GetProductResponse } from '../../back/src/infrastructure/rest/models/get-product-response';
 import { PostOrderRequest } from '../../back/src/infrastructure/rest/models/post-order-request';
 import { PutOrderRequest } from '../../back/src/infrastructure/rest/models/put-order-request';

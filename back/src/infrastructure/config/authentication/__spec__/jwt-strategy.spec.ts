@@ -1,5 +1,5 @@
 import { UnauthorizedException } from '@nestjs/common';
-import { User } from '../../../../domain/user';
+import { User } from '../../../../domain/user/user';
 import { EnvironmentConfigService } from '../../environment-config/environment-config.service';
 import { JwtStrategy } from '../jwt-strategy';
 

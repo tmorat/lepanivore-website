@@ -1,12 +1,12 @@
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import request, { Response } from 'supertest';
-import { ArchiveProductCommand } from '../../src/domain/commands/archive-product-command';
-import { NewProductCommand } from '../../src/domain/commands/new-product-command';
-import { UpdateProductCommand } from '../../src/domain/commands/update-product-command';
-import { InvalidProductError } from '../../src/domain/invalid-product.error';
-import { Product } from '../../src/domain/product';
-import { ProductNotFoundError } from '../../src/domain/product-not-found.error';
+import { ArchiveProductCommand } from '../../src/domain/product/commands/archive-product-command';
+import { NewProductCommand } from '../../src/domain/product/commands/new-product-command';
+import { UpdateProductCommand } from '../../src/domain/product/commands/update-product-command';
+import { InvalidProductError } from '../../src/domain/product/errors/invalid-product.error';
+import { ProductNotFoundError } from '../../src/domain/product/errors/product-not-found.error';
+import { Product } from '../../src/domain/product/product';
 import { ProductId } from '../../src/domain/type-aliases';
 import { EnvironmentConfigService } from '../../src/infrastructure/config/environment-config/environment-config.service';
 import { GetProductResponse } from '../../src/infrastructure/rest/models/get-product-response';

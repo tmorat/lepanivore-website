@@ -1,5 +1,5 @@
-import { FeatureInterface } from '../../domain/feature.interface';
-import { FeatureRepository } from '../../domain/feature.repository';
+import { FeatureInterface } from '../../domain/feature/feature.interface';
+import { FeatureRepository } from '../../domain/feature/feature.repository';
 import { GetProductOrderingStatus } from '../get-product-ordering-status';
 
 describe('uses_cases/GetProductOrderingStatus', () => {

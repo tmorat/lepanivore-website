@@ -1,7 +1,7 @@
 import { ArgumentsHost, Catch, ExceptionFilter, HttpStatus } from '@nestjs/common';
 import { HttpArgumentsHost } from '@nestjs/common/interfaces';
 import { Response } from 'express';
-import { InvalidItemError } from '../../../domain/invalid-item.error';
+import { InvalidItemError } from '../../../domain/errors/invalid-item.error';
 
 @Catch(InvalidItemError)
 export class InvalidItemErrorFilter implements ExceptionFilter {

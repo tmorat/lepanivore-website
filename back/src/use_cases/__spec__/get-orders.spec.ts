@@ -1,6 +1,6 @@
-import { Order } from '../../domain/order';
-import { OrderInterface } from '../../domain/order.interface';
-import { OrderRepository } from '../../domain/order.repository';
+import { Order } from '../../domain/order/order';
+import { OrderInterface } from '../../domain/order/order.interface';
+import { OrderRepository } from '../../domain/order/order.repository';
 import { GetOrders } from '../get-orders';
 
 describe('use_cases/GetOrders', () => {

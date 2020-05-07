@@ -1,7 +1,7 @@
 import { NuxtAxiosInstance } from '@nuxtjs/axios';
 import { AxiosError, AxiosResponse } from 'axios';
 import ApiService from '~/services/api.service';
-import { FeatureStatus } from '../../../back/src/domain/feature-status';
+import { FeatureStatus } from '../../../back/src/domain/feature/feature-status';
 import { ClosingPeriodId, OrderId, ProductId } from '../../../back/src/domain/type-aliases';
 import { GetClosingPeriodResponse } from '../../../back/src/infrastructure/rest/models/get-closing-period-response';
 import { GetOrderResponse } from '../../../back/src/infrastructure/rest/models/get-order-response';

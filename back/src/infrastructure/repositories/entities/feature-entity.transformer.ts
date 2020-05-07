@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ValueTransformer } from 'typeorm';
-import { FeatureStatus } from '../../../domain/feature-status';
-import { FeatureInterface } from '../../../domain/feature.interface';
+import { FeatureStatus } from '../../../domain/feature/feature-status';
+import { FeatureInterface } from '../../../domain/feature/feature.interface';
 import { FeatureEntity } from './feature.entity';
 
 @Injectable()

@@ -76,9 +76,9 @@
 
 <script lang="ts">
 import Vue, { PropOptions } from 'vue';
-import { ClosingDay } from '../../back/src/domain/closing-day';
-import { MAXIMUM_HOUR_FOR_DELIVERY_SAME_WEEK, THURSDAY, TUESDAY } from '../../back/src/domain/delivery-constraints';
-import { OrderType } from '../../back/src/domain/order-type';
+import { ClosingDay } from '../../back/src/domain/closing-period/closing-day';
+import { MAXIMUM_HOUR_FOR_DELIVERY_SAME_WEEK, THURSDAY, TUESDAY } from '../../back/src/domain/order/order-delivery-constraints';
+import { OrderType } from '../../back/src/domain/order/order-type';
 import { GetClosingPeriodResponse } from '../../back/src/infrastructure/rest/models/get-closing-period-response';
 import { PostOrderRequest } from '../../back/src/infrastructure/rest/models/post-order-request';
 import { PutOrderRequest } from '../../back/src/infrastructure/rest/models/put-order-request';

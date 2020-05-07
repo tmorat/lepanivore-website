@@ -1,5 +1,5 @@
 import { ArgumentsHost } from '@nestjs/common';
-import { ProductOrderingDisabledError } from '../../../../domain/product-ordering-disabled.error';
+import { ProductOrderingDisabledError } from '../../../../domain/feature/errors/product-ordering-disabled.error';
 import { ProductOrderingDisabledErrorFilter } from '../product-ordering-disabled-error.filter';
 
 describe('infrastructure/rest/filters/ProductOrderingDisabledErrorFilter', () => {

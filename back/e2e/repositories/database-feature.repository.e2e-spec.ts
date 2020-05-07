@@ -1,9 +1,9 @@
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Repository } from 'typeorm';
-import { FeatureNotFoundError } from '../../src/domain/feature-not-found.error';
-import { FeatureStatus } from '../../src/domain/feature-status';
-import { FeatureInterface } from '../../src/domain/feature.interface';
+import { FeatureNotFoundError } from '../../src/domain/feature/errors/feature-not-found.error';
+import { FeatureStatus } from '../../src/domain/feature/feature-status';
+import { FeatureInterface } from '../../src/domain/feature/feature.interface';
 import { FeatureId } from '../../src/domain/type-aliases';
 import { EnvironmentConfigService } from '../../src/infrastructure/config/environment-config/environment-config.service';
 import { DatabaseFeatureRepository } from '../../src/infrastructure/repositories/database-feature.repository';

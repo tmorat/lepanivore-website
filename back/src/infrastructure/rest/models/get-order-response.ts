@@ -1,5 +1,5 @@
-import { OrderType } from '../../../domain/order-type';
-import { ProductWithQuantity } from '../../../domain/product-with-quantity';
+import { OrderType } from '../../../domain/order/order-type';
+import { ProductWithQuantity } from '../../../domain/product/product-with-quantity';
 import { OrderId } from '../../../domain/type-aliases';
 
 export interface GetOrderResponse {
