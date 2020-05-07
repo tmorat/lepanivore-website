@@ -1,6 +1,6 @@
 # README
 
-| Build Status | Mutation testing coverage (back only) | 
+| Build Status | Mutation testing coverage (only on back unit tests) | 
 | ------------- |:-------------:|
 | [![Build Status](https://travis-ci.org/damienbeaufils/lepanivore-website.svg?branch=master)](https://travis-ci.org/damienbeaufils/lepanivore-website) | [![Mutation Score](https://badge.stryker-mutator.io/github.com/damienbeaufils/lepanivore-website/master)](https://dashboard.stryker-mutator.io/reports/github.com/damienbeaufils/lepanivore-website/master) |
 

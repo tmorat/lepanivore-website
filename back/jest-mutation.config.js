@@ -1,6 +1,6 @@
 module.exports = {
   moduleFileExtensions: ['js', 'json', 'ts'],
-  testRegex: '\\..*spec\\.ts$', // All tests (unit + e2e)
+  testRegex: '\\.spec\\.ts$', // only unit tests
   transform: {
     '^.+\\.ts$': 'ts-jest',
   },
