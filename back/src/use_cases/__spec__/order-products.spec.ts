@@ -1,12 +1,16 @@
 import { ClosingPeriodInterface } from '../../domain/closing-period.interface';
 import { ClosingPeriodRepository } from '../../domain/closing-period.repository';
 import { NewOrderCommand } from '../../domain/commands/new-order-command';
+import { FeatureStatus } from '../../domain/feature-status';
+import { FeatureInterface } from '../../domain/feature.interface';
+import { FeatureRepository } from '../../domain/feature.repository';
 import { Order, OrderFactoryInterface } from '../../domain/order';
 import { OrderNotification, OrderNotificationFactoryInterface } from '../../domain/order-notification';
 import { OrderNotificationRepository } from '../../domain/order-notification.repository';
 import { OrderType } from '../../domain/order-type';
 import { OrderRepository } from '../../domain/order.repository';
 import { Product } from '../../domain/product';
+import { ProductOrderingDisabledError } from '../../domain/product-ordering-disabled.error';
 import { ProductStatus } from '../../domain/product-status';
 import { ProductRepository } from '../../domain/product.repository';
 import { OrderId } from '../../domain/type-aliases';
@@ -18,6 +22,7 @@ describe('uses_cases/OrderProducts', () => {
   let mockClosingPeriodRepository: ClosingPeriodRepository;
   let mockOrderRepository: OrderRepository;
   let mockOrderNotificationRepository: OrderNotificationRepository;
+  let mockFeatureRepository: FeatureRepository;
   let newOrderCommand: NewOrderCommand;
 
   beforeEach(() => {
@@ -39,7 +44,16 @@ describe('uses_cases/OrderProducts', () => {
     mockOrderNotificationRepository = {} as OrderNotificationRepository;
     mockOrderNotificationRepository.send = jest.fn();
 
-    orderProducts = new OrderProducts(mockProductRepository, mockClosingPeriodRepository, mockOrderRepository, mockOrderNotificationRepository);
+    mockFeatureRepository = {} as FeatureRepository;
+    mockFeatureRepository.findByName = jest.fn();
+
+    orderProducts = new OrderProducts(
+      mockProductRepository,
+      mockClosingPeriodRepository,
+      mockOrderRepository,
+      mockOrderNotificationRepository,
+      mockFeatureRepository
+    );
 
     newOrderCommand = {
       clientName: 'John Doe',
@@ -49,9 +63,34 @@ describe('uses_cases/OrderProducts', () => {
       type: OrderType.DELIVERY,
       deliveryAddress: 'Montréal',
     };
+
+    (mockFeatureRepository.findByName as jest.Mock).mockReturnValue(
+      Promise.resolve({ name: 'PRODUCT_ORDERING', status: FeatureStatus.ENABLED } as FeatureInterface)
+    );
   });
 
   describe('execute()', () => {
+    it('should search for product ordering feature in order to know its status', async () => {
+      // when
+      await orderProducts.execute(newOrderCommand);
+
+      // then
+      expect(mockFeatureRepository.findByName).toHaveBeenCalledWith('PRODUCT_ORDERING');
+    });
+
+    it('should reject with product ordering disabled error when product ordering is disabled', async () => {
+      // given
+      (mockFeatureRepository.findByName as jest.Mock).mockReturnValue(
+        Promise.resolve({ name: 'PRODUCT_ORDERING', status: FeatureStatus.DISABLED } as FeatureInterface)
+      );
+
+      // when
+      const result: Promise<OrderId> = orderProducts.execute(newOrderCommand);
+
+      // then
+      await expect(result).rejects.toThrow(new ProductOrderingDisabledError('Product ordering feature has to be enabled to order products'));
+    });
+
     it('should search for active products', async () => {
       // when
       await orderProducts.execute(newOrderCommand);

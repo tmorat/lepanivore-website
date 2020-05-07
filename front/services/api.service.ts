@@ -3,6 +3,7 @@ import { AxiosError } from 'axios';
 import { ClosingPeriodId, OrderId, ProductId } from '../../back/src/domain/type-aliases';
 import { GetClosingPeriodResponse } from '../../back/src/infrastructure/rest/models/get-closing-period-response';
 import { GetOrderResponse } from '../../back/src/infrastructure/rest/models/get-order-response';
+import { GetProductOrderingResponse } from '../../back/src/infrastructure/rest/models/get-product-ordering-response';
 import { GetProductResponse } from '../../back/src/infrastructure/rest/models/get-product-response';
 import { PostClosingPeriodRequest } from '../../back/src/infrastructure/rest/models/post-closing-period-request';
 import { PostClosingPeriodResponse } from '../../back/src/infrastructure/rest/models/post-closing-period-response';
@@ -67,6 +68,18 @@ export default class ApiService {
 
   deleteClosingPeriod(id: ClosingPeriodId): Promise<void> {
     return this.$axios.$delete(`/api/closing-periods/${id}`);
+  }
+
+  getProductOrderingStatus(): Promise<GetProductOrderingResponse> {
+    return this.$axios.$get('/api/product-ordering/status');
+  }
+
+  putEnableProductOrdering(): Promise<void> {
+    return this.$axios.$put('/api/product-ordering/enable');
+  }
+
+  putDisableProductOrdering(): Promise<void> {
+    return this.$axios.$put('/api/product-ordering/disable');
   }
 
   private attachResponseInterceptors($axios: NuxtAxiosInstance): void {

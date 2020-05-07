@@ -7,6 +7,7 @@ import { UpdateOrderCommand } from '../../src/domain/commands/update-order-comma
 import { InvalidOrderError } from '../../src/domain/invalid-order.error';
 import { Order } from '../../src/domain/order';
 import { OrderType } from '../../src/domain/order-type';
+import { ProductOrderingDisabledError } from '../../src/domain/product-ordering-disabled.error';
 import { OrderId } from '../../src/domain/type-aliases';
 import { EnvironmentConfigService } from '../../src/infrastructure/config/environment-config/environment-config.service';
 import { PostOrderRequest } from '../../src/infrastructure/rest/models/post-order-request';
@@ -269,6 +270,28 @@ describe('infrastructure/rest/OrderController (e2e)', () => {
           timestamp: expect.any(String),
           name: 'Error',
           message: 'invalid order',
+        });
+      });
+    });
+
+    it('should return http status code SERVICE UNAVAILABLE when product ordering is disabled', () => {
+      // given
+      (mockOrderProducts.execute as jest.Mock).mockImplementation(() => {
+        throw new ProductOrderingDisabledError('product ordering is disabled');
+      });
+
+      // when
+      const testRequest: request.Test = request(app.getHttpServer())
+        .post('/api/orders')
+        .send({} as PostOrderRequest);
+
+      // then
+      return testRequest.expect(503).expect((response: Response) => {
+        expect(response.body).toMatchObject({
+          statusCode: 503,
+          timestamp: expect.any(String),
+          name: 'Error',
+          message: 'product ordering is disabled',
         });
       });
     });

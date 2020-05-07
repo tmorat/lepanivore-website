@@ -1,8 +1,6 @@
 import { ClosingPeriod } from '../closing-period';
 import { NewClosingPeriodCommand } from '../commands/new-closing-period-command';
 import { InvalidClosingPeriodError } from '../invalid-closing-period.error';
-import { ProductStatus } from '../product-status';
-import { ProductInterface } from '../product.interface';
 
 describe('domain/ClosingPeriod', () => {
   let realDateConstructor: DateConstructor;

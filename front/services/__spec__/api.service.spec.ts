@@ -1,9 +1,11 @@
 import { NuxtAxiosInstance } from '@nuxtjs/axios';
 import { AxiosError, AxiosResponse } from 'axios';
 import ApiService from '~/services/api.service';
+import { FeatureStatus } from '../../../back/src/domain/feature-status';
 import { ClosingPeriodId, OrderId, ProductId } from '../../../back/src/domain/type-aliases';
 import { GetClosingPeriodResponse } from '../../../back/src/infrastructure/rest/models/get-closing-period-response';
 import { GetOrderResponse } from '../../../back/src/infrastructure/rest/models/get-order-response';
+import { GetProductOrderingResponse } from '../../../back/src/infrastructure/rest/models/get-product-ordering-response';
 import { GetProductResponse } from '../../../back/src/infrastructure/rest/models/get-product-response';
 import { PostClosingPeriodRequest } from '../../../back/src/infrastructure/rest/models/post-closing-period-request';
 import { PostClosingPeriodResponse } from '../../../back/src/infrastructure/rest/models/post-closing-period-response';
@@ -230,7 +232,13 @@ describe('services/ApiService', () => {
     });
     it('should return closing periods', async () => {
       // given
-      const response: GetClosingPeriodResponse[] = [{ id: 1, startDate: '2020-04-09T00:00:00Z', endDate: '2020-04-20T00:00:00Z' }];
+      const response: GetClosingPeriodResponse[] = [
+        {
+          id: 1,
+          startDate: '2020-04-09T00:00:00Z',
+          endDate: '2020-04-20T00:00:00Z',
+        },
+      ];
       $get.mockReturnValue(Promise.resolve(response));
 
       // when
@@ -276,6 +284,47 @@ describe('services/ApiService', () => {
 
       // then
       expect($delete).toHaveBeenCalledWith('/api/closing-periods/42');
+    });
+  });
+
+  describe('getProductOrderingStatus()', () => {
+    it('should get product ordering status from api', async () => {
+      // when
+      await apiService.getProductOrderingStatus();
+
+      // then
+      expect($get).toHaveBeenCalledWith('/api/product-ordering/status');
+    });
+    it('should return product ordering feature', async () => {
+      // given
+      const response: GetProductOrderingResponse = { id: 1, name: 'PRODUCT_ORDERING', status: FeatureStatus.ENABLED };
+      $get.mockReturnValue(Promise.resolve(response));
+
+      // when
+      const result: GetProductOrderingResponse = await apiService.getProductOrderingStatus();
+
+      // then
+      expect(result).toStrictEqual(response);
+    });
+  });
+
+  describe('putEnableProductOrdering()', () => {
+    it('should put enable product ordering to api', async () => {
+      // when
+      await apiService.putEnableProductOrdering();
+
+      // then
+      expect($put).toHaveBeenCalledWith('/api/product-ordering/enable');
+    });
+  });
+
+  describe('putDisableProductOrdering()', () => {
+    it('should put enable product ordering to api', async () => {
+      // when
+      await apiService.putDisableProductOrdering();
+
+      // then
+      expect($put).toHaveBeenCalledWith('/api/product-ordering/disable');
     });
   });
 });

@@ -50,14 +50,14 @@ describe('infrastructure/rest/filters/InvalidProductErrorFilter', () => {
 
       const invalidProductError: InvalidProductError = {
         name: 'InvalidProductError',
-        message: 'An product validation error',
+        message: 'A product validation error',
       } as InvalidProductError;
 
       const expected: object = {
         statusCode: 400,
         timestamp: fixedDate.toISOString(),
         name: 'InvalidProductError',
-        message: 'An product validation error',
+        message: 'A product validation error',
       };
 
       // when

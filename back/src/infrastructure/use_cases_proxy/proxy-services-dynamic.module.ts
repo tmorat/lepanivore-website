@@ -4,13 +4,17 @@ import { AddNewProduct } from '../../use_cases/add-new-product';
 import { ArchiveProduct } from '../../use_cases/archive-product';
 import { DeleteClosingPeriod } from '../../use_cases/delete-closing-period';
 import { DeleteOrder } from '../../use_cases/delete-order';
+import { DisableProductOrdering } from '../../use_cases/disable-product-ordering';
+import { EnableProductOrdering } from '../../use_cases/enable-product-ordering';
 import { GetActiveProducts } from '../../use_cases/get-active-products';
 import { GetClosingPeriods } from '../../use_cases/get-closing-periods';
 import { GetOrders } from '../../use_cases/get-orders';
+import { GetProductOrderingStatus } from '../../use_cases/get-product-ordering-status';
 import { OrderProducts } from '../../use_cases/order-products';
 import { UpdateExistingOrder } from '../../use_cases/update-existing-order';
 import { UpdateExistingProduct } from '../../use_cases/update-existing-product';
 import { DatabaseClosingPeriodRepository } from '../repositories/database-closing-period.repository';
+import { DatabaseFeatureRepository } from '../repositories/database-feature.repository';
 import { DatabaseOrderRepository } from '../repositories/database-order.repository';
 import { DatabaseProductRepository } from '../repositories/database-product.repository';
 import { EmailOrderNotificationRepository } from '../repositories/email-order-notification.repository';
@@ -32,6 +36,9 @@ export class ProxyServicesDynamicModule {
   static ARCHIVE_PRODUCT_PROXY_SERVICE: string = 'ArchiveProductProxyService';
   static ADD_NEW_CLOSING_PERIOD_PROXY_SERVICE: string = 'AddNewClosingPeriodProxyService';
   static DELETE_CLOSING_PERIOD_PROXY_SERVICE: string = 'DeleteClosingPeriodProxyService';
+  static GET_PRODUCT_ORDERING_STATUS_PROXY_SERVICE: string = 'GetProductOrderingStatusProxyService';
+  static ENABLE_PRODUCT_ORDERING_PROXY_SERVICE: string = 'EnableProductOrderingProxyService';
+  static DISABLE_PRODUCT_ORDERING_PROXY_SERVICE: string = 'DisableProductOrderingProxyService';
 
   static register(): DynamicModule {
     return {
@@ -44,10 +51,17 @@ export class ProxyServicesDynamicModule {
             databaseProductRepository: DatabaseProductRepository,
             databaseClosingPeriodRepository: DatabaseClosingPeriodRepository,
             databaseOrderRepository: DatabaseOrderRepository,
-            emailOrderNotificationRepository: EmailOrderNotificationRepository
+            emailOrderNotificationRepository: EmailOrderNotificationRepository,
+            databaseFeatureRepository: DatabaseFeatureRepository
           ) =>
             new UseCaseProxy(
-              new OrderProducts(databaseProductRepository, databaseClosingPeriodRepository, databaseOrderRepository, emailOrderNotificationRepository)
+              new OrderProducts(
+                databaseProductRepository,
+                databaseClosingPeriodRepository,
+                databaseOrderRepository,
+                emailOrderNotificationRepository,
+                databaseFeatureRepository
+              )
             ),
         },
         {
@@ -108,6 +122,24 @@ export class ProxyServicesDynamicModule {
           useFactory: (databaseClosingPeriodRepository: DatabaseClosingPeriodRepository) =>
             new UseCaseProxy(new DeleteClosingPeriod(databaseClosingPeriodRepository)),
         },
+        {
+          inject: [DatabaseFeatureRepository],
+          provide: ProxyServicesDynamicModule.GET_PRODUCT_ORDERING_STATUS_PROXY_SERVICE,
+          useFactory: (databaseFeatureRepository: DatabaseFeatureRepository) =>
+            new UseCaseProxy(new GetProductOrderingStatus(databaseFeatureRepository)),
+        },
+        {
+          inject: [DatabaseFeatureRepository],
+          provide: ProxyServicesDynamicModule.ENABLE_PRODUCT_ORDERING_PROXY_SERVICE,
+          useFactory: (databaseFeatureRepository: DatabaseFeatureRepository) =>
+            new UseCaseProxy(new EnableProductOrdering(databaseFeatureRepository)),
+        },
+        {
+          inject: [DatabaseFeatureRepository],
+          provide: ProxyServicesDynamicModule.DISABLE_PRODUCT_ORDERING_PROXY_SERVICE,
+          useFactory: (databaseFeatureRepository: DatabaseFeatureRepository) =>
+            new UseCaseProxy(new DisableProductOrdering(databaseFeatureRepository)),
+        },
       ],
       exports: [
         ProxyServicesDynamicModule.ORDER_PRODUCTS_PROXY_SERVICE,
@@ -121,6 +153,9 @@ export class ProxyServicesDynamicModule {
         ProxyServicesDynamicModule.ARCHIVE_PRODUCT_PROXY_SERVICE,
         ProxyServicesDynamicModule.ADD_NEW_CLOSING_PERIOD_PROXY_SERVICE,
         ProxyServicesDynamicModule.DELETE_CLOSING_PERIOD_PROXY_SERVICE,
+        ProxyServicesDynamicModule.GET_PRODUCT_ORDERING_STATUS_PROXY_SERVICE,
+        ProxyServicesDynamicModule.ENABLE_PRODUCT_ORDERING_PROXY_SERVICE,
+        ProxyServicesDynamicModule.DISABLE_PRODUCT_ORDERING_PROXY_SERVICE,
       ],
     };
   }

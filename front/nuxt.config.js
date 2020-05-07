@@ -21,7 +21,7 @@ export default {
   /*
    ** Customize the progress-bar color
    */
-  loading: { color: '#ff3300' },
+  loading: { color: '#efd25c' },
   /*
    ** Global CSS
    */
@@ -113,7 +113,7 @@ export default {
   },
   toast: {
     position: 'top-center',
-    duration: 30000,
+    duration: 10000,
     iconPack: 'mdi',
   },
   /*
