@@ -1,5 +1,5 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
-import { arrayValueTransformer, DATE_MAX_LENGTH, dateIsoStringValueTransformer, DEFAULT_MAX_LENGTH, ENUM_VALUE_MAX_LENGTH } from './entity.utils';
+import { DATE_MAX_LENGTH, dateIsoStringValueTransformer } from './entity.utils';
 
 @Entity({ name: 'closing_period' })
 export class ClosingPeriodEntity {

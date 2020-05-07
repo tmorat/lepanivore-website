@@ -2,7 +2,7 @@
   <v-layout>
     <v-flex class="text-center">
       <h1>Commander pour une cueillette ou livraison</h1>
-      <v-form ref="form" @submit.prevent="validateAndSubmit">
+      <v-form ref="form" @submit.prevent="validateAndSubmit" v-if="productOrderingStatus">
         <v-container>
           <ContactDetails :value="order" class="mb-5"></ContactDetails>
           <OrderTypeSelection :value="order" :closing-periods="closingPeriods" class="mb-5"></OrderTypeSelection>
@@ -23,6 +23,12 @@
           <div class="mt-2">Après avoir validé votre commande, nous vous recontacterons pour vous confirmer sa prise en compte.</div>
         </v-container>
       </v-form>
+      <div v-else>
+        <v-alert type="info" class="product-ordering-disabled mt-12">
+          La commande en ligne n'est présentement pas possible. En cas d'urgence, n'hésitez pas à
+          <a href="https://www.lepanivore.com/Home/Contact" target="_blank">nous contacter</a>.
+        </v-alert>
+      </div>
     </v-flex>
   </v-layout>
 </template>
@@ -34,7 +40,9 @@ import ContactDetails from '~/components/ContactDetails.vue';
 import OrderNote from '~/components/OrderNote.vue';
 import OrderTypeSelection from '~/components/OrderTypeSelection.vue';
 import ProductSelection from '~/components/ProductSelection.vue';
+import { FeatureStatus } from '../../back/src/domain/feature-status';
 import { GetClosingPeriodResponse } from '../../back/src/infrastructure/rest/models/get-closing-period-response';
+import { GetProductOrderingResponse } from '../../back/src/infrastructure/rest/models/get-product-ordering-response';
 import { GetProductResponse } from '../../back/src/infrastructure/rest/models/get-product-response';
 import { PostOrderRequest } from '../../back/src/infrastructure/rest/models/post-order-request';
 import { PostOrderResponse } from '../../back/src/infrastructure/rest/models/post-order-response';
@@ -46,6 +54,7 @@ interface CommanderData {
   isLoading: boolean;
   hasValidationError: boolean;
   hasUnknownError: boolean;
+  productOrderingStatus: boolean;
 }
 
 export default Vue.extend({
@@ -64,13 +73,15 @@ export default Vue.extend({
       isLoading: false,
       hasValidationError: false,
       hasUnknownError: false,
+      productOrderingStatus: true,
     } as CommanderData;
   },
   async asyncData(ctx: Context): Promise<object> {
     const closingPeriods: GetClosingPeriodResponse[] = await ctx.app.$apiService.getClosingPeriods();
     const products: GetProductResponse[] = await ctx.app.$apiService.getProducts();
+    const productOrdering: GetProductOrderingResponse = await ctx.app.$apiService.getProductOrderingStatus();
 
-    return { closingPeriods, products };
+    return { closingPeriods, products, productOrderingStatus: productOrdering.status === FeatureStatus.ENABLED };
   },
   methods: {
     async validateAndSubmit(): Promise<void> {
@@ -98,3 +109,5 @@ export default Vue.extend({
   },
 });
 </script>
+
+<style scoped lang="scss"></style>

@@ -4,12 +4,9 @@ import { Repository } from 'typeorm';
 import { ClosingPeriodNotFoundError } from '../../domain/closing-period-not-found.error';
 import { ClosingPeriodInterface } from '../../domain/closing-period.interface';
 import { ClosingPeriodRepository } from '../../domain/closing-period.repository';
-import { OrderNotFoundError } from '../../domain/order-not-found.error';
-import { OrderInterface } from '../../domain/order.interface';
-import { ClosingPeriodId, OrderId } from '../../domain/type-aliases';
+import { ClosingPeriodId } from '../../domain/type-aliases';
 import { ClosingPeriodEntityTransformer } from './entities/closing-period-entity.transformer';
 import { ClosingPeriodEntity } from './entities/closing-period.entity';
-import { OrderEntity } from './entities/order.entity';
 
 @Injectable()
 export class DatabaseClosingPeriodRepository implements ClosingPeriodRepository {

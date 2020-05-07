@@ -1,12 +1,6 @@
-import { isEmpty } from 'lodash';
 import { ClosingPeriodInterface } from './closing-period.interface';
 import { NewClosingPeriodCommand } from './commands/new-closing-period-command';
-import { NewOrderCommand } from './commands/new-order-command';
 import { InvalidClosingPeriodError } from './invalid-closing-period.error';
-import { InvalidOrderError } from './invalid-order.error';
-import { OrderFactoryInterface } from './order';
-import { OrderInterface } from './order.interface';
-import { ProductInterface } from './product.interface';
 import { ClosingPeriodId } from './type-aliases';
 
 export class ClosingPeriod implements ClosingPeriodInterface {

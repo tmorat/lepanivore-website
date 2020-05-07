@@ -4,14 +4,8 @@
       <v-toolbar-title>Interface d'administration</v-toolbar-title>
       <v-spacer></v-spacer>
       <v-toolbar-items>
-        <v-btn rounded class="mr-5 mt-2" color="primary" max-height="50px" nuxt to="/admin/commandes">
-          Commandes passées
-        </v-btn>
-        <v-btn rounded class="mr-5 mt-2" color="primary" max-height="50px" nuxt to="/admin/produits">
-          Configuration des produits
-        </v-btn>
-        <v-btn rounded class="mr-5 mt-2" color="primary" max-height="50px" nuxt to="/admin/periodes-de-fermeture">
-          Configuration des périodes de fermeture
+        <v-btn color="primary" class="mt-2" max-height="50px" nuxt to="/admin">
+          Retour au menu d'administration
         </v-btn>
       </v-toolbar-items>
     </v-app-bar>
