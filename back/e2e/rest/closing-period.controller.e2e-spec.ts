@@ -1,6 +1,7 @@
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import request, { Response } from 'supertest';
+import { ClosingPeriodNotFoundError } from '../../src/domain/closing-period-not-found.error';
 import { ClosingPeriodInterface } from '../../src/domain/closing-period.interface';
 import { DeleteClosingPeriodCommand } from '../../src/domain/commands/delete-closing-period-command';
 import { NewClosingPeriodCommand } from '../../src/domain/commands/new-closing-period-command';
@@ -238,6 +239,44 @@ describe('infrastructure/rest/ClosingPeriodController (e2e)', () => {
             .expect(204)
             .expect((response: Response) => {
               expect(mockDeleteClosingPeriod.execute).toHaveBeenCalledWith({ closingPeriodId: 1337 } as DeleteClosingPeriodCommand);
+            })
+            .end(done);
+        });
+    });
+
+    it('should return http status code NOT FOUND when closing period not found', (done: DoneCallback) => {
+      // given
+      (mockDeleteClosingPeriod.execute as jest.Mock).mockImplementation(() => {
+        throw new ClosingPeriodNotFoundError('closing period not found');
+      });
+
+      const loginRequest: request.Test = request(app.getHttpServer()).post('/api/authentication/login').send({
+        username: ADMIN_E2E_USERNAME,
+        password: ADMIN_E2E_PASSWORD,
+      });
+
+      let accessToken: string;
+      loginRequest
+        .expect(200)
+        .expect((loginResponse: Response) => {
+          accessToken = loginResponse.body.accessToken;
+        })
+        .end(() => {
+          // when
+          const testRequest: request.Test = request(app.getHttpServer())
+            .delete('/api/closing-periods/1337')
+            .set({ Authorization: `Bearer ${accessToken}` });
+
+          // then
+          testRequest
+            .expect(404)
+            .expect((response: Response) => {
+              expect(response.body).toMatchObject({
+                statusCode: 404,
+                timestamp: expect.any(String),
+                name: 'Error',
+                message: 'closing period not found',
+              });
             })
             .end(done);
         });

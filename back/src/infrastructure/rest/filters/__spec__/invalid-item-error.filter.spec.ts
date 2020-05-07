@@ -1,9 +1,9 @@
 import { ArgumentsHost } from '@nestjs/common';
-import { InvalidProductError } from '../../../../domain/invalid-product.error';
-import { InvalidProductErrorFilter } from '../invalid-product-error.filter';
+import { InvalidItemError } from '../../../../domain/invalid-item.error';
+import { InvalidItemErrorFilter } from '../invalid-item-error.filter';
 
-describe('infrastructure/rest/filters/InvalidProductErrorFilter', () => {
-  let invalidProductErrorFilter: InvalidProductErrorFilter;
+describe('infrastructure/rest/filters/InvalidItemErrorFilter', () => {
+  let invalidItemErrorFilter: InvalidItemErrorFilter;
   let mockArgumentsHost: ArgumentsHost;
   let mockStatus: jest.Mock;
   let mockJson: jest.Mock;
@@ -26,42 +26,42 @@ describe('infrastructure/rest/filters/InvalidProductErrorFilter', () => {
       }),
     } as ArgumentsHost;
 
-    invalidProductErrorFilter = new InvalidProductErrorFilter();
+    invalidItemErrorFilter = new InvalidItemErrorFilter();
   });
 
   describe('catch()', () => {
     it('should call response status method with http bad request status code', () => {
       // given
-      const invalidProductError: InvalidProductError = {} as InvalidProductError;
+      const invalidItemError: InvalidItemError = {} as InvalidItemError;
       const expected: number = 400;
 
       // when
-      invalidProductErrorFilter.catch(invalidProductError, mockArgumentsHost);
+      invalidItemErrorFilter.catch(invalidItemError, mockArgumentsHost);
 
       // then
       expect(mockStatus).toHaveBeenCalledWith(expected);
     });
 
-    it('should call response status json method with body from invalid product error', () => {
+    it('should call response status json method with body from invalid item error', () => {
       // given
       const fixedDate: Date = new Date('2017-06-13T04:41:20');
       // @ts-ignore
       jest.spyOn(global, 'Date').mockImplementationOnce(() => fixedDate);
 
-      const invalidProductError: InvalidProductError = {
-        name: 'InvalidProductError',
-        message: 'A product validation error',
-      } as InvalidProductError;
+      const invalidItemError: InvalidItemError = {
+        name: 'InvalidItemError',
+        message: 'An item validation error',
+      } as InvalidItemError;
 
       const expected: object = {
         statusCode: 400,
         timestamp: fixedDate.toISOString(),
-        name: 'InvalidProductError',
-        message: 'A product validation error',
+        name: 'InvalidItemError',
+        message: 'An item validation error',
       };
 
       // when
-      invalidProductErrorFilter.catch(invalidProductError, mockArgumentsHost);
+      invalidItemErrorFilter.catch(invalidItemError, mockArgumentsHost);
 
       // then
       expect(mockJson).toHaveBeenCalledWith(expected);

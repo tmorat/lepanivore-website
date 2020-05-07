@@ -1,14 +1,14 @@
 import { ArgumentsHost, Catch, ExceptionFilter, HttpStatus } from '@nestjs/common';
 import { HttpArgumentsHost } from '@nestjs/common/interfaces';
 import { Response } from 'express';
-import { FeatureNotFoundError } from '../../../domain/feature-not-found.error';
+import { InvalidItemError } from '../../../domain/invalid-item.error';
 
-@Catch(FeatureNotFoundError)
-export class FeatureNotFoundErrorFilter implements ExceptionFilter {
-  catch(exception: FeatureNotFoundError, host: ArgumentsHost): void {
+@Catch(InvalidItemError)
+export class InvalidItemErrorFilter implements ExceptionFilter {
+  catch(exception: InvalidItemError, host: ArgumentsHost): void {
     const ctx: HttpArgumentsHost = host.switchToHttp();
     const response: Response = ctx.getResponse<Response>();
-    const status: HttpStatus = HttpStatus.NOT_FOUND;
+    const status: HttpStatus = HttpStatus.BAD_REQUEST;
 
     response.status(status).json({
       statusCode: status,

@@ -1,9 +1,9 @@
 import { ArgumentsHost } from '@nestjs/common';
-import { FeatureNotFoundError } from '../../../../domain/feature-not-found.error';
-import { FeatureNotFoundErrorFilter } from '../feature-not-found-error.filter';
+import { ItemNotFoundError } from '../../../../domain/item-not-found.error';
+import { ItemNotFoundErrorFilter } from '../item-not-found-error.filter';
 
-describe('infrastructure/rest/filters/FeatureNotFoundErrorFilter', () => {
-  let featureNotFoundErrorFilter: FeatureNotFoundErrorFilter;
+describe('infrastructure/rest/filters/ItemNotFoundErrorFilter', () => {
+  let itemNotFoundErrorFilter: ItemNotFoundErrorFilter;
   let mockArgumentsHost: ArgumentsHost;
   let mockStatus: jest.Mock;
   let mockJson: jest.Mock;
@@ -26,42 +26,42 @@ describe('infrastructure/rest/filters/FeatureNotFoundErrorFilter', () => {
       }),
     } as ArgumentsHost;
 
-    featureNotFoundErrorFilter = new FeatureNotFoundErrorFilter();
+    itemNotFoundErrorFilter = new ItemNotFoundErrorFilter();
   });
 
   describe('catch()', () => {
     it('should call response status method with http not found status code', () => {
       // given
-      const featureNotFoundError: FeatureNotFoundError = {} as FeatureNotFoundError;
+      const itemNotFoundError: ItemNotFoundError = {} as ItemNotFoundError;
       const expected: number = 404;
 
       // when
-      featureNotFoundErrorFilter.catch(featureNotFoundError, mockArgumentsHost);
+      itemNotFoundErrorFilter.catch(itemNotFoundError, mockArgumentsHost);
 
       // then
       expect(mockStatus).toHaveBeenCalledWith(expected);
     });
 
-    it('should call response status json method with body from feature not found error', () => {
+    it('should call response status json method with body from item not found error', () => {
       // given
       const fixedDate: Date = new Date('2017-06-13T04:41:20');
       // @ts-ignore
       jest.spyOn(global, 'Date').mockImplementationOnce(() => fixedDate);
 
-      const featureNotFoundError: FeatureNotFoundError = {
-        name: 'FeatureNotFoundError',
-        message: 'A feature not found error',
-      } as FeatureNotFoundError;
+      const itemNotFoundError: ItemNotFoundError = {
+        name: 'ItemNotFoundError',
+        message: 'An item not found error',
+      } as ItemNotFoundError;
 
       const expected: object = {
         statusCode: 404,
         timestamp: fixedDate.toISOString(),
-        name: 'FeatureNotFoundError',
-        message: 'A feature not found error',
+        name: 'ItemNotFoundError',
+        message: 'An item not found error',
       };
 
       // when
-      featureNotFoundErrorFilter.catch(featureNotFoundError, mockArgumentsHost);
+      itemNotFoundErrorFilter.catch(itemNotFoundError, mockArgumentsHost);
 
       // then
       expect(mockJson).toHaveBeenCalledWith(expected);

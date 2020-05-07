@@ -6,6 +6,7 @@ import { NewOrderCommand } from '../../src/domain/commands/new-order-command';
 import { UpdateOrderCommand } from '../../src/domain/commands/update-order-command';
 import { InvalidOrderError } from '../../src/domain/invalid-order.error';
 import { Order } from '../../src/domain/order';
+import { OrderNotFoundError } from '../../src/domain/order-not-found.error';
 import { OrderType } from '../../src/domain/order-type';
 import { ProductOrderingDisabledError } from '../../src/domain/product-ordering-disabled.error';
 import { OrderId } from '../../src/domain/type-aliases';
@@ -384,6 +385,45 @@ describe('infrastructure/rest/OrderController (e2e)', () => {
         });
     });
 
+    it('should return http status code NOT FOUND when order not found', (done: DoneCallback) => {
+      // given
+      (mockUpdateExistingOrder.execute as jest.Mock).mockImplementation(() => {
+        throw new OrderNotFoundError('order not found');
+      });
+
+      const loginRequest: request.Test = request(app.getHttpServer()).post('/api/authentication/login').send({
+        username: ADMIN_E2E_USERNAME,
+        password: ADMIN_E2E_PASSWORD,
+      });
+
+      let accessToken: string;
+      loginRequest
+        .expect(200)
+        .expect((loginResponse: Response) => {
+          accessToken = loginResponse.body.accessToken;
+        })
+        .end(() => {
+          // when
+          const testRequest: request.Test = request(app.getHttpServer())
+            .put('/api/orders/1337')
+            .send({} as PutOrderRequest)
+            .set({ Authorization: `Bearer ${accessToken}` });
+
+          // then
+          testRequest
+            .expect(404)
+            .expect((response: Response) => {
+              expect(response.body).toMatchObject({
+                statusCode: 404,
+                timestamp: expect.any(String),
+                name: 'Error',
+                message: 'order not found',
+              });
+            })
+            .end(done);
+        });
+    });
+
     it('should return http status code Unauthorized when not authenticated as admin', () => {
       // when
       const testRequestWithoutAuthorizationHeader: request.Test = request(app.getHttpServer())
@@ -420,6 +460,44 @@ describe('infrastructure/rest/OrderController (e2e)', () => {
             .expect(204)
             .expect((response: Response) => {
               expect(mockDeleteOrder.execute).toHaveBeenCalledWith({ orderId: 1337 } as DeleteOrderCommand);
+            })
+            .end(done);
+        });
+    });
+
+    it('should return http status code NOT FOUND when order not found', (done: DoneCallback) => {
+      // given
+      (mockDeleteOrder.execute as jest.Mock).mockImplementation(() => {
+        throw new OrderNotFoundError('order not found');
+      });
+
+      const loginRequest: request.Test = request(app.getHttpServer()).post('/api/authentication/login').send({
+        username: ADMIN_E2E_USERNAME,
+        password: ADMIN_E2E_PASSWORD,
+      });
+
+      let accessToken: string;
+      loginRequest
+        .expect(200)
+        .expect((loginResponse: Response) => {
+          accessToken = loginResponse.body.accessToken;
+        })
+        .end(() => {
+          // when
+          const testRequest: request.Test = request(app.getHttpServer())
+            .delete('/api/orders/1337')
+            .set({ Authorization: `Bearer ${accessToken}` });
+
+          // then
+          testRequest
+            .expect(404)
+            .expect((response: Response) => {
+              expect(response.body).toMatchObject({
+                statusCode: 404,
+                timestamp: expect.any(String),
+                name: 'Error',
+                message: 'order not found',
+              });
             })
             .end(done);
         });

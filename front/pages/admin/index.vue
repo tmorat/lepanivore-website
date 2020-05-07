@@ -72,10 +72,9 @@ export default Vue.extend({
         } else {
           await this.$apiService.putDisableProductOrdering();
         }
+        this.productOrderingStatusSwitchLoading = false;
       } catch (e) {
         this.handleError(e);
-      } finally {
-        this.productOrderingStatusSwitchLoading = false;
       }
     },
 

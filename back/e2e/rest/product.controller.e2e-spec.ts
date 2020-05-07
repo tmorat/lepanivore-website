@@ -6,6 +6,7 @@ import { NewProductCommand } from '../../src/domain/commands/new-product-command
 import { UpdateProductCommand } from '../../src/domain/commands/update-product-command';
 import { InvalidProductError } from '../../src/domain/invalid-product.error';
 import { Product } from '../../src/domain/product';
+import { ProductNotFoundError } from '../../src/domain/product-not-found.error';
 import { ProductId } from '../../src/domain/type-aliases';
 import { EnvironmentConfigService } from '../../src/infrastructure/config/environment-config/environment-config.service';
 import { GetProductResponse } from '../../src/infrastructure/rest/models/get-product-response';
@@ -296,6 +297,45 @@ describe('infrastructure/rest/ProductController (e2e)', () => {
         });
     });
 
+    it('should return http status code NOT FOUND when product not found', (done: DoneCallback) => {
+      // given
+      (mockUpdateExistingProduct.execute as jest.Mock).mockImplementation(() => {
+        throw new ProductNotFoundError('product not found');
+      });
+
+      const loginRequest: request.Test = request(app.getHttpServer()).post('/api/authentication/login').send({
+        username: ADMIN_E2E_USERNAME,
+        password: ADMIN_E2E_PASSWORD,
+      });
+
+      let accessToken: string;
+      loginRequest
+        .expect(200)
+        .expect((loginResponse: Response) => {
+          accessToken = loginResponse.body.accessToken;
+        })
+        .end(() => {
+          // when
+          const testRequest: request.Test = request(app.getHttpServer())
+            .put('/api/products/1337')
+            .send({} as PutProductRequest)
+            .set({ Authorization: `Bearer ${accessToken}` });
+
+          // then
+          testRequest
+            .expect(404)
+            .expect((response: Response) => {
+              expect(response.body).toMatchObject({
+                statusCode: 404,
+                timestamp: expect.any(String),
+                name: 'Error',
+                message: 'product not found',
+              });
+            })
+            .end(done);
+        });
+    });
+
     it('should return http status code Unauthorized when not authenticated as admin', () => {
       // when
       const testRequestWithoutAuthorizationHeader: request.Test = request(app.getHttpServer())
@@ -332,6 +372,44 @@ describe('infrastructure/rest/ProductController (e2e)', () => {
             .expect(204)
             .expect((response: Response) => {
               expect(mockArchiveProduct.execute).toHaveBeenCalledWith({ productId: 1337 } as ArchiveProductCommand);
+            })
+            .end(done);
+        });
+    });
+
+    it('should return http status code NOT FOUND when product not found', (done: DoneCallback) => {
+      // given
+      (mockArchiveProduct.execute as jest.Mock).mockImplementation(() => {
+        throw new ProductNotFoundError('product not found');
+      });
+
+      const loginRequest: request.Test = request(app.getHttpServer()).post('/api/authentication/login').send({
+        username: ADMIN_E2E_USERNAME,
+        password: ADMIN_E2E_PASSWORD,
+      });
+
+      let accessToken: string;
+      loginRequest
+        .expect(200)
+        .expect((loginResponse: Response) => {
+          accessToken = loginResponse.body.accessToken;
+        })
+        .end(() => {
+          // when
+          const testRequest: request.Test = request(app.getHttpServer())
+            .delete('/api/products/1337')
+            .set({ Authorization: `Bearer ${accessToken}` });
+
+          // then
+          testRequest
+            .expect(404)
+            .expect((response: Response) => {
+              expect(response.body).toMatchObject({
+                statusCode: 404,
+                timestamp: expect.any(String),
+                name: 'Error',
+                message: 'product not found',
+              });
             })
             .end(done);
         });

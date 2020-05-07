@@ -87,7 +87,7 @@ export default {
     },
     redirect: {
       login: '/admin/connexion',
-      home: '/admin/commandes',
+      home: '/admin/',
     },
   },
   /*

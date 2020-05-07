@@ -1,1 +1,3 @@
-export class InvalidOrderError extends Error {}
+import { InvalidItemError } from './invalid-item.error';
+
+export class InvalidOrderError extends InvalidItemError {}
