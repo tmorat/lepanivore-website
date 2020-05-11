@@ -25,17 +25,21 @@ import { UseCaseProxy } from './use-case-proxy';
   imports: [RepositoriesModule],
 })
 export class ProxyServicesDynamicModule {
-  static ORDER_PRODUCTS_PROXY_SERVICE: string = 'OrderProductsProxyService';
-  static GET_CLOSING_PERIODS_PROXY_SERVICE: string = 'GetClosingPeriodsProxyService';
-  static GET_ACTIVE_PRODUCTS_PROXY_SERVICE: string = 'GetActiveProductsProxyService';
+  // Order
   static GET_ORDERS_PROXY_SERVICE: string = 'GetOrdersProxyService';
+  static ORDER_PRODUCTS_PROXY_SERVICE: string = 'OrderProductsProxyService';
   static UPDATE_EXISTING_ORDER_PROXY_SERVICE: string = 'UpdateExistingOrderProxyService';
   static DELETE_ORDER_PROXY_SERVICE: string = 'DeleteOrderProxyService';
+  // Product
+  static GET_ACTIVE_PRODUCTS_PROXY_SERVICE: string = 'GetActiveProductsProxyService';
   static ADD_NEW_PRODUCT_PROXY_SERVICE: string = 'AddNewProductProxyService';
   static UPDATE_EXISTING_PRODUCT_PROXY_SERVICE: string = 'UpdateExistingProductProxyService';
   static ARCHIVE_PRODUCT_PROXY_SERVICE: string = 'ArchiveProductProxyService';
+  // Closing period
+  static GET_CLOSING_PERIODS_PROXY_SERVICE: string = 'GetClosingPeriodsProxyService';
   static ADD_NEW_CLOSING_PERIOD_PROXY_SERVICE: string = 'AddNewClosingPeriodProxyService';
   static DELETE_CLOSING_PERIOD_PROXY_SERVICE: string = 'DeleteClosingPeriodProxyService';
+  // Feature
   static GET_PRODUCT_ORDERING_STATUS_PROXY_SERVICE: string = 'GetProductOrderingStatusProxyService';
   static ENABLE_PRODUCT_ORDERING_PROXY_SERVICE: string = 'EnableProductOrderingProxyService';
   static DISABLE_PRODUCT_ORDERING_PROXY_SERVICE: string = 'DisableProductOrderingProxyService';
@@ -44,8 +48,20 @@ export class ProxyServicesDynamicModule {
     return {
       module: ProxyServicesDynamicModule,
       providers: [
+        // Order
         {
-          inject: [DatabaseProductRepository, DatabaseClosingPeriodRepository, DatabaseOrderRepository, EmailOrderNotificationRepository],
+          inject: [DatabaseOrderRepository],
+          provide: ProxyServicesDynamicModule.GET_ORDERS_PROXY_SERVICE,
+          useFactory: (databaseOrderRepository: DatabaseOrderRepository) => new UseCaseProxy(new GetOrders(databaseOrderRepository)),
+        },
+        {
+          inject: [
+            DatabaseProductRepository,
+            DatabaseClosingPeriodRepository,
+            DatabaseOrderRepository,
+            EmailOrderNotificationRepository,
+            DatabaseFeatureRepository,
+          ],
           provide: ProxyServicesDynamicModule.ORDER_PRODUCTS_PROXY_SERVICE,
           useFactory: (
             databaseProductRepository: DatabaseProductRepository,
@@ -65,22 +81,6 @@ export class ProxyServicesDynamicModule {
             ),
         },
         {
-          inject: [DatabaseClosingPeriodRepository],
-          provide: ProxyServicesDynamicModule.GET_CLOSING_PERIODS_PROXY_SERVICE,
-          useFactory: (databaseClosingPeriodRepository: DatabaseClosingPeriodRepository) =>
-            new UseCaseProxy(new GetClosingPeriods(databaseClosingPeriodRepository)),
-        },
-        {
-          inject: [DatabaseProductRepository],
-          provide: ProxyServicesDynamicModule.GET_ACTIVE_PRODUCTS_PROXY_SERVICE,
-          useFactory: (databaseProductRepository: DatabaseProductRepository) => new UseCaseProxy(new GetActiveProducts(databaseProductRepository)),
-        },
-        {
-          inject: [DatabaseOrderRepository],
-          provide: ProxyServicesDynamicModule.GET_ORDERS_PROXY_SERVICE,
-          useFactory: (databaseOrderRepository: DatabaseOrderRepository) => new UseCaseProxy(new GetOrders(databaseOrderRepository)),
-        },
-        {
           inject: [DatabaseProductRepository, DatabaseClosingPeriodRepository, DatabaseOrderRepository],
           provide: ProxyServicesDynamicModule.UPDATE_EXISTING_ORDER_PROXY_SERVICE,
           useFactory: (
@@ -93,6 +93,12 @@ export class ProxyServicesDynamicModule {
           inject: [DatabaseOrderRepository],
           provide: ProxyServicesDynamicModule.DELETE_ORDER_PROXY_SERVICE,
           useFactory: (databaseOrderRepository: DatabaseOrderRepository) => new UseCaseProxy(new DeleteOrder(databaseOrderRepository)),
+        },
+        // Product
+        {
+          inject: [DatabaseProductRepository],
+          provide: ProxyServicesDynamicModule.GET_ACTIVE_PRODUCTS_PROXY_SERVICE,
+          useFactory: (databaseProductRepository: DatabaseProductRepository) => new UseCaseProxy(new GetActiveProducts(databaseProductRepository)),
         },
         {
           inject: [DatabaseProductRepository],
@@ -110,6 +116,13 @@ export class ProxyServicesDynamicModule {
           provide: ProxyServicesDynamicModule.ARCHIVE_PRODUCT_PROXY_SERVICE,
           useFactory: (databaseProductRepository: DatabaseProductRepository) => new UseCaseProxy(new ArchiveProduct(databaseProductRepository)),
         },
+        // Closing period
+        {
+          inject: [DatabaseClosingPeriodRepository],
+          provide: ProxyServicesDynamicModule.GET_CLOSING_PERIODS_PROXY_SERVICE,
+          useFactory: (databaseClosingPeriodRepository: DatabaseClosingPeriodRepository) =>
+            new UseCaseProxy(new GetClosingPeriods(databaseClosingPeriodRepository)),
+        },
         {
           inject: [DatabaseClosingPeriodRepository],
           provide: ProxyServicesDynamicModule.ADD_NEW_CLOSING_PERIOD_PROXY_SERVICE,
@@ -122,6 +135,7 @@ export class ProxyServicesDynamicModule {
           useFactory: (databaseClosingPeriodRepository: DatabaseClosingPeriodRepository) =>
             new UseCaseProxy(new DeleteClosingPeriod(databaseClosingPeriodRepository)),
         },
+        // Feature
         {
           inject: [DatabaseFeatureRepository],
           provide: ProxyServicesDynamicModule.GET_PRODUCT_ORDERING_STATUS_PROXY_SERVICE,
@@ -142,17 +156,21 @@ export class ProxyServicesDynamicModule {
         },
       ],
       exports: [
-        ProxyServicesDynamicModule.ORDER_PRODUCTS_PROXY_SERVICE,
-        ProxyServicesDynamicModule.GET_CLOSING_PERIODS_PROXY_SERVICE,
-        ProxyServicesDynamicModule.GET_ACTIVE_PRODUCTS_PROXY_SERVICE,
+        // Order
         ProxyServicesDynamicModule.GET_ORDERS_PROXY_SERVICE,
+        ProxyServicesDynamicModule.ORDER_PRODUCTS_PROXY_SERVICE,
         ProxyServicesDynamicModule.UPDATE_EXISTING_ORDER_PROXY_SERVICE,
         ProxyServicesDynamicModule.DELETE_ORDER_PROXY_SERVICE,
+        // Product
+        ProxyServicesDynamicModule.GET_ACTIVE_PRODUCTS_PROXY_SERVICE,
         ProxyServicesDynamicModule.ADD_NEW_PRODUCT_PROXY_SERVICE,
         ProxyServicesDynamicModule.UPDATE_EXISTING_PRODUCT_PROXY_SERVICE,
         ProxyServicesDynamicModule.ARCHIVE_PRODUCT_PROXY_SERVICE,
+        // Closing period
+        ProxyServicesDynamicModule.GET_CLOSING_PERIODS_PROXY_SERVICE,
         ProxyServicesDynamicModule.ADD_NEW_CLOSING_PERIOD_PROXY_SERVICE,
         ProxyServicesDynamicModule.DELETE_CLOSING_PERIOD_PROXY_SERVICE,
+        // Feature
         ProxyServicesDynamicModule.GET_PRODUCT_ORDERING_STATUS_PROXY_SERVICE,
         ProxyServicesDynamicModule.ENABLE_PRODUCT_ORDERING_PROXY_SERVICE,
         ProxyServicesDynamicModule.DISABLE_PRODUCT_ORDERING_PROXY_SERVICE,
