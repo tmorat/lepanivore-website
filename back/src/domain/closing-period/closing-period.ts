@@ -26,7 +26,8 @@ export class ClosingPeriod implements ClosingPeriodInterface {
     if (!startDate) {
       throw new InvalidClosingPeriodError('start date has to be defined');
     }
-    if (startDate.getTime() < new Date().getTime()) {
+
+    if (ClosingPeriod.isBeforeNowIgnoringHours(startDate)) {
       throw new InvalidClosingPeriodError('start date has to be in the future');
     }
   }
@@ -35,12 +36,19 @@ export class ClosingPeriod implements ClosingPeriodInterface {
     if (!endDate) {
       throw new InvalidClosingPeriodError('end date has to be defined');
     }
-    if (endDate.getTime() < new Date().getTime()) {
+    if (ClosingPeriod.isBeforeNowIgnoringHours(endDate)) {
       throw new InvalidClosingPeriodError('end date has to be in the future');
     }
     if (endDate.getTime() < startDate.getTime()) {
       throw new InvalidClosingPeriodError('end date has to be greater than start date');
     }
+  }
+
+  private static isBeforeNowIgnoringHours(date: Date): boolean {
+    const now: Date = new Date();
+    now.setHours(date.getHours(), date.getMinutes(), date.getSeconds(), date.getMilliseconds());
+
+    return date.getTime() < now.getTime();
   }
 }
 

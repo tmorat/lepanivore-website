@@ -37,7 +37,12 @@
                           :rules="[(v) => !!v || 'La date de début est requise']"
                         ></v-text-field>
                       </template>
-                      <v-date-picker v-model="newClosingPeriod.startDate" @input="showStartDatePicker = false" locale="fr-ca"></v-date-picker>
+                      <v-date-picker
+                        v-model="newClosingPeriod.startDate"
+                        @input="showStartDatePicker = false"
+                        locale="fr-ca"
+                        :min="startDateMin"
+                      ></v-date-picker>
                     </v-menu>
                   </v-col>
                   <v-col cols="12">
@@ -53,7 +58,12 @@
                           :rules="[(v) => !!v || 'La date de fin est requise']"
                         ></v-text-field>
                       </template>
-                      <v-date-picker v-model="newClosingPeriod.endDate" @input="showEndDatePicker = false" locale="fr-ca"></v-date-picker>
+                      <v-date-picker
+                        v-model="newClosingPeriod.endDate"
+                        @input="showEndDatePicker = false"
+                        locale="fr-ca"
+                        :min="endDateMin"
+                      ></v-date-picker>
                     </v-menu>
                   </v-col>
                 </v-row>
@@ -132,6 +142,20 @@ export default Vue.extend({
       value || this.closeNewClosingPeriodDialog();
     },
   },
+  computed: {
+    startDateMin(): string {
+      return new Date().toISOString();
+    },
+
+    endDateMin(): string {
+      const date: Date = new Date();
+      if (this.newClosingPeriod.startDate) {
+        date.setDate(this.toDate(this.newClosingPeriod.startDate).getDate() + 1);
+      }
+
+      return date.toISOString();
+    },
+  },
   methods: {
     closeNewClosingPeriodDialog(): void {
       this.newClosingPeriodDialog = false;
@@ -176,6 +200,14 @@ export default Vue.extend({
           href: '/admin/connexion',
         },
       });
+    },
+
+    toDate(dateAsIsoString: string): Date {
+      if (dateAsIsoString.length > 10) {
+        return new Date(dateAsIsoString);
+      } else {
+        return new Date(`${dateAsIsoString}T12:00:00Z`);
+      }
     },
   },
 });

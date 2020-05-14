@@ -71,6 +71,20 @@ describe('domain/closing-period/ClosingPeriod', () => {
           // then
           expect(result).toThrow(new InvalidClosingPeriodError('start date has to be in the future'));
         });
+
+        it('should not fail when start date is same date as now but different hour', () => {
+          // given
+          newClosingPeriodCommand.startDate = new Date('2020-06-03T12:41:20');
+          const now: Date = new Date('2020-06-03T13:41:20');
+          // @ts-ignore
+          jest.spyOn(global, 'Date').mockImplementation(() => now);
+
+          // when
+          const result = () => ClosingPeriod.factory.create(newClosingPeriodCommand);
+
+          // then
+          expect(result).not.toThrow();
+        });
       });
 
       describe('endDate', () => {
