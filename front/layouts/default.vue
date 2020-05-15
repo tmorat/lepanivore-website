@@ -1,7 +1,22 @@
 <template>
   <v-app class="body">
     <v-app-bar class="header" color="#8c5e32">
-      <v-toolbar-title><img class="logo" alt="Logo boulangerie Le Panivore" src="/img/logo-panivore.png" /></v-toolbar-title>
+      <v-toolbar-title>
+        <a href="https://www.lepanivore.com/">
+          <img class="logo" alt="Logo Boulangerie Le Panivore" src="/img/logo-panivore.png" />
+        </a>
+      </v-toolbar-title>
+      <v-toolbar-items>
+        <v-btn text color="#efd25c" class="mt-2" max-height="50px" href="https://www.lepanivore.com/Home/Products">
+          Produits
+        </v-btn>
+        <v-btn text color="#efd25c" class="mt-2" max-height="50px" href="https://www.lepanivore.com/Home/About">
+          À propos
+        </v-btn>
+        <v-btn text color="#efd25c" class="mt-2" max-height="50px" href="https://www.lepanivore.com/Home/Contact">
+          Contact
+        </v-btn>
+      </v-toolbar-items>
     </v-app-bar>
     <v-content class="main-content">
       <v-container fluid>
