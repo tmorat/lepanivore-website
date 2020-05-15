@@ -70,8 +70,8 @@ Environment variables are accessible in `front` application using [Nuxt env prop
     * Example: `from@example.org`
 
   * __`APP_EMAIL_ORDER_NOTIFICATION_TO`__
-    * Description: the email address that will be used in the `to` field in the email order notification  
-    * Example: `to@example.org`
+    * Description: the email addresses that will be used in the `to` field in the email order notification, comma-separated  
+    * Example: `to1@example.org,to2@example.org`
 
   * __`APP_JWT_SECRET`__
     * Description: the JWT secret for admin authentication  
