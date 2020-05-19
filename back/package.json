@@ -1,6 +1,6 @@
 {
   "name": "lepanivore-website-backend",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "private": true,
   "scripts": {
     "postinstall": "[[ -n $APP_FOLDER ]] && npm run build && npm run typeorm:migration:run || exit 0",
@@ -70,7 +70,7 @@
     "jest": "26.0.1",
     "prettier": "2.0.5",
     "supertest": "4.0.2",
-    "ts-jest": "25.5.1",
+    "ts-jest": "26.0.0",
     "ts-loader": "7.0.4",
     "ts-node": "8.10.1",
     "tsc-watch": "4.2.6",
