@@ -1,6 +1,6 @@
 {
   "name": "front",
-  "version": "0.0.10",
+  "version": "1.0.0",
   "description": "lepanivore-website-frontend",
   "private": true,
   "scripts": {
