@@ -78,6 +78,10 @@
 import Vue, { PropOptions } from 'vue';
 import { ClosingDay } from '../../back/src/domain/closing-period/closing-day';
 import { MAXIMUM_HOUR_FOR_DELIVERY_SAME_WEEK, THURSDAY, TUESDAY } from '../../back/src/domain/order/order-delivery-constraints';
+import {
+  NUMBER_OF_MINIMUM_DAYS_FOR_A_CLIENT_PICK_UP_ORDER,
+  NUMBER_OF_MINIMUM_DAYS_FOR_AN_ADMIN_PICK_UP_ORDER,
+} from '../../back/src/domain/order/order-pick-up-constraints';
 import { OrderType } from '../../back/src/domain/order/order-type';
 import { GetClosingPeriodResponse } from '../../back/src/infrastructure/rest/models/get-closing-period-response';
 import { PostOrderRequest } from '../../back/src/infrastructure/rest/models/post-order-request';
@@ -143,7 +147,12 @@ export default Vue.extend({
     },
     pickUpDateMin(): string {
       const date: Date = new Date();
-      date.setDate(date.getDate() + 2);
+      const isInAdmin: boolean = this.$route.path.includes('admin');
+
+      const numberOfMinimumDaysForAPickUp: number = isInAdmin
+        ? NUMBER_OF_MINIMUM_DAYS_FOR_AN_ADMIN_PICK_UP_ORDER
+        : NUMBER_OF_MINIMUM_DAYS_FOR_A_CLIENT_PICK_UP_ORDER;
+      date.setDate(date.getDate() + numberOfMinimumDaysForAPickUp);
 
       return date.toISOString();
     },

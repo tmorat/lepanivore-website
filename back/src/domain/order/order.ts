@@ -9,7 +9,7 @@ import { NewOrderCommand } from './commands/new-order-command';
 import { UpdateOrderCommand } from './commands/update-order-command';
 import { InvalidOrderError } from './errors/invalid-order.error';
 import { DELIVERY_DAY, MAXIMUM_DAY_FOR_DELIVERY_SAME_WEEK, MAXIMUM_HOUR_FOR_DELIVERY_SAME_WEEK } from './order-delivery-constraints';
-import { NUMBER_OF_MINIMUM_DAYS_FOR_A_PICK_UP_ORDER } from './order-pick-up-constraints';
+import { NUMBER_OF_MINIMUM_DAYS_FOR_AN_ADMIN_PICK_UP_ORDER } from './order-pick-up-constraints';
 import { OrderType } from './order-type';
 import { OrderInterface } from './order.interface';
 
@@ -92,13 +92,13 @@ export class Order implements OrderInterface {
     }
   }
 
-  private static assertpickUpDateIsValid(type: OrderType, closingPeriods: ClosingPeriodInterface[], pickUpDate?: Date): void {
+  private static assertPickUpDateIsValid(type: OrderType, closingPeriods: ClosingPeriodInterface[], pickUpDate?: Date): void {
     if (type === OrderType.PICK_UP) {
       if (!pickUpDate) {
         throw new InvalidOrderError('a pick-up date has to be defined when order type is pick-up');
       }
 
-      if (pickUpDate.getTime() < this.getCurrentDatePlusDays(NUMBER_OF_MINIMUM_DAYS_FOR_A_PICK_UP_ORDER).getTime()) {
+      if (pickUpDate.getTime() < this.getCurrentDatePlusDays(NUMBER_OF_MINIMUM_DAYS_FOR_AN_ADMIN_PICK_UP_ORDER).getTime()) {
         throw new InvalidOrderError('pick-up date has to be at least two days after now');
       }
 
@@ -208,7 +208,7 @@ export class Order implements OrderInterface {
 
   private bindOrderTypeSelection(command: NewOrderCommand | UpdateOrderCommand, closingPeriods: ClosingPeriodInterface[]): void {
     Order.assertTypeIsValid(command.type);
-    Order.assertpickUpDateIsValid(command.type, closingPeriods, command.pickUpDate);
+    Order.assertPickUpDateIsValid(command.type, closingPeriods, command.pickUpDate);
     Order.assertDeliveryDateIsValid(command.type, closingPeriods, command.deliveryDate);
     Order.assertDeliveryAddressIsValid(command.type, command.deliveryAddress);
 
