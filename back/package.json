@@ -1,6 +1,6 @@
 {
   "name": "lepanivore-website-backend",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "scripts": {
     "postinstall": "[[ -n $APP_FOLDER ]] && npm run build && npm run typeorm:migration:run || exit 0",
@@ -28,12 +28,12 @@
   "dependencies": {
     "@hapi/joi": "17.1.1",
     "@nestjs-modules/mailer": "1.5.0",
-    "@nestjs/common": "7.0.13",
-    "@nestjs/core": "7.0.13",
+    "@nestjs/common": "7.1.0",
+    "@nestjs/core": "7.1.0",
     "@nestjs/jwt": "7.0.0",
     "@nestjs/passport": "7.0.0",
-    "@nestjs/platform-express": "7.0.13",
-    "@nestjs/typeorm": "7.0.0",
+    "@nestjs/platform-express": "7.1.0",
+    "@nestjs/typeorm": "7.0.1",
     "@sentry/node": "5.15.5",
     "bcrypt": "4.0.1",
     "helmet": "3.22.0",
@@ -48,12 +48,12 @@
     "rimraf": "3.0.2",
     "rxjs": "6.5.5",
     "sqlite3": "4.2.0",
-    "typeorm": "0.2.24"
+    "typeorm": "0.2.25"
   },
   "devDependencies": {
     "@nestjs/cli": "7.1.5",
     "@nestjs/schematics": "7.0.0",
-    "@nestjs/testing": "7.0.13",
+    "@nestjs/testing": "7.1.0",
     "@stryker-mutator/core": "3.2.4",
     "@stryker-mutator/jest-runner": "3.2.4",
     "@stryker-mutator/typescript": "3.2.4",
@@ -62,8 +62,8 @@
     "@types/hapi__joi": "17.1.0",
     "@types/jest": "25.2.3",
     "@types/json2csv": "5.0.1",
-    "@types/lodash": "4.14.151",
-    "@types/node": "12.12.39",
+    "@types/lodash": "4.14.152",
+    "@types/node": "12.12.42",
     "@types/passport-jwt": "3.0.3",
     "@types/passport-local": "1.0.33",
     "@types/supertest": "2.0.9",
@@ -71,14 +71,14 @@
     "prettier": "2.0.5",
     "supertest": "4.0.2",
     "ts-jest": "26.0.0",
-    "ts-loader": "7.0.4",
+    "ts-loader": "7.0.5",
     "ts-node": "8.10.1",
-    "tsc-watch": "4.2.6",
+    "tsc-watch": "4.2.8",
     "tsconfig-paths": "3.9.0",
     "tslint": "6.1.2",
     "tslint-config-prettier": "1.18.0",
     "tslint-plugin-prettier": "2.3.0",
-    "typescript": "3.9.2"
+    "typescript": "3.9.3"
   },
   "engines": {
     "node": "~12.16"
