@@ -2,9 +2,9 @@
   <v-sheet elevation="2" class="pa-3">
     <v-row>
       <v-col cols="12" md="10">
-        <v-select
+        <v-autocomplete
           v-model="value.productId"
-          :items="availableProducts"
+          :items="availableProductsOrderedAlphabetically"
           :hint="getDescriptionWithPrice(value.productId)"
           item-text="name"
           item-value="id"
@@ -12,7 +12,10 @@
           persistent-hint
           required
           :rules="[(v) => !!v || 'Un produit doit être sélectionné']"
-        ></v-select>
+          placeholder="Commencez à écrire pour rechercher"
+          no-data-text="Aucun produit trouvé avec cette recherche"
+          clearable
+        ></v-autocomplete>
       </v-col>
       <v-col cols="12" md="2">
         <v-text-field
@@ -48,6 +51,13 @@ export default Vue.extend({
       const foundProduct: GetProductResponse | undefined = this.availableProducts.find((product: GetProductResponse) => product.id === productId);
 
       return foundProduct ? `${foundProduct.description} (${foundProduct.price.toFixed(2)}$ à l'unité)` : '';
+    },
+  },
+  computed: {
+    availableProductsOrderedAlphabetically(): GetProductResponse[] {
+      return this.availableProducts.sort((productA: GetProductResponse, productB: GetProductResponse): number =>
+        productA.name.localeCompare(productB.name)
+      );
     },
   },
 });
