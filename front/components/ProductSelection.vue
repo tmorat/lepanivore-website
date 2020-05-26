@@ -12,7 +12,7 @@
       <v-sheet v-for="(product, index) in value.products" v-bind:key="product.id" v-bind:index="index">
         <v-row align="center" justify="center">
           <v-col cols="9" md="10">
-            <ProductSelectionItem :available-products="availableProducts" :value="product"></ProductSelectionItem>
+            <ProductSelectionItem :available-products="availableProductsOrderedAlphabetically" :value="product"></ProductSelectionItem>
           </v-col>
           <v-col cols="3" md="1">
             <v-tooltip bottom v-if="index > 0">
@@ -61,6 +61,13 @@ export default Vue.extend({
       if (index > -1) {
         this.value.products.splice(index, 1);
       }
+    },
+  },
+  computed: {
+    availableProductsOrderedAlphabetically(): GetProductResponse[] {
+      return this.availableProducts.sort((productA: GetProductResponse, productB: GetProductResponse): number =>
+        productA.name.localeCompare(productB.name)
+      );
     },
   },
 });

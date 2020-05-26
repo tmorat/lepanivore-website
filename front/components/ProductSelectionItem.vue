@@ -4,7 +4,7 @@
       <v-col cols="12" md="10">
         <v-autocomplete
           v-model="value.productId"
-          :items="availableProductsOrderedAlphabetically"
+          :items="availableProducts"
           :hint="getDescriptionWithPrice(value.productId)"
           item-text="name"
           item-value="id"
@@ -51,13 +51,6 @@ export default Vue.extend({
       const foundProduct: GetProductResponse | undefined = this.availableProducts.find((product: GetProductResponse) => product.id === productId);
 
       return foundProduct ? `${foundProduct.description} (${foundProduct.price.toFixed(2)}$ à l'unité)` : '';
-    },
-  },
-  computed: {
-    availableProductsOrderedAlphabetically(): GetProductResponse[] {
-      return this.availableProducts.sort((productA: GetProductResponse, productB: GetProductResponse): number =>
-        productA.name.localeCompare(productB.name)
-      );
     },
   },
 });
