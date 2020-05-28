@@ -1,2 +1,18 @@
-export const NUMBER_OF_MINIMUM_DAYS_FOR_AN_ADMIN_PICK_UP_ORDER: number = 2;
-export const NUMBER_OF_MINIMUM_DAYS_FOR_A_CLIENT_PICK_UP_ORDER: number = 3;
+import { Day } from '../date.utils';
+
+export const CLOSING_DAYS: Day[] = [Day.SUNDAY, Day.MONDAY];
+
+export interface AvailableDayForAPickUpOrder {
+  whenOrderIsPlacedOn: Day;
+  firstAvailableDay: Day;
+}
+
+export const AVAILABLE_DAYS_FOR_A_PICK_UP_ORDER: AvailableDayForAPickUpOrder[] = [
+  { whenOrderIsPlacedOn: Day.SUNDAY, firstAvailableDay: Day.TUESDAY },
+  { whenOrderIsPlacedOn: Day.MONDAY, firstAvailableDay: Day.THURSDAY },
+  { whenOrderIsPlacedOn: Day.TUESDAY, firstAvailableDay: Day.THURSDAY },
+  { whenOrderIsPlacedOn: Day.WEDNESDAY, firstAvailableDay: Day.SATURDAY },
+  { whenOrderIsPlacedOn: Day.THURSDAY, firstAvailableDay: Day.SATURDAY },
+  { whenOrderIsPlacedOn: Day.FRIDAY, firstAvailableDay: Day.TUESDAY },
+  { whenOrderIsPlacedOn: Day.SATURDAY, firstAvailableDay: Day.TUESDAY },
+];

@@ -252,18 +252,26 @@ describe('domain/order/Order', () => {
       describe('pickUpDate', () => {
         let now: Date;
         let nowMinusOneDay: Date;
-        let nowPlusOneDay: Date;
-        let nowPlusTwoDays: Date;
         let aSundayInTheFuture: Date;
         let aMondayInTheFuture: Date;
+        let aTuesdayInTheFuture: Date;
+        let aWednesdayInTheFuture: Date;
+        let aThursdayInTheFuture: Date;
+        let aFridayInTheFuture: Date;
+        let aSaturdayInTheFuture: Date;
+        let aTuesdayInTheFutureTheWeekAfter: Date;
 
         beforeEach(() => {
-          now = new Date('2020-06-03T04:41:20');
-          nowMinusOneDay = new Date('2020-06-02T04:41:20');
-          nowPlusOneDay = new Date('2020-06-04T04:41:20');
-          nowPlusTwoDays = new Date('2020-06-05T04:41:20');
+          now = new Date('2020-06-03T07:41:20');
+          nowMinusOneDay = new Date('2020-06-02T07:41:20');
           aSundayInTheFuture = new Date('2030-03-31T04:41:20');
-          aMondayInTheFuture = new Date('2030-04-01T04:41:20');
+          aMondayInTheFuture = new Date('2030-04-01T05:41:20');
+          aTuesdayInTheFuture = new Date('2030-04-02T06:41:20');
+          aWednesdayInTheFuture = new Date('2030-04-03T07:41:20');
+          aThursdayInTheFuture = new Date('2030-04-04T08:41:20');
+          aFridayInTheFuture = new Date('2030-04-05T09:41:20');
+          aSaturdayInTheFuture = new Date('2030-04-06T10:41:20');
+          aTuesdayInTheFutureTheWeekAfter = new Date('2030-04-09T06:41:20');
           // @ts-ignore
           jest.spyOn(global, 'Date').mockImplementation(() => now);
 
@@ -272,18 +280,18 @@ describe('domain/order/Order', () => {
 
         it('should bind pick-up date from command', () => {
           // given
-          newOrderCommand.pickUpDate = nowPlusTwoDays;
+          newOrderCommand.pickUpDate = aTuesdayInTheFuture;
 
           // when
           const result: Order = Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
 
           // then
-          expect(result.pickUpDate).toBe(nowPlusTwoDays);
+          expect(result.pickUpDate).toBe(aTuesdayInTheFuture);
         });
 
         it('should not bind any pick-up date from command when order type is delivery', () => {
           // given
-          newOrderCommand.pickUpDate = nowPlusTwoDays;
+          newOrderCommand.pickUpDate = aTuesdayInTheFuture;
           newOrderCommand.type = OrderType.DELIVERY;
 
           // when
@@ -312,29 +320,7 @@ describe('domain/order/Order', () => {
           const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
 
           // then
-          expect(result).toThrow(new InvalidOrderError('pick-up date has to be at least two days after now'));
-        });
-
-        it('should fail when pick-up date is same as now', () => {
-          // given
-          newOrderCommand.pickUpDate = now;
-
-          // when
-          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
-
-          // then
-          expect(result).toThrow(new InvalidOrderError('pick-up date has to be at least two days after now'));
-        });
-
-        it('should fail when pick-up date is tomorrow', () => {
-          // given
-          newOrderCommand.pickUpDate = nowPlusOneDay;
-
-          // when
-          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
-
-          // then
-          expect(result).toThrow(new InvalidOrderError('pick-up date has to be at least two days after now'));
+          expect(result).toThrow(new InvalidOrderError('pick-up date has to be in the future'));
         });
 
         it('should fail when pick-up date is a Sunday', () => {
@@ -362,10 +348,10 @@ describe('domain/order/Order', () => {
         it('should fail when pick-up date is in a closing period', () => {
           // given
           closingPeriods = [
-            { startDate: aSundayInTheFuture, endDate: aMondayInTheFuture } as ClosingPeriodInterface,
-            { startDate: nowMinusOneDay, endDate: nowPlusTwoDays } as ClosingPeriodInterface,
+            { startDate: nowMinusOneDay, endDate: aSundayInTheFuture } as ClosingPeriodInterface,
+            { startDate: aMondayInTheFuture, endDate: aWednesdayInTheFuture } as ClosingPeriodInterface,
           ];
-          newOrderCommand.pickUpDate = nowPlusTwoDays;
+          newOrderCommand.pickUpDate = aTuesdayInTheFuture;
 
           // when
           const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
@@ -377,16 +363,274 @@ describe('domain/order/Order', () => {
         it('should not fail when pick-up date is outside closing periods', () => {
           // given
           closingPeriods = [
-            { startDate: aSundayInTheFuture, endDate: aMondayInTheFuture } as ClosingPeriodInterface,
-            { startDate: nowMinusOneDay, endDate: nowPlusOneDay } as ClosingPeriodInterface,
+            { startDate: nowMinusOneDay, endDate: aSundayInTheFuture } as ClosingPeriodInterface,
+            { startDate: aMondayInTheFuture, endDate: aWednesdayInTheFuture } as ClosingPeriodInterface,
           ];
-          newOrderCommand.pickUpDate = nowPlusTwoDays;
+          newOrderCommand.pickUpDate = aThursdayInTheFuture;
 
           // when
           const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
 
           // then
           expect(result).not.toThrow();
+        });
+
+        describe('when ordering a Sunday', () => {
+          beforeEach(() => {
+            // @ts-ignore
+            jest.spyOn(global, 'Date').mockImplementation(() => aSundayInTheFuture);
+          });
+
+          it('should not fail when pick-up date is the following Tuesday', () => {
+            // given
+            newOrderCommand.pickUpDate = aTuesdayInTheFuture;
+
+            // when
+            const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+
+            // then
+            expect(result).not.toThrow();
+          });
+        });
+
+        describe('when ordering a Monday', () => {
+          beforeEach(() => {
+            // @ts-ignore
+            jest.spyOn(global, 'Date').mockImplementation(() => aMondayInTheFuture);
+          });
+
+          it('should fail when pick-up date is the following Tuesday', () => {
+            // given
+            newOrderCommand.pickUpDate = aTuesdayInTheFuture;
+
+            // when
+            const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+
+            // then
+            expect(result).toThrow(new InvalidOrderError('pick-up date has to be at least 3 days after now'));
+          });
+
+          it('should fail when pick-up date is the following Wednesday', () => {
+            // given
+            newOrderCommand.pickUpDate = aWednesdayInTheFuture;
+
+            // when
+            const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+
+            // then
+            expect(result).toThrow(new InvalidOrderError('pick-up date has to be at least 3 days after now'));
+          });
+
+          it('should not fail when pick-up date is the following Thursday', () => {
+            // given
+            newOrderCommand.pickUpDate = aThursdayInTheFuture;
+
+            // when
+            const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+
+            // then
+            expect(result).not.toThrow();
+          });
+        });
+
+        describe('when ordering a Tuesday', () => {
+          beforeEach(() => {
+            // @ts-ignore
+            jest.spyOn(global, 'Date').mockImplementation(() => aTuesdayInTheFuture);
+          });
+
+          it('should fail when pick-up date is the same Tuesday', () => {
+            // given
+            newOrderCommand.pickUpDate = aTuesdayInTheFuture;
+
+            // when
+            const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+
+            // then
+            expect(result).toThrow(new InvalidOrderError('pick-up date cannot be same day as now'));
+          });
+
+          it('should fail when pick-up date is the following Wednesday', () => {
+            // given
+            newOrderCommand.pickUpDate = aWednesdayInTheFuture;
+
+            // when
+            const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+
+            // then
+            expect(result).toThrow(new InvalidOrderError('pick-up date has to be at least 2 days after now'));
+          });
+
+          it('should not fail when pick-up date is the following Thursday', () => {
+            // given
+            newOrderCommand.pickUpDate = aThursdayInTheFuture;
+
+            // when
+            const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+
+            // then
+            expect(result).not.toThrow();
+          });
+        });
+
+        describe('when ordering a Wednesday', () => {
+          beforeEach(() => {
+            // @ts-ignore
+            jest.spyOn(global, 'Date').mockImplementation(() => aWednesdayInTheFuture);
+          });
+
+          it('should fail when pick-up date is the same Wednesday', () => {
+            // given
+            newOrderCommand.pickUpDate = aWednesdayInTheFuture;
+
+            // when
+            const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+
+            // then
+            expect(result).toThrow(new InvalidOrderError('pick-up date cannot be same day as now'));
+          });
+
+          it('should fail when pick-up date is the following Thursday', () => {
+            // given
+            newOrderCommand.pickUpDate = aThursdayInTheFuture;
+
+            // when
+            const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+
+            // then
+            expect(result).toThrow(new InvalidOrderError('pick-up date has to be at least 3 days after now'));
+          });
+
+          it('should fail when pick-up date is the following Friday', () => {
+            // given
+            newOrderCommand.pickUpDate = aFridayInTheFuture;
+
+            // when
+            const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+
+            // then
+            expect(result).toThrow(new InvalidOrderError('pick-up date has to be at least 3 days after now'));
+          });
+
+          it('should not fail when pick-up date is the following Saturday', () => {
+            // given
+            newOrderCommand.pickUpDate = aSaturdayInTheFuture;
+
+            // when
+            const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+
+            // then
+            expect(result).not.toThrow();
+          });
+        });
+
+        describe('when ordering a Thursday', () => {
+          beforeEach(() => {
+            // @ts-ignore
+            jest.spyOn(global, 'Date').mockImplementation(() => aThursdayInTheFuture);
+          });
+
+          it('should fail when pick-up date is the same Thursday', () => {
+            // given
+            newOrderCommand.pickUpDate = aThursdayInTheFuture;
+
+            // when
+            const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+
+            // then
+            expect(result).toThrow(new InvalidOrderError('pick-up date cannot be same day as now'));
+          });
+
+          it('should fail when pick-up date is the following Friday', () => {
+            // given
+            newOrderCommand.pickUpDate = aFridayInTheFuture;
+
+            // when
+            const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+
+            // then
+            expect(result).toThrow(new InvalidOrderError('pick-up date has to be at least 2 days after now'));
+          });
+
+          it('should not fail when pick-up date is the following Saturday', () => {
+            // given
+            newOrderCommand.pickUpDate = aSaturdayInTheFuture;
+
+            // when
+            const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+
+            // then
+            expect(result).not.toThrow();
+          });
+        });
+
+        describe('when ordering a Friday', () => {
+          beforeEach(() => {
+            // @ts-ignore
+            jest.spyOn(global, 'Date').mockImplementation(() => aFridayInTheFuture);
+          });
+
+          it('should fail when pick-up date is the same Friday', () => {
+            // given
+            newOrderCommand.pickUpDate = aFridayInTheFuture;
+
+            // when
+            const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+
+            // then
+            expect(result).toThrow(new InvalidOrderError('pick-up date cannot be same day as now'));
+          });
+
+          it('should fail when pick-up date is the following Saturday', () => {
+            // given
+            newOrderCommand.pickUpDate = aSaturdayInTheFuture;
+
+            // when
+            const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+
+            // then
+            expect(result).toThrow(new InvalidOrderError('pick-up date has to be at least 3 days after now'));
+          });
+
+          it('should not fail when pick-up date is the following Tuesday', () => {
+            // given
+            newOrderCommand.pickUpDate = aTuesdayInTheFutureTheWeekAfter;
+
+            // when
+            const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+
+            // then
+            expect(result).not.toThrow();
+          });
+        });
+
+        describe('when ordering a Saturday', () => {
+          beforeEach(() => {
+            // @ts-ignore
+            jest.spyOn(global, 'Date').mockImplementation(() => aSaturdayInTheFuture);
+          });
+
+          it('should fail when pick-up date is the same Saturday', () => {
+            // given
+            newOrderCommand.pickUpDate = aSaturdayInTheFuture;
+
+            // when
+            const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+
+            // then
+            expect(result).toThrow(new InvalidOrderError('pick-up date cannot be same day as now'));
+          });
+
+          it('should not fail when pick-up date is the following Tuesday', () => {
+            // given
+            newOrderCommand.pickUpDate = aTuesdayInTheFutureTheWeekAfter;
+
+            // when
+            const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+
+            // then
+            expect(result).not.toThrow();
+          });
         });
       });
 
@@ -904,18 +1148,22 @@ describe('domain/order/Order', () => {
     describe('pickUpDate', () => {
       let now: Date;
       let nowMinusOneDay: Date;
-      let nowPlusOneDay: Date;
-      let nowPlusTwoDays: Date;
+      let nowMinusOneHour: Date;
       let aSundayInTheFuture: Date;
       let aMondayInTheFuture: Date;
+      let aTuesdayInTheFuture: Date;
+      let aWednesdayInTheFuture: Date;
+      let aThursdayInTheFuture: Date;
 
       beforeEach(() => {
-        now = new Date('2020-06-03T04:41:20');
-        nowMinusOneDay = new Date('2020-06-02T04:41:20');
-        nowPlusOneDay = new Date('2020-06-04T04:41:20');
-        nowPlusTwoDays = new Date('2020-06-05T04:41:20');
+        now = new Date('2020-06-03T07:41:20');
+        nowMinusOneDay = new Date('2020-06-02T07:41:20');
+        nowMinusOneHour = new Date('2020-06-03T06:41:20');
         aSundayInTheFuture = new Date('2030-03-31T04:41:20');
-        aMondayInTheFuture = new Date('2030-04-01T04:41:20');
+        aMondayInTheFuture = new Date('2030-04-01T05:41:20');
+        aTuesdayInTheFuture = new Date('2030-04-02T06:41:20');
+        aWednesdayInTheFuture = new Date('2030-04-03T07:41:20');
+        aThursdayInTheFuture = new Date('2030-04-04T08:41:20');
         // @ts-ignore
         jest.spyOn(global, 'Date').mockImplementation(() => now);
 
@@ -924,18 +1172,18 @@ describe('domain/order/Order', () => {
 
       it('should bind pick-up date from command', () => {
         // given
-        updateOrderCommand.pickUpDate = nowPlusTwoDays;
+        updateOrderCommand.pickUpDate = aTuesdayInTheFuture;
 
         // when
         existingOrder.updateWith(updateOrderCommand, activeProducts, closingPeriods);
 
         // then
-        expect(existingOrder.pickUpDate).toBe(nowPlusTwoDays);
+        expect(existingOrder.pickUpDate).toBe(aTuesdayInTheFuture);
       });
 
       it('should not bind any pick-up date from command when order type is delivery', () => {
         // given
-        updateOrderCommand.pickUpDate = nowPlusTwoDays;
+        updateOrderCommand.pickUpDate = aTuesdayInTheFuture;
         updateOrderCommand.type = OrderType.DELIVERY;
 
         // when
@@ -964,29 +1212,18 @@ describe('domain/order/Order', () => {
         const result = () => existingOrder.updateWith(updateOrderCommand, activeProducts, closingPeriods);
 
         // then
-        expect(result).toThrow(new InvalidOrderError('pick-up date has to be at least two days after now'));
+        expect(result).toThrow(new InvalidOrderError('pick-up date has to be in the future'));
       });
 
-      it('should fail when pick-up date is same as now', () => {
+      it('should not fail when pick-up date is in the past but at same date and different time', () => {
         // given
-        updateOrderCommand.pickUpDate = now;
+        updateOrderCommand.pickUpDate = nowMinusOneHour;
 
         // when
         const result = () => existingOrder.updateWith(updateOrderCommand, activeProducts, closingPeriods);
 
         // then
-        expect(result).toThrow(new InvalidOrderError('pick-up date has to be at least two days after now'));
-      });
-
-      it('should fail when pick-up date is tomorrow', () => {
-        // given
-        updateOrderCommand.pickUpDate = nowPlusOneDay;
-
-        // when
-        const result = () => existingOrder.updateWith(updateOrderCommand, activeProducts, closingPeriods);
-
-        // then
-        expect(result).toThrow(new InvalidOrderError('pick-up date has to be at least two days after now'));
+        expect(result).not.toThrow();
       });
 
       it('should fail when pick-up date is a Sunday', () => {
@@ -1014,10 +1251,10 @@ describe('domain/order/Order', () => {
       it('should fail when pick-up date is in a closing period', () => {
         // given
         closingPeriods = [
-          { startDate: aSundayInTheFuture, endDate: aMondayInTheFuture } as ClosingPeriodInterface,
-          { startDate: nowMinusOneDay, endDate: nowPlusTwoDays } as ClosingPeriodInterface,
+          { startDate: nowMinusOneDay, endDate: aSundayInTheFuture } as ClosingPeriodInterface,
+          { startDate: aMondayInTheFuture, endDate: aWednesdayInTheFuture } as ClosingPeriodInterface,
         ];
-        updateOrderCommand.pickUpDate = nowPlusTwoDays;
+        updateOrderCommand.pickUpDate = aTuesdayInTheFuture;
 
         // when
         const result = () => existingOrder.updateWith(updateOrderCommand, activeProducts, closingPeriods);
@@ -1029,10 +1266,10 @@ describe('domain/order/Order', () => {
       it('should not fail when pick-up date is outside closing periods', () => {
         // given
         closingPeriods = [
-          { startDate: aSundayInTheFuture, endDate: aMondayInTheFuture } as ClosingPeriodInterface,
-          { startDate: nowMinusOneDay, endDate: nowPlusOneDay } as ClosingPeriodInterface,
+          { startDate: nowMinusOneDay, endDate: aSundayInTheFuture } as ClosingPeriodInterface,
+          { startDate: aMondayInTheFuture, endDate: aWednesdayInTheFuture } as ClosingPeriodInterface,
         ];
-        updateOrderCommand.pickUpDate = nowPlusTwoDays;
+        updateOrderCommand.pickUpDate = aThursdayInTheFuture;
 
         // when
         const result = () => existingOrder.updateWith(updateOrderCommand, activeProducts, closingPeriods);

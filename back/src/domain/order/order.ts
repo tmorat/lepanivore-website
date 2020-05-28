@@ -1,6 +1,6 @@
 import { cloneDeep, isEmpty } from 'lodash';
-import { ClosingDay } from '../closing-period/closing-day';
 import { ClosingPeriodInterface } from '../closing-period/closing-period.interface';
+import { Day, getNumberOfDaysBetweenFirstDateAndSecondDate, isFirstDateBeforeSecondDateIgnoringHours, NUMBER_OF_DAYS_IN_A_WEEK } from '../date.utils';
 import { Product } from '../product/product';
 import { ProductIdWithQuantity, ProductWithQuantity } from '../product/product-with-quantity';
 import { ProductInterface } from '../product/product.interface';
@@ -9,7 +9,7 @@ import { NewOrderCommand } from './commands/new-order-command';
 import { UpdateOrderCommand } from './commands/update-order-command';
 import { InvalidOrderError } from './errors/invalid-order.error';
 import { DELIVERY_DAY, MAXIMUM_DAY_FOR_DELIVERY_SAME_WEEK, MAXIMUM_HOUR_FOR_DELIVERY_SAME_WEEK } from './order-delivery-constraints';
-import { NUMBER_OF_MINIMUM_DAYS_FOR_AN_ADMIN_PICK_UP_ORDER } from './order-pick-up-constraints';
+import { AVAILABLE_DAYS_FOR_A_PICK_UP_ORDER, AvailableDayForAPickUpOrder, CLOSING_DAYS } from './order-pick-up-constraints';
 import { OrderType } from './order-type';
 import { OrderInterface } from './order.interface';
 
@@ -45,6 +45,7 @@ export class Order implements OrderInterface {
       this.bindContactDetails(command);
       this.bindProductSelection(command, activeProducts);
       this.bindOrderTypeSelection(command, closingPeriods);
+      Order.assertPickUpDateIsEqualOrAfterTheFirstAvailableDay(command.type, command.pickUpDate);
       this.note = command.note;
     }
   }
@@ -98,11 +99,12 @@ export class Order implements OrderInterface {
         throw new InvalidOrderError('a pick-up date has to be defined when order type is pick-up');
       }
 
-      if (pickUpDate.getTime() < this.getCurrentDatePlusDays(NUMBER_OF_MINIMUM_DAYS_FOR_AN_ADMIN_PICK_UP_ORDER).getTime()) {
-        throw new InvalidOrderError('pick-up date has to be at least two days after now');
+      const now: Date = new Date();
+      if (isFirstDateBeforeSecondDateIgnoringHours(pickUpDate, now)) {
+        throw new InvalidOrderError('pick-up date has to be in the future');
       }
 
-      if (Object.values(ClosingDay).includes(pickUpDate.getDay())) {
+      if (CLOSING_DAYS.includes(pickUpDate.getDay())) {
         throw new InvalidOrderError('pick-up date has to be between a Tuesday and a Saturday');
       }
 
@@ -111,6 +113,33 @@ export class Order implements OrderInterface {
           throw new InvalidOrderError('pick-up date has to be outside closing periods');
         }
       });
+    }
+  }
+
+  private static assertPickUpDateIsEqualOrAfterTheFirstAvailableDay(type: OrderType, pickUpDate: Date): void {
+    if (type === OrderType.PICK_UP) {
+      const now: Date = new Date();
+      const currentDay: number = now.getDay();
+      if (currentDay - pickUpDate.getDay() === 0) {
+        throw new InvalidOrderError('pick-up date cannot be same day as now');
+      }
+
+      const firstAvailableDay: Day = AVAILABLE_DAYS_FOR_A_PICK_UP_ORDER.filter(
+        (availableDayForAPickUpOrder: AvailableDayForAPickUpOrder) => availableDayForAPickUpOrder.whenOrderIsPlacedOn === currentDay
+      ).map((availableDayForAPickUpOrder: AvailableDayForAPickUpOrder) => availableDayForAPickUpOrder.firstAvailableDay)[0];
+
+      let numberOfDaysBetweenNowAndFirstAvailableDay: number = Math.abs(firstAvailableDay - currentDay);
+
+      const numberOfDaysBetweenNowAndPickUpDate: number = getNumberOfDaysBetweenFirstDateAndSecondDate(now, pickUpDate);
+      const isPickUpDateInTheNextSixDays: boolean = numberOfDaysBetweenNowAndPickUpDate < NUMBER_OF_DAYS_IN_A_WEEK;
+      const isPickUpDateInTheWeekAfter: boolean = isPickUpDateInTheNextSixDays && pickUpDate.getDay() < currentDay;
+      if (isPickUpDateInTheWeekAfter) {
+        numberOfDaysBetweenNowAndFirstAvailableDay = NUMBER_OF_DAYS_IN_A_WEEK - numberOfDaysBetweenNowAndFirstAvailableDay;
+      }
+
+      if (isFirstDateBeforeSecondDateIgnoringHours(pickUpDate, Order.getCurrentDatePlusDays(numberOfDaysBetweenNowAndFirstAvailableDay))) {
+        throw new InvalidOrderError(`pick-up date has to be at least ${numberOfDaysBetweenNowAndFirstAvailableDay} days after now`);
+      }
     }
   }
 
@@ -125,8 +154,8 @@ export class Order implements OrderInterface {
       if (!deliveryDate) {
         throw new InvalidOrderError('a delivery date has to be defined when order type is delivery');
       }
-      const now: Date = new Date();
 
+      const now: Date = new Date();
       if (deliveryDate.getTime() < now.getTime()) {
         throw new InvalidOrderError('delivery date has to be in the future');
       }
@@ -141,8 +170,8 @@ export class Order implements OrderInterface {
         throw new InvalidOrderError('delivery date has to be a Thursday');
       }
 
-      const numberOfDaysBetweenDeliveryDateAndNow: number = (deliveryDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24);
-      const isDeliveryDateIsInTheNextSixDays: boolean = numberOfDaysBetweenDeliveryDateAndNow <= 6;
+      const numberOfDaysBetweenNowAndDeliveryDate: number = getNumberOfDaysBetweenFirstDateAndSecondDate(now, deliveryDate);
+      const isDeliveryDateIsInTheNextSixDays: boolean = numberOfDaysBetweenNowAndDeliveryDate < NUMBER_OF_DAYS_IN_A_WEEK;
       if (
         isDeliveryDateIsInTheNextSixDays &&
         (now.getDay() > MAXIMUM_DAY_FOR_DELIVERY_SAME_WEEK ||
