@@ -171,13 +171,16 @@ export default Vue.extend({
     },
     deliveryDateMin(): string {
       const now = new Date();
-      const currentDayOfWeek: number = now.getDay();
-      if (
-        (currentDayOfWeek > TUESDAY && currentDayOfWeek <= THURSDAY) ||
-        (currentDayOfWeek === TUESDAY && now.getHours() >= MAXIMUM_HOUR_FOR_DELIVERY_SAME_WEEK)
-      ) {
-        const numberOfDaysToAddToOverlapNextThursday: number = THURSDAY - currentDayOfWeek + 1;
-        now.setDate(now.getDate() + numberOfDaysToAddToOverlapNextThursday);
+
+      if (!this.isInAdmin) {
+        const currentDayOfWeek: number = now.getDay();
+        if (
+          (currentDayOfWeek > TUESDAY && currentDayOfWeek <= THURSDAY) ||
+          (currentDayOfWeek === TUESDAY && now.getHours() >= MAXIMUM_HOUR_FOR_DELIVERY_SAME_WEEK)
+        ) {
+          const numberOfDaysToAddToOverlapNextThursday: number = THURSDAY - currentDayOfWeek + 1;
+          now.setDate(now.getDate() + numberOfDaysToAddToOverlapNextThursday);
+        }
       }
 
       return now.toISOString();
