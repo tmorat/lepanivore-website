@@ -96,7 +96,7 @@ describe('domain/product/Product', () => {
           const result = () => Product.factory.create(newProductCommand);
 
           // then
-          expect(result).toThrow(new InvalidProductError('price has to be a positive value'));
+          expect(result).toThrow(new InvalidProductError('price 0 has to be a positive value'));
         });
 
         it('should fail when price is negative', () => {
@@ -107,7 +107,7 @@ describe('domain/product/Product', () => {
           const result = () => Product.factory.create(newProductCommand);
 
           // then
-          expect(result).toThrow(new InvalidProductError('price has to be a positive value'));
+          expect(result).toThrow(new InvalidProductError('price -1 has to be a positive value'));
         });
       });
 
@@ -191,7 +191,7 @@ describe('domain/product/Product', () => {
         const result = () => existingProduct.updateWith(updateProductCommand);
 
         // then
-        expect(result).toThrow(new InvalidProductError('existing product id does not match product id in command'));
+        expect(result).toThrow(new InvalidProductError('existing product id 42 does not match command product id 1337'));
       });
     });
 

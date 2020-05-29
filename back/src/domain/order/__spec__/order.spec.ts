@@ -131,7 +131,7 @@ describe('domain/order/Order', () => {
           const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
 
           // then
-          expect(result).toThrow(new InvalidOrderError('invalid client email address'));
+          expect(result).toThrow(new InvalidOrderError('invalid client email address not-a-valid-email'));
         });
       });
 
@@ -179,7 +179,7 @@ describe('domain/order/Order', () => {
           const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
 
           // then
-          expect(result).toThrow(new InvalidOrderError('a product quantity has to be positive'));
+          expect(result).toThrow(new InvalidOrderError('product quantity 0 has to be positive'));
         });
 
         it('should fail when having a product with negative quantity', () => {
@@ -193,7 +193,7 @@ describe('domain/order/Order', () => {
           const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
 
           // then
-          expect(result).toThrow(new InvalidOrderError('a product quantity has to be positive'));
+          expect(result).toThrow(new InvalidOrderError('product quantity -1 has to be positive'));
         });
 
         it('should fail when having an unknown product id', () => {
@@ -245,7 +245,7 @@ describe('domain/order/Order', () => {
           const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
 
           // then
-          expect(result).toThrow(new InvalidOrderError('unknown order type'));
+          expect(result).toThrow(new InvalidOrderError('unknown order type UNKNOWN_TYPE'));
         });
       });
 
@@ -320,7 +320,7 @@ describe('domain/order/Order', () => {
           const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
 
           // then
-          expect(result).toThrow(new InvalidOrderError('pick-up date has to be in the future'));
+          expect(result).toThrow(new InvalidOrderError('pick-up date 2020-06-02T11:41:20.000Z has to be in the future'));
         });
 
         it('should fail when pick-up date is a Sunday', () => {
@@ -331,7 +331,7 @@ describe('domain/order/Order', () => {
           const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
 
           // then
-          expect(result).toThrow(new InvalidOrderError('pick-up date has to be between a Tuesday and a Saturday'));
+          expect(result).toThrow(new InvalidOrderError('pick-up date 2030-03-31T08:41:20.000Z has to be between a Tuesday and a Saturday'));
         });
 
         it('should fail when pick-up date is a Monday', () => {
@@ -342,7 +342,7 @@ describe('domain/order/Order', () => {
           const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
 
           // then
-          expect(result).toThrow(new InvalidOrderError('pick-up date has to be between a Tuesday and a Saturday'));
+          expect(result).toThrow(new InvalidOrderError('pick-up date 2030-04-01T09:41:20.000Z has to be between a Tuesday and a Saturday'));
         });
 
         it('should fail when pick-up date is in a closing period', () => {
@@ -357,7 +357,7 @@ describe('domain/order/Order', () => {
           const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
 
           // then
-          expect(result).toThrow(new InvalidOrderError('pick-up date has to be outside closing periods'));
+          expect(result).toThrow(new InvalidOrderError('pick-up date 2030-04-02T10:41:20.000Z has to be outside closing periods'));
         });
 
         it('should not fail when pick-up date is outside closing periods', () => {
@@ -407,7 +407,7 @@ describe('domain/order/Order', () => {
             const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
 
             // then
-            expect(result).toThrow(new InvalidOrderError('pick-up date has to be at least 3 days after now'));
+            expect(result).toThrow(new InvalidOrderError('pick-up date 2030-04-02T10:41:20.000Z has to be at least 3 days after now'));
           });
 
           it('should fail when pick-up date is the following Wednesday', () => {
@@ -418,7 +418,7 @@ describe('domain/order/Order', () => {
             const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
 
             // then
-            expect(result).toThrow(new InvalidOrderError('pick-up date has to be at least 3 days after now'));
+            expect(result).toThrow(new InvalidOrderError('pick-up date 2030-04-03T11:41:20.000Z has to be at least 3 days after now'));
           });
 
           it('should not fail when pick-up date is the following Thursday', () => {
@@ -447,7 +447,7 @@ describe('domain/order/Order', () => {
             const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
 
             // then
-            expect(result).toThrow(new InvalidOrderError('pick-up date cannot be same day as now'));
+            expect(result).toThrow(new InvalidOrderError('pick-up date 2030-04-02T10:41:20.000Z cannot be same day as now'));
           });
 
           it('should fail when pick-up date is the following Wednesday', () => {
@@ -458,7 +458,7 @@ describe('domain/order/Order', () => {
             const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
 
             // then
-            expect(result).toThrow(new InvalidOrderError('pick-up date has to be at least 2 days after now'));
+            expect(result).toThrow(new InvalidOrderError('pick-up date 2030-04-03T11:41:20.000Z has to be at least 2 days after now'));
           });
 
           it('should not fail when pick-up date is the following Thursday', () => {
@@ -487,7 +487,7 @@ describe('domain/order/Order', () => {
             const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
 
             // then
-            expect(result).toThrow(new InvalidOrderError('pick-up date cannot be same day as now'));
+            expect(result).toThrow(new InvalidOrderError('pick-up date 2030-04-03T11:41:20.000Z cannot be same day as now'));
           });
 
           it('should fail when pick-up date is the following Thursday', () => {
@@ -498,7 +498,7 @@ describe('domain/order/Order', () => {
             const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
 
             // then
-            expect(result).toThrow(new InvalidOrderError('pick-up date has to be at least 3 days after now'));
+            expect(result).toThrow(new InvalidOrderError('pick-up date 2030-04-04T12:41:20.000Z has to be at least 3 days after now'));
           });
 
           it('should fail when pick-up date is the following Friday', () => {
@@ -509,7 +509,7 @@ describe('domain/order/Order', () => {
             const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
 
             // then
-            expect(result).toThrow(new InvalidOrderError('pick-up date has to be at least 3 days after now'));
+            expect(result).toThrow(new InvalidOrderError('pick-up date 2030-04-05T13:41:20.000Z has to be at least 3 days after now'));
           });
 
           it('should not fail when pick-up date is the following Saturday', () => {
@@ -538,7 +538,7 @@ describe('domain/order/Order', () => {
             const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
 
             // then
-            expect(result).toThrow(new InvalidOrderError('pick-up date cannot be same day as now'));
+            expect(result).toThrow(new InvalidOrderError('pick-up date 2030-04-04T12:41:20.000Z cannot be same day as now'));
           });
 
           it('should fail when pick-up date is the following Friday', () => {
@@ -549,7 +549,7 @@ describe('domain/order/Order', () => {
             const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
 
             // then
-            expect(result).toThrow(new InvalidOrderError('pick-up date has to be at least 2 days after now'));
+            expect(result).toThrow(new InvalidOrderError('pick-up date 2030-04-05T13:41:20.000Z has to be at least 2 days after now'));
           });
 
           it('should not fail when pick-up date is the following Saturday', () => {
@@ -578,7 +578,7 @@ describe('domain/order/Order', () => {
             const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
 
             // then
-            expect(result).toThrow(new InvalidOrderError('pick-up date cannot be same day as now'));
+            expect(result).toThrow(new InvalidOrderError('pick-up date 2030-04-05T13:41:20.000Z cannot be same day as now'));
           });
 
           it('should fail when pick-up date is the following Saturday', () => {
@@ -589,7 +589,7 @@ describe('domain/order/Order', () => {
             const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
 
             // then
-            expect(result).toThrow(new InvalidOrderError('pick-up date has to be at least 3 days after now'));
+            expect(result).toThrow(new InvalidOrderError('pick-up date 2030-04-06T14:41:20.000Z has to be at least 3 days after now'));
           });
 
           it('should not fail when pick-up date is the following Tuesday', () => {
@@ -618,7 +618,7 @@ describe('domain/order/Order', () => {
             const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
 
             // then
-            expect(result).toThrow(new InvalidOrderError('pick-up date cannot be same day as now'));
+            expect(result).toThrow(new InvalidOrderError('pick-up date 2030-04-06T14:41:20.000Z cannot be same day as now'));
           });
 
           it('should not fail when pick-up date is the following Tuesday', () => {
@@ -741,7 +741,7 @@ describe('domain/order/Order', () => {
           const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
 
           // then
-          expect(result).toThrow(new InvalidOrderError('delivery date has to be in the future'));
+          expect(result).toThrow(new InvalidOrderError('delivery date 2020-06-02T08:41:20.000Z has to be in the future'));
         });
 
         it('should fail when delivery date is not a Thursday', () => {
@@ -752,7 +752,7 @@ describe('domain/order/Order', () => {
           const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
 
           // then
-          expect(result).toThrow(new InvalidOrderError('delivery date has to be a Thursday'));
+          expect(result).toThrow(new InvalidOrderError('delivery date 2020-06-10T23:00:00.000Z has to be a Thursday'));
         });
 
         it('should not fail when delivery date is the Thursday same week as now when creating the order before Tuesday 7 PM', () => {
@@ -778,7 +778,7 @@ describe('domain/order/Order', () => {
           const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
 
           // then
-          expect(result).toThrow(new InvalidOrderError('delivery date has to be one of the next available Thursday'));
+          expect(result).toThrow(new InvalidOrderError('delivery date 2020-06-11T23:00:00.000Z has to be one of the next available Thursday'));
         });
 
         it('should not fail when delivery date is the Thursday the week after now when creating the order Tuesday after 7 PM', () => {
@@ -804,7 +804,7 @@ describe('domain/order/Order', () => {
           const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
 
           // then
-          expect(result).toThrow(new InvalidOrderError('delivery date has to be one of the next available Thursday'));
+          expect(result).toThrow(new InvalidOrderError('delivery date 2020-06-11T23:00:00.000Z has to be one of the next available Thursday'));
         });
 
         it('should not fail when delivery date is the Thursday the week after now when creating the order Wednesday', () => {
@@ -830,7 +830,7 @@ describe('domain/order/Order', () => {
           const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
 
           // then
-          expect(result).toThrow(new InvalidOrderError('delivery date has to be one of the next available Thursday'));
+          expect(result).toThrow(new InvalidOrderError('delivery date 2020-06-11T23:00:00.000Z has to be one of the next available Thursday'));
         });
 
         it('should not fail when delivery date is the Thursday the week after now when creating the order Thursday', () => {
@@ -871,7 +871,7 @@ describe('domain/order/Order', () => {
           const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
 
           // then
-          expect(result).toThrow(new InvalidOrderError('delivery date has to be outside closing periods'));
+          expect(result).toThrow(new InvalidOrderError('delivery date 2020-06-11T23:00:00.000Z has to be outside closing periods'));
         });
 
         it('should not fail when delivery date is outside a closing period', () => {
@@ -997,7 +997,7 @@ describe('domain/order/Order', () => {
         const result = () => existingOrder.updateWith(updateOrderCommand, activeProducts, closingPeriods);
 
         // then
-        expect(result).toThrow(new InvalidOrderError('existing order id does not match order id in command'));
+        expect(result).toThrow(new InvalidOrderError('existing order id 42 does not match command order id 1337'));
       });
     });
 
@@ -1075,7 +1075,7 @@ describe('domain/order/Order', () => {
         const result = () => existingOrder.updateWith(updateOrderCommand, activeProducts, closingPeriods);
 
         // then
-        expect(result).toThrow(new InvalidOrderError('a product quantity has to be positive'));
+        expect(result).toThrow(new InvalidOrderError('product quantity 0 has to be positive'));
       });
 
       it('should fail when having a product with negative quantity', () => {
@@ -1089,7 +1089,7 @@ describe('domain/order/Order', () => {
         const result = () => existingOrder.updateWith(updateOrderCommand, activeProducts, closingPeriods);
 
         // then
-        expect(result).toThrow(new InvalidOrderError('a product quantity has to be positive'));
+        expect(result).toThrow(new InvalidOrderError('product quantity -1 has to be positive'));
       });
 
       it('should fail when having an unknown product id', () => {
@@ -1141,7 +1141,7 @@ describe('domain/order/Order', () => {
         const result = () => existingOrder.updateWith(updateOrderCommand, activeProducts, closingPeriods);
 
         // then
-        expect(result).toThrow(new InvalidOrderError('unknown order type'));
+        expect(result).toThrow(new InvalidOrderError('unknown order type UNKNOWN_TYPE'));
       });
     });
 
@@ -1212,7 +1212,7 @@ describe('domain/order/Order', () => {
         const result = () => existingOrder.updateWith(updateOrderCommand, activeProducts, closingPeriods);
 
         // then
-        expect(result).toThrow(new InvalidOrderError('pick-up date has to be in the future'));
+        expect(result).toThrow(new InvalidOrderError('pick-up date 2020-06-02T11:41:20.000Z has to be in the future'));
       });
 
       it('should not fail when pick-up date is in the past but at same date and different time', () => {
@@ -1234,7 +1234,7 @@ describe('domain/order/Order', () => {
         const result = () => existingOrder.updateWith(updateOrderCommand, activeProducts, closingPeriods);
 
         // then
-        expect(result).toThrow(new InvalidOrderError('pick-up date has to be between a Tuesday and a Saturday'));
+        expect(result).toThrow(new InvalidOrderError('pick-up date 2030-03-31T08:41:20.000Z has to be between a Tuesday and a Saturday'));
       });
 
       it('should fail when pick-up date is a Monday', () => {
@@ -1245,7 +1245,7 @@ describe('domain/order/Order', () => {
         const result = () => existingOrder.updateWith(updateOrderCommand, activeProducts, closingPeriods);
 
         // then
-        expect(result).toThrow(new InvalidOrderError('pick-up date has to be between a Tuesday and a Saturday'));
+        expect(result).toThrow(new InvalidOrderError('pick-up date 2030-04-01T09:41:20.000Z has to be between a Tuesday and a Saturday'));
       });
 
       it('should fail when pick-up date is in a closing period', () => {
@@ -1260,7 +1260,7 @@ describe('domain/order/Order', () => {
         const result = () => existingOrder.updateWith(updateOrderCommand, activeProducts, closingPeriods);
 
         // then
-        expect(result).toThrow(new InvalidOrderError('pick-up date has to be outside closing periods'));
+        expect(result).toThrow(new InvalidOrderError('pick-up date 2030-04-02T10:41:20.000Z has to be outside closing periods'));
       });
 
       it('should not fail when pick-up date is outside closing periods', () => {
@@ -1386,7 +1386,7 @@ describe('domain/order/Order', () => {
         const result = () => existingOrder.updateWith(updateOrderCommand, activeProducts, closingPeriods);
 
         // then
-        expect(result).toThrow(new InvalidOrderError('delivery date has to be in the future'));
+        expect(result).toThrow(new InvalidOrderError('delivery date 2020-06-02T08:41:20.000Z has to be in the future'));
       });
 
       it('should fail when delivery date is not a Thursday', () => {
@@ -1397,7 +1397,7 @@ describe('domain/order/Order', () => {
         const result = () => existingOrder.updateWith(updateOrderCommand, activeProducts, closingPeriods);
 
         // then
-        expect(result).toThrow(new InvalidOrderError('delivery date has to be a Thursday'));
+        expect(result).toThrow(new InvalidOrderError('delivery date 2020-06-10T23:00:00.000Z has to be a Thursday'));
       });
 
       it('should not fail when delivery date is the Thursday same week as now when creating the order before Tuesday 7 PM', () => {
@@ -1423,7 +1423,7 @@ describe('domain/order/Order', () => {
         const result = () => existingOrder.updateWith(updateOrderCommand, activeProducts, closingPeriods);
 
         // then
-        expect(result).toThrow(new InvalidOrderError('delivery date has to be one of the next available Thursday'));
+        expect(result).toThrow(new InvalidOrderError('delivery date 2020-06-11T23:00:00.000Z has to be one of the next available Thursday'));
       });
 
       it('should not fail when delivery date is the Thursday the week after now when creating the order Tuesday after 7 PM', () => {
@@ -1449,7 +1449,7 @@ describe('domain/order/Order', () => {
         const result = () => existingOrder.updateWith(updateOrderCommand, activeProducts, closingPeriods);
 
         // then
-        expect(result).toThrow(new InvalidOrderError('delivery date has to be one of the next available Thursday'));
+        expect(result).toThrow(new InvalidOrderError('delivery date 2020-06-11T23:00:00.000Z has to be one of the next available Thursday'));
       });
 
       it('should not fail when delivery date is the Thursday the week after now when creating the order Wednesday', () => {
@@ -1475,7 +1475,7 @@ describe('domain/order/Order', () => {
         const result = () => existingOrder.updateWith(updateOrderCommand, activeProducts, closingPeriods);
 
         // then
-        expect(result).toThrow(new InvalidOrderError('delivery date has to be one of the next available Thursday'));
+        expect(result).toThrow(new InvalidOrderError('delivery date 2020-06-11T23:00:00.000Z has to be one of the next available Thursday'));
       });
 
       it('should not fail when delivery date is the Thursday the week after now when creating the order Thursday', () => {
@@ -1516,7 +1516,7 @@ describe('domain/order/Order', () => {
         const result = () => existingOrder.updateWith(updateOrderCommand, activeProducts, closingPeriods);
 
         // then
-        expect(result).toThrow(new InvalidOrderError('delivery date has to be outside closing periods'));
+        expect(result).toThrow(new InvalidOrderError('delivery date 2020-06-11T23:00:00.000Z has to be outside closing periods'));
       });
 
       it('should not fail when delivery date is outside a closing period', () => {

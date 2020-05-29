@@ -67,7 +67,7 @@ export class Order implements OrderInterface {
       throw new InvalidOrderError('client email address has to be defined');
     }
     if (!this.EMAIL_REGEX.test(clientEmailAddress)) {
-      throw new InvalidOrderError('invalid client email address');
+      throw new InvalidOrderError(`invalid client email address ${clientEmailAddress}`);
     }
   }
 
@@ -76,7 +76,7 @@ export class Order implements OrderInterface {
       throw new InvalidOrderError('order type has to be defined');
     }
     if (!Object.keys(OrderType).includes(type)) {
-      throw new InvalidOrderError('unknown order type');
+      throw new InvalidOrderError(`unknown order type ${type}`);
     }
   }
 
@@ -85,12 +85,11 @@ export class Order implements OrderInterface {
       throw new InvalidOrderError('an order must have at least one product');
     }
 
-    const numberOfProductsHavingANegativeOrZeroQuantity: number = products.filter(
-      (productWithQuantity: ProductIdWithQuantity) => productWithQuantity.quantity < 1
-    ).length;
-    if (numberOfProductsHavingANegativeOrZeroQuantity > 0) {
-      throw new InvalidOrderError('a product quantity has to be positive');
-    }
+    products.forEach((productWithQuantity: ProductIdWithQuantity) => {
+      if (productWithQuantity.quantity < 1) {
+        throw new InvalidOrderError(`product quantity ${productWithQuantity.quantity} has to be positive`);
+      }
+    });
   }
 
   private static assertPickUpDateIsValid(type: OrderType, closingPeriods: ClosingPeriodInterface[], pickUpDate?: Date): void {
@@ -101,16 +100,16 @@ export class Order implements OrderInterface {
 
       const now: Date = new Date();
       if (isFirstDateBeforeSecondDateIgnoringHours(pickUpDate, now)) {
-        throw new InvalidOrderError('pick-up date has to be in the future');
+        throw new InvalidOrderError(`pick-up date ${pickUpDate.toISOString()} has to be in the future`);
       }
 
       if (CLOSING_DAYS.includes(pickUpDate.getDay())) {
-        throw new InvalidOrderError('pick-up date has to be between a Tuesday and a Saturday');
+        throw new InvalidOrderError(`pick-up date ${pickUpDate.toISOString()} has to be between a Tuesday and a Saturday`);
       }
 
       closingPeriods.forEach((closingPeriod: ClosingPeriodInterface) => {
         if (pickUpDate.getTime() >= closingPeriod.startDate.getTime() && pickUpDate.getTime() <= closingPeriod.endDate.getTime()) {
-          throw new InvalidOrderError('pick-up date has to be outside closing periods');
+          throw new InvalidOrderError(`pick-up date ${pickUpDate.toISOString()} has to be outside closing periods`);
         }
       });
     }
@@ -121,7 +120,7 @@ export class Order implements OrderInterface {
       const now: Date = new Date();
       const currentDay: number = now.getDay();
       if (currentDay - pickUpDate.getDay() === 0) {
-        throw new InvalidOrderError('pick-up date cannot be same day as now');
+        throw new InvalidOrderError(`pick-up date ${pickUpDate.toISOString()} cannot be same day as now`);
       }
 
       const firstAvailableDay: Day = AVAILABLE_DAYS_FOR_A_PICK_UP_ORDER.filter(
@@ -138,7 +137,9 @@ export class Order implements OrderInterface {
       }
 
       if (isFirstDateBeforeSecondDateIgnoringHours(pickUpDate, Order.getCurrentDatePlusDays(numberOfDaysBetweenNowAndFirstAvailableDay))) {
-        throw new InvalidOrderError(`pick-up date has to be at least ${numberOfDaysBetweenNowAndFirstAvailableDay} days after now`);
+        throw new InvalidOrderError(
+          `pick-up date ${pickUpDate.toISOString()} has to be at least ${numberOfDaysBetweenNowAndFirstAvailableDay} days after now`
+        );
       }
     }
   }
@@ -157,17 +158,17 @@ export class Order implements OrderInterface {
 
       const now: Date = new Date();
       if (deliveryDate.getTime() < now.getTime()) {
-        throw new InvalidOrderError('delivery date has to be in the future');
+        throw new InvalidOrderError(`delivery date ${deliveryDate.toISOString()} has to be in the future`);
       }
 
       closingPeriods.forEach((closingPeriod: ClosingPeriodInterface) => {
         if (deliveryDate.getTime() >= closingPeriod.startDate.getTime() && deliveryDate.getTime() <= closingPeriod.endDate.getTime()) {
-          throw new InvalidOrderError('delivery date has to be outside closing periods');
+          throw new InvalidOrderError(`delivery date ${deliveryDate.toISOString()} has to be outside closing periods`);
         }
       });
 
       if (deliveryDate.getDay() !== DELIVERY_DAY) {
-        throw new InvalidOrderError('delivery date has to be a Thursday');
+        throw new InvalidOrderError(`delivery date ${deliveryDate.toISOString()} has to be a Thursday`);
       }
 
       const numberOfDaysBetweenNowAndDeliveryDate: number = getNumberOfDaysBetweenFirstDateAndSecondDate(now, deliveryDate);
@@ -177,7 +178,7 @@ export class Order implements OrderInterface {
         (now.getDay() > MAXIMUM_DAY_FOR_DELIVERY_SAME_WEEK ||
           (now.getDay() === MAXIMUM_DAY_FOR_DELIVERY_SAME_WEEK && now.getHours() >= MAXIMUM_HOUR_FOR_DELIVERY_SAME_WEEK))
       ) {
-        throw new InvalidOrderError('delivery date has to be one of the next available Thursday');
+        throw new InvalidOrderError(`delivery date ${deliveryDate.toISOString()} has to be one of the next available Thursday`);
       }
     }
   }
@@ -200,7 +201,7 @@ export class Order implements OrderInterface {
 
   updateWith(command: UpdateOrderCommand, activeProducts: ProductInterface[], closingPeriods: ClosingPeriodInterface[]): void {
     if (this.id !== command.orderId) {
-      throw new InvalidOrderError('existing order id does not match order id in command');
+      throw new InvalidOrderError(`existing order id ${this.id} does not match command order id ${command.orderId}`);
     }
 
     this.bindProductSelection(command, activeProducts);

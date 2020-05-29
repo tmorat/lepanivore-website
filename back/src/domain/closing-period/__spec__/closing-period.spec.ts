@@ -69,7 +69,7 @@ describe('domain/closing-period/ClosingPeriod', () => {
           const result = () => ClosingPeriod.factory.create(newClosingPeriodCommand);
 
           // then
-          expect(result).toThrow(new InvalidClosingPeriodError('start date has to be in the future'));
+          expect(result).toThrow(new InvalidClosingPeriodError('start date 2020-06-02T08:41:20.000Z has to be in the future'));
         });
 
         it('should not fail when start date is same date as now but different hour', () => {
@@ -122,7 +122,7 @@ describe('domain/closing-period/ClosingPeriod', () => {
           const result = () => ClosingPeriod.factory.create(newClosingPeriodCommand);
 
           // then
-          expect(result).toThrow(new InvalidClosingPeriodError('end date has to be in the future'));
+          expect(result).toThrow(new InvalidClosingPeriodError('end date 2020-06-02T08:41:20.000Z has to be in the future'));
         });
 
         it('should fail when end date is before start date', () => {
@@ -134,7 +134,9 @@ describe('domain/closing-period/ClosingPeriod', () => {
           const result = () => ClosingPeriod.factory.create(newClosingPeriodCommand);
 
           // then
-          expect(result).toThrow(new InvalidClosingPeriodError('end date has to be greater than start date'));
+          expect(result).toThrow(
+            new InvalidClosingPeriodError('end date 2040-03-28T20:41:20.000Z has to be greater than start date 2040-03-28T20:41:21.000Z')
+          );
         });
       });
     });

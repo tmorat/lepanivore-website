@@ -30,7 +30,7 @@ export class ClosingPeriod implements ClosingPeriodInterface {
 
     const now: Date = new Date();
     if (isFirstDateBeforeSecondDateIgnoringHours(startDate, now)) {
-      throw new InvalidClosingPeriodError('start date has to be in the future');
+      throw new InvalidClosingPeriodError(`start date ${startDate.toISOString()} has to be in the future`);
     }
   }
 
@@ -41,10 +41,10 @@ export class ClosingPeriod implements ClosingPeriodInterface {
 
     const now: Date = new Date();
     if (isFirstDateBeforeSecondDateIgnoringHours(endDate, now)) {
-      throw new InvalidClosingPeriodError('end date has to be in the future');
+      throw new InvalidClosingPeriodError(`end date ${endDate.toISOString()} has to be in the future`);
     }
     if (endDate.getTime() < startDate.getTime()) {
-      throw new InvalidClosingPeriodError('end date has to be greater than start date');
+      throw new InvalidClosingPeriodError(`end date ${endDate.toISOString()} has to be greater than start date ${startDate.toISOString()}`);
     }
   }
 }
