@@ -1,5 +1,7 @@
+import { cloneDeep } from 'lodash';
+
 export const isFirstDateBeforeSecondDateIgnoringHours = (firstDate: Date, secondDate: Date): boolean => {
-  const secondDateCopy: Date = new Date(secondDate.getTime());
+  const secondDateCopy: Date = cloneDeep(secondDate);
   secondDateCopy.setHours(firstDate.getHours(), firstDate.getMinutes(), firstDate.getSeconds(), firstDate.getMilliseconds());
 
   return firstDate.getTime() < secondDateCopy.getTime();

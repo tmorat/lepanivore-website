@@ -158,7 +158,7 @@ export class Order implements OrderInterface {
       }
 
       const now: Date = new Date();
-      if (deliveryDate.getTime() < now.getTime()) {
+      if (isFirstDateBeforeSecondDateIgnoringHours(deliveryDate, now)) {
         throw new InvalidOrderError(`delivery date ${deliveryDate.toISOString()} has to be in the future`);
       }
 
@@ -251,10 +251,10 @@ export class Order implements OrderInterface {
     this.type = command.type;
     if (this.type === OrderType.PICK_UP) {
       this.pickUpDate = command.pickUpDate;
-      this.deliveryDate = undefined;
-      this.deliveryAddress = undefined;
+      this.deliveryDate = null;
+      this.deliveryAddress = null;
     } else {
-      this.pickUpDate = undefined;
+      this.pickUpDate = null;
       this.deliveryDate = command.deliveryDate;
       this.deliveryAddress = command.deliveryAddress;
     }

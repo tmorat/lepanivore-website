@@ -262,8 +262,8 @@ describe('domain/order/Order', () => {
         let aTuesdayInTheFutureTheWeekAfter: Date;
 
         beforeEach(() => {
-          now = new Date('2020-06-03T07:41:20');
-          nowMinusOneDay = new Date('2020-06-02T07:41:20');
+          now = new Date('2020-06-03T04:41:20');
+          nowMinusOneDay = new Date('2020-06-02T04:41:20');
           aSundayInTheFuture = new Date('2030-03-31T04:41:20');
           aMondayInTheFuture = new Date('2030-04-01T05:41:20');
           aTuesdayInTheFuture = new Date('2030-04-02T06:41:20');
@@ -298,7 +298,7 @@ describe('domain/order/Order', () => {
           const result: Order = Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
 
           // then
-          expect(result.pickUpDate).toBeUndefined();
+          expect(result.pickUpDate).toBeNull();
         });
 
         it('should fail when no pick-up date and order type is pick-up', () => {
@@ -320,7 +320,7 @@ describe('domain/order/Order', () => {
           const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
 
           // then
-          expect(result).toThrow(new InvalidOrderError('pick-up date 2020-06-02T11:41:20.000Z has to be in the future'));
+          expect(result).toThrow(new InvalidOrderError('pick-up date 2020-06-02T08:41:20.000Z has to be in the future'));
         });
 
         it('should fail when pick-up date is a Sunday', () => {
@@ -659,7 +659,7 @@ describe('domain/order/Order', () => {
           const result: Order = Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
 
           // then
-          expect(result.deliveryAddress).toBeUndefined();
+          expect(result.deliveryAddress).toBeNull();
         });
 
         it('should fail when delivery address is empty and order type is delivery', () => {
@@ -719,7 +719,7 @@ describe('domain/order/Order', () => {
           const result: Order = Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
 
           // then
-          expect(result.deliveryDate).toBeUndefined();
+          expect(result.deliveryDate).toBeNull();
         });
 
         it('should fail when delivery date is empty and order type is delivery', () => {
@@ -733,7 +733,7 @@ describe('domain/order/Order', () => {
           expect(result).toThrow(new InvalidOrderError('a delivery date has to be defined when order type is delivery'));
         });
 
-        it('should fail when delivery date is before current date', () => {
+        it('should fail when delivery date is in the past', () => {
           // given
           newOrderCommand.deliveryDate = nowMinusOneDay;
 
@@ -1156,9 +1156,9 @@ describe('domain/order/Order', () => {
       let aThursdayInTheFuture: Date;
 
       beforeEach(() => {
-        now = new Date('2020-06-03T07:41:20');
-        nowMinusOneDay = new Date('2020-06-02T07:41:20');
-        nowMinusOneHour = new Date('2020-06-03T06:41:20');
+        now = new Date('2020-06-03T04:41:20');
+        nowMinusOneDay = new Date('2020-06-02T04:41:20');
+        nowMinusOneHour = new Date('2020-06-04T06:41:20');
         aSundayInTheFuture = new Date('2030-03-31T04:41:20');
         aMondayInTheFuture = new Date('2030-04-01T05:41:20');
         aTuesdayInTheFuture = new Date('2030-04-02T06:41:20');
@@ -1190,7 +1190,7 @@ describe('domain/order/Order', () => {
         existingOrder.updateWith(updateOrderCommand, activeProducts, closingPeriods);
 
         // then
-        expect(existingOrder.pickUpDate).toBeUndefined();
+        expect(existingOrder.pickUpDate).toBeNull();
       });
 
       it('should fail when no pick-up date and order type is pick-up', () => {
@@ -1212,7 +1212,7 @@ describe('domain/order/Order', () => {
         const result = () => existingOrder.updateWith(updateOrderCommand, activeProducts, closingPeriods);
 
         // then
-        expect(result).toThrow(new InvalidOrderError('pick-up date 2020-06-02T11:41:20.000Z has to be in the future'));
+        expect(result).toThrow(new InvalidOrderError('pick-up date 2020-06-02T08:41:20.000Z has to be in the future'));
       });
 
       it('should not fail when pick-up date is in the past but at same date and different time', () => {
@@ -1304,7 +1304,7 @@ describe('domain/order/Order', () => {
         existingOrder.updateWith(updateOrderCommand, activeProducts, closingPeriods);
 
         // then
-        expect(existingOrder.deliveryAddress).toBeUndefined();
+        expect(existingOrder.deliveryAddress).toBeNull();
       });
 
       it('should fail when delivery address is empty and order type is delivery', () => {
@@ -1322,6 +1322,7 @@ describe('domain/order/Order', () => {
     describe('deliveryDate', () => {
       let now: Date;
       let nowMinusOneDay: Date;
+      let nowMinusOneHour: Date;
       let tuesdayBeforeSevenPM: Date;
       let tuesdayAtSevenPM: Date;
       let wednesdayAfterTuesday: Date;
@@ -1332,6 +1333,7 @@ describe('domain/order/Order', () => {
       beforeEach(() => {
         now = new Date('2020-06-03T04:41:20');
         nowMinusOneDay = new Date('2020-06-02T04:41:20');
+        nowMinusOneHour = new Date('2020-06-04T06:41:20');
         tuesdayBeforeSevenPM = new Date('2020-06-09T18:59:59');
         tuesdayAtSevenPM = new Date('2020-06-09T19:00:00');
         wednesdayAfterTuesday = new Date('2020-06-10T19:00:00');
@@ -1364,7 +1366,7 @@ describe('domain/order/Order', () => {
         existingOrder.updateWith(updateOrderCommand, activeProducts, closingPeriods);
 
         // then
-        expect(existingOrder.deliveryDate).toBeUndefined();
+        expect(existingOrder.deliveryDate).toBeNull();
       });
 
       it('should fail when delivery date is empty and order type is delivery', () => {
@@ -1378,7 +1380,7 @@ describe('domain/order/Order', () => {
         expect(result).toThrow(new InvalidOrderError('a delivery date has to be defined when order type is delivery'));
       });
 
-      it('should fail when delivery date is before current date', () => {
+      it('should fail when delivery date is in the past', () => {
         // given
         updateOrderCommand.deliveryDate = nowMinusOneDay;
 
@@ -1387,6 +1389,17 @@ describe('domain/order/Order', () => {
 
         // then
         expect(result).toThrow(new InvalidOrderError('delivery date 2020-06-02T08:41:20.000Z has to be in the future'));
+      });
+
+      it('should not fail when delivery date is in the past but at same date and different time', () => {
+        // given
+        updateOrderCommand.deliveryDate = nowMinusOneHour;
+
+        // when
+        const result = () => existingOrder.updateWith(updateOrderCommand, activeProducts, closingPeriods);
+
+        // then
+        expect(result).not.toThrow();
       });
 
       it('should fail when delivery date is during a closing period', () => {

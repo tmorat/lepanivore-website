@@ -59,8 +59,8 @@ describe('domain/date.utils', () => {
       isFirstDateBeforeSecondDateIgnoringHours(firstDate, secondDate);
 
       // then
-      expect(firstDate).toStrictEqual(new Date('2030-06-13T04:41:20'));
-      expect(secondDate).toStrictEqual(new Date('2030-06-14T04:41:20'));
+      expect(firstDate.toISOString()).toStrictEqual('2030-06-13T08:41:20.000Z');
+      expect(secondDate.toISOString()).toStrictEqual('2030-06-14T08:41:20.000Z');
     });
   });
 
@@ -110,8 +110,8 @@ describe('domain/date.utils', () => {
       getNumberOfDaysBetweenFirstDateAndSecondDate(firstDate, secondDate);
 
       // then
-      expect(firstDate).toStrictEqual(new Date('2030-06-13T04:41:20'));
-      expect(secondDate).toStrictEqual(new Date('2030-06-14T04:41:20'));
+      expect(firstDate.toISOString()).toStrictEqual('2030-06-13T08:41:20.000Z');
+      expect(secondDate.toISOString()).toStrictEqual('2030-06-14T08:41:20.000Z');
     });
   });
 });
