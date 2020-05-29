@@ -1,4 +1,4 @@
-import { Day } from '../date.utils';
+import { Day } from '../date.constants';
 
 export const CLOSING_DAYS: Day[] = [Day.SUNDAY, Day.MONDAY];
 

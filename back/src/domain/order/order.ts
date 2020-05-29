@@ -1,6 +1,7 @@
 import { cloneDeep, isEmpty } from 'lodash';
 import { ClosingPeriodInterface } from '../closing-period/closing-period.interface';
-import { Day, getNumberOfDaysBetweenFirstDateAndSecondDate, isFirstDateBeforeSecondDateIgnoringHours, NUMBER_OF_DAYS_IN_A_WEEK } from '../date.utils';
+import { Day, NUMBER_OF_DAYS_IN_A_WEEK } from '../date.constants';
+import { getNumberOfDaysBetweenFirstDateAndSecondDate, isFirstDateBeforeSecondDateIgnoringHours } from '../date.utils';
 import { Product } from '../product/product';
 import { ProductIdWithQuantity, ProductWithQuantity } from '../product/product-with-quantity';
 import { ProductInterface } from '../product/product.interface';

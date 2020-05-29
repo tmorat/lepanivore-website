@@ -76,7 +76,7 @@
 
 <script lang="ts">
 import Vue, { PropOptions } from 'vue';
-import { Day, NUMBER_OF_DAYS_IN_A_WEEK } from '../../back/src/domain/date.utils';
+import { Day, NUMBER_OF_DAYS_IN_A_WEEK } from '../../back/src/domain/date.constants';
 import { MAXIMUM_HOUR_FOR_DELIVERY_SAME_WEEK, THURSDAY, TUESDAY } from '../../back/src/domain/order/order-delivery-constraints';
 import { AVAILABLE_DAYS_FOR_A_PICK_UP_ORDER, AvailableDayForAPickUpOrder, CLOSING_DAYS } from '../../back/src/domain/order/order-pick-up-constraints';
 import { OrderType } from '../../back/src/domain/order/order-type';
