@@ -1,7 +1,5 @@
 import { Day } from '../date.constants';
 
-export const CLOSING_DAYS: Day[] = [Day.SUNDAY, Day.MONDAY];
-
 export interface AvailableDayForAPickUpOrder {
   whenOrderIsPlacedOn: Day;
   firstAvailableDay: Day;
@@ -16,3 +14,5 @@ export const AVAILABLE_DAYS_FOR_A_PICK_UP_ORDER: AvailableDayForAPickUpOrder[] =
   { whenOrderIsPlacedOn: Day.FRIDAY, firstAvailableDay: Day.TUESDAY },
   { whenOrderIsPlacedOn: Day.SATURDAY, firstAvailableDay: Day.TUESDAY },
 ];
+
+export const CLOSING_DAYS: Day[] = [Day.SUNDAY, Day.MONDAY];
