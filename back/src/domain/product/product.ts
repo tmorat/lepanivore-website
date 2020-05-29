@@ -52,7 +52,7 @@ export class Product implements ProductInterface {
 
   private static assertPriceIsValid(price: number): void {
     if (price <= 0) {
-      throw new InvalidProductError('price has to be a positive value');
+      throw new InvalidProductError(`price ${price} has to be a positive value`);
     }
   }
 
@@ -62,7 +62,7 @@ export class Product implements ProductInterface {
 
   updateWith(command: UpdateProductCommand): void {
     if (this.id !== command.productId) {
-      throw new InvalidProductError('existing product id does not match product id in command');
+      throw new InvalidProductError(`existing product id ${this.id} does not match command product id ${command.productId}`);
     }
 
     Product.assertDescriptionIsValid(command.description);

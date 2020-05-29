@@ -1,3 +1,4 @@
+import { isFirstDateBeforeSecondDateIgnoringHours } from '../date.utils';
 import { ClosingPeriodId } from '../type-aliases';
 import { ClosingPeriodInterface } from './closing-period.interface';
 import { NewClosingPeriodCommand } from './commands/new-closing-period-command';
@@ -27,8 +28,9 @@ export class ClosingPeriod implements ClosingPeriodInterface {
       throw new InvalidClosingPeriodError('start date has to be defined');
     }
 
-    if (ClosingPeriod.isBeforeNowIgnoringHours(startDate)) {
-      throw new InvalidClosingPeriodError('start date has to be in the future');
+    const now: Date = new Date();
+    if (isFirstDateBeforeSecondDateIgnoringHours(startDate, now)) {
+      throw new InvalidClosingPeriodError(`start date ${startDate.toISOString()} has to be in the future`);
     }
   }
 
@@ -36,19 +38,14 @@ export class ClosingPeriod implements ClosingPeriodInterface {
     if (!endDate) {
       throw new InvalidClosingPeriodError('end date has to be defined');
     }
-    if (ClosingPeriod.isBeforeNowIgnoringHours(endDate)) {
-      throw new InvalidClosingPeriodError('end date has to be in the future');
+
+    const now: Date = new Date();
+    if (isFirstDateBeforeSecondDateIgnoringHours(endDate, now)) {
+      throw new InvalidClosingPeriodError(`end date ${endDate.toISOString()} has to be in the future`);
     }
     if (endDate.getTime() < startDate.getTime()) {
-      throw new InvalidClosingPeriodError('end date has to be greater than start date');
+      throw new InvalidClosingPeriodError(`end date ${endDate.toISOString()} has to be greater than start date ${startDate.toISOString()}`);
     }
-  }
-
-  private static isBeforeNowIgnoringHours(date: Date): boolean {
-    const now: Date = new Date();
-    now.setHours(date.getHours(), date.getMinutes(), date.getSeconds(), date.getMilliseconds());
-
-    return date.getTime() < now.getTime();
   }
 }
 

@@ -76,12 +76,9 @@
 
 <script lang="ts">
 import Vue, { PropOptions } from 'vue';
-import { ClosingDay } from '../../back/src/domain/closing-period/closing-day';
+import { Day, NUMBER_OF_DAYS_IN_A_WEEK } from '../../back/src/domain/date.utils';
 import { MAXIMUM_HOUR_FOR_DELIVERY_SAME_WEEK, THURSDAY, TUESDAY } from '../../back/src/domain/order/order-delivery-constraints';
-import {
-  NUMBER_OF_MINIMUM_DAYS_FOR_A_CLIENT_PICK_UP_ORDER,
-  NUMBER_OF_MINIMUM_DAYS_FOR_AN_ADMIN_PICK_UP_ORDER,
-} from '../../back/src/domain/order/order-pick-up-constraints';
+import { AVAILABLE_DAYS_FOR_A_PICK_UP_ORDER, AvailableDayForAPickUpOrder, CLOSING_DAYS } from '../../back/src/domain/order/order-pick-up-constraints';
 import { OrderType } from '../../back/src/domain/order/order-type';
 import { GetClosingPeriodResponse } from '../../back/src/infrastructure/rest/models/get-closing-period-response';
 import { PostOrderRequest } from '../../back/src/infrastructure/rest/models/post-order-request';
@@ -125,7 +122,7 @@ export default Vue.extend({
       }
     },
     isStoreOpen(date: Date): boolean {
-      if (Object.values(ClosingDay).includes(date.getDay())) {
+      if (CLOSING_DAYS.includes(date.getDay())) {
         return false;
       }
 
@@ -137,6 +134,12 @@ export default Vue.extend({
 
       return true;
     },
+    isAddingGivenDaysWillPassedToNextWeek(numberOfDays: number): boolean {
+      const now: Date = new Date();
+      const futureDate: Date = new Date();
+      futureDate.setDate(futureDate.getDate() + numberOfDays);
+      return futureDate.getDay() < now.getDay();
+    },
   },
   computed: {
     isPickUpOrderTypeSelected(): boolean {
@@ -146,15 +149,25 @@ export default Vue.extend({
       return this.value.type === OrderType.DELIVERY;
     },
     pickUpDateMin(): string {
-      const date: Date = new Date();
-      const isInAdmin: boolean = this.$route.path.includes('admin');
+      const now: Date = new Date();
 
-      const numberOfMinimumDaysForAPickUp: number = isInAdmin
-        ? NUMBER_OF_MINIMUM_DAYS_FOR_AN_ADMIN_PICK_UP_ORDER
-        : NUMBER_OF_MINIMUM_DAYS_FOR_A_CLIENT_PICK_UP_ORDER;
-      date.setDate(date.getDate() + numberOfMinimumDaysForAPickUp);
+      if (!this.isInAdmin) {
+        const currentDay: number = now.getDay();
+        const firstAvailableDay: Day = AVAILABLE_DAYS_FOR_A_PICK_UP_ORDER.filter(
+          (availableDayForAPickUpOrder: AvailableDayForAPickUpOrder) => availableDayForAPickUpOrder.whenOrderIsPlacedOn === currentDay
+        ).map((availableDayForAPickUpOrder: AvailableDayForAPickUpOrder) => availableDayForAPickUpOrder.firstAvailableDay)[0];
 
-      return date.toISOString();
+        let numberOfDaysBetweenNowAndFirstAvailableDay: number = Math.abs(firstAvailableDay - currentDay);
+        if (
+          numberOfDaysBetweenNowAndFirstAvailableDay < NUMBER_OF_DAYS_IN_A_WEEK &&
+          this.isAddingGivenDaysWillPassedToNextWeek(numberOfDaysBetweenNowAndFirstAvailableDay)
+        ) {
+          numberOfDaysBetweenNowAndFirstAvailableDay = NUMBER_OF_DAYS_IN_A_WEEK - numberOfDaysBetweenNowAndFirstAvailableDay;
+        }
+        now.setDate(now.getDate() + numberOfDaysBetweenNowAndFirstAvailableDay);
+      }
+
+      return now.toISOString();
     },
     deliveryDateMin(): string {
       const now = new Date();
@@ -168,6 +181,9 @@ export default Vue.extend({
       }
 
       return now.toISOString();
+    },
+    isInAdmin(): boolean {
+      return this.$route.path.includes('admin');
     },
   },
 });
