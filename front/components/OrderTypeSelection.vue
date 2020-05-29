@@ -77,7 +77,7 @@
 <script lang="ts">
 import Vue, { PropOptions } from 'vue';
 import { Day, NUMBER_OF_DAYS_IN_A_WEEK } from '../../back/src/domain/date.constants';
-import { MAXIMUM_HOUR_FOR_DELIVERY_SAME_WEEK, THURSDAY, TUESDAY } from '../../back/src/domain/order/order-delivery-constraints';
+import { MAXIMUM_HOUR_FOR_DELIVERY_SAME_WEEK } from '../../back/src/domain/order/order-delivery-constraints';
 import { AVAILABLE_DAYS_FOR_A_PICK_UP_ORDER, AvailableDayForAPickUpOrder, CLOSING_DAYS } from '../../back/src/domain/order/order-pick-up-constraints';
 import { OrderType } from '../../back/src/domain/order/order-type';
 import { GetClosingPeriodResponse } from '../../back/src/infrastructure/rest/models/get-closing-period-response';
@@ -112,7 +112,7 @@ export default Vue.extend({
     },
     deliveryAllowedDates(dateAsIsoString: string): boolean {
       const date: Date = this.toDate(dateAsIsoString);
-      return this.isStoreOpen(date) && date.getDay() === THURSDAY;
+      return this.isStoreOpen(date) && date.getDay() === Day.THURSDAY;
     },
     toDate(dateAsIsoString: string): Date {
       if (dateAsIsoString.length > 10) {
@@ -175,10 +175,10 @@ export default Vue.extend({
       if (!this.isInAdmin) {
         const currentDayOfWeek: number = now.getDay();
         if (
-          (currentDayOfWeek > TUESDAY && currentDayOfWeek <= THURSDAY) ||
-          (currentDayOfWeek === TUESDAY && now.getHours() >= MAXIMUM_HOUR_FOR_DELIVERY_SAME_WEEK)
+          (currentDayOfWeek > Day.TUESDAY && currentDayOfWeek <= Day.THURSDAY) ||
+          (currentDayOfWeek === Day.TUESDAY && now.getHours() >= MAXIMUM_HOUR_FOR_DELIVERY_SAME_WEEK)
         ) {
-          const numberOfDaysToAddToOverlapNextThursday: number = THURSDAY - currentDayOfWeek + 1;
+          const numberOfDaysToAddToOverlapNextThursday: number = Day.THURSDAY - currentDayOfWeek + 1;
           now.setDate(now.getDate() + numberOfDaysToAddToOverlapNextThursday);
         }
       }
