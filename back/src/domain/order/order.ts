@@ -46,6 +46,7 @@ export class Order implements OrderInterface {
       this.bindProductSelection(command, activeProducts);
       this.bindOrderTypeSelection(command, closingPeriods);
       Order.assertPickUpDateIsEqualOrAfterTheFirstAvailableDay(command.type, command.pickUpDate);
+      Order.assertDeliveryDateIsEqualOrAfterTheFirstAvailableDay(command.type, command.deliveryDate);
       this.note = command.note;
     }
   }
@@ -170,7 +171,12 @@ export class Order implements OrderInterface {
       if (deliveryDate.getDay() !== DELIVERY_DAY) {
         throw new InvalidOrderError(`delivery date ${deliveryDate.toISOString()} has to be a Thursday`);
       }
+    }
+  }
 
+  private static assertDeliveryDateIsEqualOrAfterTheFirstAvailableDay(type: OrderType, deliveryDate: Date): void {
+    if (type === OrderType.DELIVERY) {
+      const now: Date = new Date();
       const numberOfDaysBetweenNowAndDeliveryDate: number = getNumberOfDaysBetweenFirstDateAndSecondDate(now, deliveryDate);
       const isDeliveryDateIsInTheNextSixDays: boolean = numberOfDaysBetweenNowAndDeliveryDate < NUMBER_OF_DAYS_IN_A_WEEK;
       if (
