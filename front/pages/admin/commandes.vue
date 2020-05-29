@@ -204,7 +204,7 @@ export default Vue.extend({
       const message: string =
         e.statusCode === 401
           ? 'Votre session a expiré. Merci de <nuxt-link to="/admin/connexion">vous reconnecter en cliquant ici</nuxt-link>.'
-          : "Une erreur s'est produite, veuillez nous excuser ! Si le problème persiste, contactez-nous.";
+          : `Une erreur s'est produite, veuillez nous excuser ! Si le problème persiste, contactez-nous.<br/><br/>Error message: ${e.message}`;
       // @ts-ignore
       this.$toast.error(message, {
         icon: 'mdi-alert',
